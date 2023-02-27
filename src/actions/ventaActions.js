@@ -98,6 +98,7 @@ export const actualizarVenta = (venta) => async (dispatch, getState) => {
     dispatch({ type: SUCCESS_VENTA_ACTUALIZAR, payload: data });
     // dispatch({ type: RESET_VENTA_DETALLES });
     dispatch({ type: RESET_VENTA_LISTA });
+    dispatch({ type: RESET_PRODUCTO_LISTA });
   } catch (error) {
     dispatch({ type: FAIL_VENTA_ACTUALIZAR, payload: error.message });
   }
