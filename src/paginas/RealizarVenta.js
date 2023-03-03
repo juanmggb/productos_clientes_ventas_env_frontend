@@ -208,23 +208,23 @@ const RealizarVenta = () => {
                   type="text"
                   value={vendedor}
                 ></Form.Control>
+              </Form.Group>
 
-                <Form.Group controlId="cliente">
-                  <Form.Label>CLIENTE</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={cliente.id}
-                    onChange={(e) =>
-                      manejarCambiarCliente(Number(e.target.value))
-                    }
-                  >
-                    {clientes.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.NOMBRE}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
+              <Form.Group controlId="cliente">
+                <Form.Label>CLIENTE</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={cliente.id}
+                  onChange={(e) =>
+                    manejarCambiarCliente(Number(e.target.value))
+                  }
+                >
+                  {clientes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.NOMBRE}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
 
               <Form.Group controlId="productosCliente">
