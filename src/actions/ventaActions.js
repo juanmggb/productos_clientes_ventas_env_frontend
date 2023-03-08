@@ -35,7 +35,7 @@ export const pedirVentasLista = () => async (dispatch, getState) => {
     };
 
     const { data } = await axios.get(
-      "http://212.1.214.18:8080/api/ventas/",
+      "http://212.1.214.18:8000/api/ventas/",
       config
     );
 
@@ -63,7 +63,7 @@ export const obtenerVentaDetalles = (id) => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.get(
-      `http://212.1.214.18:8080/api/ventas/${id}/`,
+      `http://212.1.214.18:8000/api/ventas/${id}/`,
       config
     );
 
@@ -90,7 +90,7 @@ export const actualizarVenta = (venta) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `http://212.1.214.18:8080/api/modificar-venta/${venta.id}/`,
+      `http://212.1.214.18:8000/api/modificar-venta/${venta.id}/`,
       venta,
       config
     );
@@ -122,7 +122,7 @@ export const registrarVenta = (venta) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      "http://212.1.214.18:8080/api/crear-venta/",
+      "http://212.1.214.18:8000/api/crear-venta/",
       venta,
       config
     );

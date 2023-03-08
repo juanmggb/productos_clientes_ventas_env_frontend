@@ -151,7 +151,7 @@ export const borrarCliente = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.delete(
-      `http://212.1.214.18:8080/api/modificar-cliente/${id}/`,
+      `http://212.1.214.18:8000/api/modificar-cliente/${id}/`,
       config
     );
 

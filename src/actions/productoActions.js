@@ -39,7 +39,7 @@ export const pedirProductosLista = () => async (dispatch, getState) => {
     };
 
     const { data } = await axios.get(
-      "http://212.1.214.18:8080/api/productos/",
+      "http://212.1.214.18:8000/api/productos/",
       config
     );
 
@@ -67,7 +67,7 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.get(
-      `http://212.1.214.18:8080/api/productos/${id}/`,
+      `http://212.1.214.18:8000/api/productos/${id}/`,
       config
     );
 
@@ -94,7 +94,7 @@ export const actualizarProducto = (producto) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `http://212.1.214.18:8080/api/modificar-producto/${producto.id}/`,
+      `http://212.1.214.18:8000/api/modificar-producto/${producto.id}/`,
       producto,
       config
     );
@@ -127,7 +127,7 @@ export const registrarProducto = (producto) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      "http://212.1.214.18:8080/api/crear-producto/",
+      "http://212.1.214.18:8000/api/crear-producto/",
       producto,
       config
     );
@@ -160,7 +160,7 @@ export const borrarProducto = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.delete(
-      `http://212.1.214.18:8080/api/modificar-producto/${id}/`,
+      `http://212.1.214.18:8000/api/modificar-producto/${id}/`,
       config
     );
 
