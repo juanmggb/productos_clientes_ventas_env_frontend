@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
+const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana, descuento }) => {
   return (
     venta &&
     venta.productos_venta && (
@@ -9,7 +9,7 @@ const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
         <Modal.Header closeButton>
           <Modal.Title>Detalles de Venta #{venta.id}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style= {{color: 'black'}}>
           <p>
             <strong>VENDEDOR:</strong> {venta.VENDEDOR}
           </p>
@@ -20,7 +20,13 @@ const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
             <strong>FECHA:</strong> {formatearFecha(venta.FECHA)}
           </p>
           <p>
-            <strong>MONTO:</strong> {venta.MONTO}
+            <strong>MONTO SIN DESCUENTO:</strong> $ {(venta.MONTO/(1-descuento/100)).toFixed(2)}
+          </p>
+          <p>
+            <strong>DESCUENTO:</strong> {descuento}%
+          </p>
+          <p>
+            <strong>MONTO CON DESCUENTO:</strong> $ {venta.MONTO.toFixed(2)}
           </p>
           <p>
             <strong>TIPO DE VENTA:</strong> {venta.TIPO_VENTA}
@@ -40,13 +46,15 @@ const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
           <ul>
             {venta.productos_venta.map((pv) => (
               <li key={pv.id}>
-                {pv.producto_nombre} x {pv.CANTIDAD_VENTA} = {pv.PRECIO_VENTA}
+                {pv.producto_nombre} x {pv.CANTIDAD_VENTA} = $ {pv.PRECIO_VENTA*(1-descuento/100).toFixed(2)}
               </li>
             ))}
           </ul>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={manejarCerrarVentana}>
+          <Button variant="secondary" 
+           onClick={() => {manejarCerrarVentana()}} 
+           style= {{backgroundColor: 'rgb(20,50,100)', color: 'white', fontWeight: 'bold'}}>
             Cerrar
           </Button>
         </Modal.Footer>
