@@ -11,7 +11,9 @@ import RegistrarCliente from "./paginas/RegistrarCliente";
 import RegistrarProducto from "./paginas/RegistrarProducto";
 import VentaDetalles from "./paginas/VentaDetalles";
 import VentasLista from "./paginas/VentasLista";
-
+import UsuariosLista from "./paginas/UsuariosLista";
+import UsuarioDetalles from "./paginas/UsuarioDetalles";
+import RegistrarUsuario from "./paginas/RegistrarUsuario";
 function App() {
   return (
     <div className="App">
@@ -34,6 +36,10 @@ function App() {
           <Route path="/ventas" element={<VentasLista />} />
           <Route path="/ventas/:id" element={<VentaDetalles />} />
           <Route path="/realizar-venta" element={<RealizarVenta />} />
+          {/* Usuarios */}
+          <Route path="/usuarios" element={<UsuariosLista />} />
+          <Route path="/usuarios/:id" element={<UsuarioDetalles />} />
+          <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -12,6 +12,8 @@ import {
   RESET_PRODUCTO_BORRAR,
   RESET_PRODUCTO_DETALLES,
 } from "../constantes/productoConstantes";
+import ImagenObjeto from "../componentes/ImagenObjeto";
+import { useMediaQuery } from "react-responsive";
 
 const ProductosLista = () => {
   // Funcion para disparar las acciones
@@ -29,6 +31,9 @@ const ProductosLista = () => {
     success: successBorrar,
     error: errorBorrar,
   } = productoBorrar;
+
+  const isSmallViewport = useMediaQuery({ maxWidth: 768 });
+  const shouldShow = !isSmallViewport;
 
   useEffect(() => {
     if (successBorrar) {
@@ -72,8 +77,14 @@ const ProductosLista = () => {
             <tr>
               <th>ID</th>
               <th>NOMBRE</th>
-              <th>CANTIDAD</th>
-              <th>PRECIO</th>
+              {shouldShow ? (
+                <>
+                  <th>IMAGEN</th>
+                  <th>CANTIDAD</th>
+                  <th>PRECIO</th>
+                </>
+              ) : null}
+
               <th>EDITAR</th>
               <th>BORRAR</th>
             </tr>
@@ -83,8 +94,20 @@ const ProductosLista = () => {
               <tr key={p.id}>
                 <td>{p.id}</td>
                 <td>{p.NOMBRE}</td>
-                <td>{p.CANTIDAD}</td>
-                <td>{p.PRECIO}</td>
+                {shouldShow ? (
+                  <>
+                    <td>
+                      <ImagenObjeto
+                        src={`http://127.0.0.1:8000/${p.IMAGEN}`}
+                        alt={p.NOMBRE}
+                      />
+                    </td>
+                    {/* <td>{`http:/127.0.0.1:8000${p.IMAGEN}`}</td> */}
+                    <td>{p.CANTIDAD}</td>
+                    <td>{p.PRECIO}</td>
+                  </>
+                ) : null}
+
                 <td>
                   <Button onClick={() => manejarProductoDetalles(p.id)}>
                     <i className="fa-solid fa-circle-info"></i>

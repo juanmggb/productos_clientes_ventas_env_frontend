@@ -25,6 +25,7 @@ const RegistrarProducto = () => {
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
+  const [imagen, setImagen] = useState(null);
 
   useEffect(() => {
     // Si el registro fue correcto, reset productoRegistrar y redireccionar a la pagina de productos
@@ -38,14 +39,17 @@ const RegistrarProducto = () => {
   const manejarRegistrarProducto = (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+
+    formData.append("NOMBRE", nombre);
+    formData.append("CANTIDAD", cantidad);
+    formData.append("PRECIO", precio);
+    if (imagen) {
+      formData.append("IMAGEN", imagen);
+    }
+
     // Disparar la accion de actualizar producto
-    dispatch(
-      registrarProducto({
-        NOMBRE: nombre,
-        CANTIDAD: cantidad,
-        PRECIO: precio,
-      })
-    );
+    dispatch(registrarProducto(formData));
   };
 
   // Aqui no es necesario empezar con loading porque no hay un estado necesario al cargar el componente.
@@ -82,7 +86,18 @@ const RegistrarProducto = () => {
             onChange={(e) => setPrecio(e.target.value)}
           ></Form.Control>
         </Form.Group>
-        <Button type="submit">Registrar producto</Button>
+
+        <Form.Group controlId="formImage">
+          <Form.Label>IMAGEN</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={(e) => setImagen(e.target.files[0])}
+          />
+        </Form.Group>
+
+        <Button className="mt-3" type="submit">
+          Registrar producto
+        </Button>
       </Form>
     </div>
   );

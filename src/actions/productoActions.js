@@ -21,6 +21,9 @@ import {
   RESET_PRODUCTO_BORRAR,
 } from "../constantes/productoConstantes";
 import { RESET_VENTA_LISTA } from "../constantes/ventaConstantes";
+import { actualizarAccessToken } from "./usuarioActions";
+
+// Funcion para navegar en la pagina
 
 // Creador de acciones para pedir los productos del backend
 export const pedirProductosLista = () => async (dispatch, getState) => {
@@ -28,13 +31,13 @@ export const pedirProductosLista = () => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -48,6 +51,11 @@ export const pedirProductosLista = () => async (dispatch, getState) => {
     localStorage.setItem("productos", JSON.stringify(data));
   } catch (error) {
     dispatch({ type: FAIL_PRODUCTO_LISTA, payload: error.message });
+
+    // Redirect user to "/" page if error is due to expired token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken("/productos"));
+    }
   }
 };
 
@@ -57,13 +65,13 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
     const { data } = await axios.get(
@@ -78,57 +86,58 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
 };
 
 // Creador de acciones para actualizar producto del backend
-export const actualizarProducto = (producto) => async (dispatch, getState) => {
-  dispatch({ type: REQUEST_PRODUCTO_ACTUALIZAR });
+export const actualizarProducto =
+  (id, formData) => async (dispatch, getState) => {
+    dispatch({ type: REQUEST_PRODUCTO_ACTUALIZAR });
 
-  try {
-    const {
-      usuarioInfo: { tokens },
-    } = getState();
+    try {
+      const {
+        usuarioInfo: { token },
+      } = getState();
 
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
-      },
-    };
+      const config = {
+        headers: {
+          "Content-type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-    const { data } = await axios.put(
-      `http://127.0.0.1:8000/api/modificar-producto/${producto.id}/`,
-      producto,
-      config
-    );
+      const { data } = await axios.put(
+        `http://127.0.0.1:8000/api/modificar-producto/${id}/`,
+        formData,
+        config
+      );
 
-    dispatch({ type: SUCCESS_PRODUCTO_ACTUALIZAR });
-    dispatch({ type: RESET_PRODUCTO_LISTA });
-    // Debo volver a pedir la lista de clientes del bakcend
-    dispatch({ type: RESET_CLIENTE_LISTA });
-    // Debo volver a pedir la lista de ventas del backend
-    dispatch({ type: RESET_VENTA_LISTA });
-  } catch (error) {
-    dispatch({ type: FAIL_PRODUCTO_ACTUALIZAR, payload: error.message });
-  }
-};
+      dispatch({ type: SUCCESS_PRODUCTO_ACTUALIZAR });
+      dispatch({ type: RESET_PRODUCTO_LISTA });
+      // Debo volver a pedir la lista de clientes del bakcend
+      dispatch({ type: RESET_CLIENTE_LISTA });
+      // Debo volver a pedir la lista de ventas del backend
+      dispatch({ type: RESET_VENTA_LISTA });
+    } catch (error) {
+      dispatch({ type: FAIL_PRODUCTO_ACTUALIZAR, payload: error.message });
+    }
+  };
 
 // Creador de acciones para registrar un nuevo producto en el backend
-export const registrarProducto = (producto) => async (dispatch, getState) => {
+export const registrarProducto = (formData) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_PRODUCTO_REGISTRAR });
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
       },
     };
 
     const { data } = await axios.post(
       "http://127.0.0.1:8000/api/crear-producto/",
-      producto,
+      formData,
       config
     );
 
@@ -149,13 +158,13 @@ export const borrarProducto = (id) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 

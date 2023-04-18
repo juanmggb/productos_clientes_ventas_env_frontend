@@ -10,6 +10,7 @@ import {
   RESET_CLIENTE_BORRAR,
   RESET_CLIENTE_DETALLES,
 } from "../constantes/clienteConstantes";
+import { useMediaQuery } from "react-responsive";
 
 const ClientesLista = () => {
   // Funcion para disparar las acciones
@@ -30,6 +31,9 @@ const ClientesLista = () => {
 
   const [mostrarCliente, setMostrarCliente] = useState(false);
   const [cliente, setCliente] = useState({});
+
+  const isSmallViewport = useMediaQuery({ maxWidth: 768 });
+  const shouldShow = !isSmallViewport;
 
   useEffect(() => {
     if (successBorrar) {
@@ -84,6 +88,15 @@ const ClientesLista = () => {
             <tr>
               <th>ID</th>
               <th>NOMBRE</th>
+
+              {shouldShow ? (
+                <>
+                  <th>CONTACTO</th>
+                  <th>TELEFONO</th>
+                  <th>CORREO</th>
+                </>
+              ) : null}
+
               <th>EDITAR</th>
               <th>BORRAR</th>
             </tr>
@@ -96,6 +109,15 @@ const ClientesLista = () => {
               >
                 <td>{c.id}</td>
                 <td>{c.NOMBRE}</td>
+
+                {shouldShow ? (
+                  <>
+                    <td>{c.CONTACTO}</td>
+                    <td>{c.TELEFONO}</td>
+                    <td>{c.CORREO}</td>
+                  </>
+                ) : null}
+
                 <td>
                   <Button onClick={() => manejarClienteDetalles(c.id)}>
                     <i className="fa-solid fa-circle-info"></i>

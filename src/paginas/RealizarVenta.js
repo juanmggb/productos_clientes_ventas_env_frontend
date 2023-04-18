@@ -10,12 +10,18 @@ import Mensaje from "../componentes/Mensaje";
 import VentanaMostrarVenta from "../componentes/VentanaMostrarVenta";
 import { RESET_VENTA_REGISTRAR } from "../constantes/ventaConstantes";
 import jwt_decode from "jwt-decode";
-import styled from 'styled-components';
-import ImprimirTicket from '../componentes/ImprimirTicket'
+import styled from "styled-components";
+import ImprimirTicket from "../componentes/ImprimirTicket";
 
 const Principal = styled.div`
   position: fixed;
-  background: linear-gradient(rgb(54, 54, 82), 15%,rgb(84, 106, 144), 60%, rgb(68, 111, 151));
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
   color: black;
   font-weight: 400;
   border-radius: 0px;
@@ -26,9 +32,10 @@ const Principal = styled.div`
   display: grid;
   grid-template-columns: 2.5fr 8fr;
   grid-template-rows: 0.7fr 5.7fr 1.5fr;
-  grid-template-areas: "Formulario Encabezado"
-                       "Formulario ContenidoPrincipal"
-                       "Formulario ContenidoPrincipal";
+  grid-template-areas:
+    "Formulario Encabezado"
+    "Formulario ContenidoPrincipal"
+    "Formulario ContenidoPrincipal";
 `;
 
 const Encabezado = styled.div`
@@ -40,7 +47,7 @@ const Encabezado = styled.div`
   align-items: center;
   border-radius: 5px;
   text-align: center;
-  box-shadow: 1px 2px 5px 1px rgba(0,0,0,0.2);
+  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
 `;
 
 const Formulario = styled.div`
@@ -48,14 +55,15 @@ const Formulario = styled.div`
   grid-area: Formulario;
   display: grid;
   grid-template-rows: 6fr 2.4fr;
-  grid-template-areas:  "PanelControl"
-                        "Herramientas";
+  grid-template-areas:
+    "PanelControl"
+    "Herramientas";
   height: 100%;
   width: 100%;
 `;
 
 const PanelControl = styled.div`
-  position: relative; 
+  position: relative;
   grid-area: PanelControl;
   display: flex;
   justify-content: center;
@@ -77,12 +85,12 @@ const ContenidoPrincipal = styled.div`
   align-items: flex-start;
   padding: 15px;
   border-radius: 5px;
-  box-shadow: 1px 2px 5px 1px rgba(0,0,0,0.2);
+  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
 
   -ms-overflow-style: none;
   scrollbar-width: none;
 
-  &::-webkit-scrollbar{
+  &::-webkit-scrollbar {
     display: none;
   }
 `;
@@ -97,7 +105,7 @@ const Herramientas = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  box-shadow: 1px 2px 5px 1px rgba(0,0,0,0.2);
+  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
 `;
 
 const BotonVenta = styled(Button)`
@@ -139,7 +147,7 @@ const RealizarVenta = () => {
   const { loading, clientes, error } = clienteLista;
 
   const usuarioInfo = useSelector((state) => state.usuarioInfo);
-  const { tokens } = usuarioInfo;
+  const { token } = usuarioInfo;
 
   const ventaRegistrar = useSelector((state) => state.ventaRegistrar);
 
@@ -161,15 +169,12 @@ const RealizarVenta = () => {
   const [deshabilitarVenta, setDesabilitarVenta] = useState(true);
   const [mostrarVenta, setMostrarVenta] = useState(false);
   const [imprimirTicket, setImprimirTicket] = useState(false);
-  
 
   useEffect(() => {
-    if (!tokens) {
+    if (!token) {
       navigate("/login");
     } else {
-      // Obtener el usrname a partir del token
-      var decoded = jwt_decode(tokens.access);
-      setVendedor(decoded.username);
+      setVendedor(JSON.parse(localStorage.getItem("name")));
     }
     if (venta) {
       setMostrarVenta(true);
@@ -182,7 +187,7 @@ const RealizarVenta = () => {
       setCliente(clientes[0]);
       setProductosCliente(clientes[0].precios_cliente);
     }
-  }, [clientes, navigate, venta, dispatch, tokens]);
+  }, [clientes, navigate, venta, dispatch, token]);
 
   const manejarCambiarCliente = (clienteId) => {
     const clienteSeleccionado = { ...clientes.find((c) => c.id === clienteId) };
@@ -239,25 +244,26 @@ const RealizarVenta = () => {
         `La cantidad seleccionada debe ser inferior a ${productoSeleccionado.producto_cantidad}`
       );
     } else {
-      if(nuevaCantidad <= 0){
-        nuevaCantidad = 1
-      } else{
-      const indexProducto = productosVenta.findIndex(
-        (producto) => producto.id === productoId
-      );
+      if (nuevaCantidad <= 0) {
+        nuevaCantidad = 1;
+      } else {
+        const indexProducto = productosVenta.findIndex(
+          (producto) => producto.id === productoId
+        );
 
-      // Crear una copia del arreglo de productos
-      const nuevosProductosVenta = [...productosVenta];
+        // Crear una copia del arreglo de productos
+        const nuevosProductosVenta = [...productosVenta];
 
-      // Actualizar el precio con el index seleccionado
-      nuevosProductosVenta[indexProducto] = {
-        ...productosVenta[indexProducto],
-        cantidadVenta: nuevaCantidad,
-      };
+        // Actualizar el precio con el index seleccionado
+        nuevosProductosVenta[indexProducto] = {
+          ...productosVenta[indexProducto],
+          cantidadVenta: nuevaCantidad,
+        };
 
-      setProductosVenta(nuevosProductosVenta);
+        setProductosVenta(nuevosProductosVenta);
+      }
     }
-  }};
+  };
 
   const manejarConfirmarProducto = (productoId) => {
     const nuevosProductosVenta = productosVenta.map((p) => {
@@ -292,7 +298,7 @@ const RealizarVenta = () => {
     const nuevosProductosVenta = crearProductosVenta(productosVenta, descuento);
 
     const monto = calcularMonto(tipoPago, nuevosProductosVenta);
-    const montoDescuento = monto*(1-descuento/100);
+    const montoDescuento = monto * (1 - descuento / 100);
 
     const venta = {
       productosVenta: nuevosProductosVenta,
@@ -304,7 +310,7 @@ const RealizarVenta = () => {
       OBSERVACIONES: observaciones,
       CLIENTE: cliente.id,
       DESCUENTO: descuento,
-/*      LOCAL: {
+      /*      LOCAL: {
         CALLE: 'Culiver City',
         NUMERO: '3',
         COLONIA: 'Barrio de Santo Santiago',
@@ -323,17 +329,17 @@ const RealizarVenta = () => {
   };
 
   const manejarFinalizarVenta = () => {
-    dispatch({type: RESET_VENTA_REGISTRAR})
-    navigate('/ventas');
-  }
-  
+    dispatch({ type: RESET_VENTA_REGISTRAR });
+    navigate("/ventas");
+  };
+
   const manejarImprimirTicket = () => {
     setImprimirTicket(!imprimirTicket);
-  }
+  };
 
   const reset = () => {
     setImprimirTicket(!imprimirTicket);
-  }
+  };
 
   return loading ? (
     <Loader />
@@ -341,154 +347,291 @@ const RealizarVenta = () => {
     <Mensaje variant="danger">{error}</Mensaje>
   ) : (
     clientes && (
-      <div style={{maxWidth: "100vw" }}>
+      <div style={{ maxWidth: "100vw" }}>
         {loadingRegistrar && <Loader />}
         {errorRegistrar && <Mensaje variant="danger">{error}</Mensaje>}
         {/* Esta es la parte que cambia en las paginas */}
 
-      <Principal>
-        <Encabezado>
-          <ClienteVenta onMouseOver={() => {console.log(venta)}}>{cliente.NOMBRE}</ClienteVenta>
-        </Encabezado>
-        <ContenidoPrincipal>
-          <FormularioProductoVenta
-            productos= {productosVenta} 
-            manejarCambioCantidad={manejarCambioCantidad}
-            manejarConfirmarProducto={manejarConfirmarProducto}
-            manejarCancelarProducto={manejarCancelarProducto}
-          />
-        </ContenidoPrincipal>
-        <Formulario>
-          <Form onSubmit={manejarRealizarVenta}>
-            <PanelControl>
-              <Row style= {{rowGap: '9px'}}>
-                <Form.Group style={{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize:'13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>VENDEDOR</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    readOnly
-                    type="text"
-                    value={vendedor}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="cliente" style= {{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>CLIENTE</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    as="select"
-                    value={cliente.id}
-                    onChange={(e) =>
-                      manejarCambiarCliente(Number(e.target.value))
-                    }
-                  >
-                    {clientes.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.NOMBRE}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="productosCliente" style={{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>PRODUCTOS DEL CLIENTE</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    as="select"
-                    defaultValue={0}
-                    onChange={(e) =>
-                      manejarSeleccionarProducto(Number(e.target.value))
-                    }
-                  >
-                    <option value={0}>Selecciona un producto</option>
-                    {productosCliente.map((pc) => (
-                      <option key={pc.id} value={pc.id}>
-                        {pc.producto_nombre}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="tipoVenta" style={{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>TIPO DE VENTA</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    as="select"
-                    value={tipoVenta}
-                    onChange={(e) => setTipoVenta(e.target.value)}
-                  >
-                    <option value="MOSTRADOR">Mostrador</option>
-                    <option value="RUTA">Ruta</option>
-                  </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="tipoPago" style= {{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>TIPO DE PAGO</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    as="select"
-                    value={tipoPago}
-                    onChange={(e) => setTipoPago(e.target.value)}
-                  >
-                    <option value="CONTADO">Efectivo</option>
-                    <option value="CREDITO">Credito</option>
-                    <option value="CORTESIA">Cortesia</option>
-                  </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="status" style= {{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>ESTATUS</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    as="select"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    {(tipoPago === "CORTESIA" || descuento !== 0) ? (
-                      <option value="PENDIENTE">Pendiente</option>
-                    ) :(
-                      <>
-                        <option value="REALIZADO">Realizado</option>
-                        <option value="PENDIENTE">Pendiente</option>
-                      </>
-                    )}
-                  </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId="observaciones" style= {{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>OBSERVACIONES</Form.Label>
-                  <Form.Control style= {{height: '45%', padding: '0px', paddingLeft: '8px'}}
-                    required
-                    type="text"
-                    value={observaciones}
-                    onChange={(e) => setObservaciones(e.target.value)}
-                    autoComplete='off'
-                  ></Form.Control>
-                </Form.Group>
-                
-                <Form.Group controlId="Descuento" style={{maxHeight: '3.5em'}}>
-                  <Form.Label style={{fontSize: '13.5px', color: 'white', fontWeight: 'bold', marginBottom: '4px'}}>DESCUENTO</Form.Label>
-                  <Form.Control style= {{height:'45%', padding: '0px', paddingLeft: '8px'}}
-                    required
-                    type='number'
-                    value={descuento}
-                    min={0}
-                    max={100}
-                    autoComplete='off'
-                    onChange={(e) => setDescuento(parseInt(e.target.value))}/>
-                </Form.Group>
-          </Row>
-            </PanelControl>
-            <Herramientas>
-              <BotonVenta disabled={deshabilitarVenta} type='submit'>
-                Realizar venta
-              </BotonVenta>
-            </Herramientas>
-          </Form>
-        </Formulario>
-      </Principal>
-        {/* Mostrar venta */}
-          <ImprimirTicket
-            estado= {imprimirTicket}
-            datosVenta= {venta}
-            reset= {reset}
-            DESCUENTO={descuento}
-            manejarFinalizarVenta={manejarFinalizarVenta}
+        <Principal>
+          <Encabezado>
+            <ClienteVenta
+              onMouseOver={() => {
+                console.log(venta);
+              }}
+            >
+              {cliente.NOMBRE}
+            </ClienteVenta>
+          </Encabezado>
+          <ContenidoPrincipal>
+            <FormularioProductoVenta
+              productos={productosVenta}
+              manejarCambioCantidad={manejarCambioCantidad}
+              manejarConfirmarProducto={manejarConfirmarProducto}
+              manejarCancelarProducto={manejarCancelarProducto}
             />
+          </ContenidoPrincipal>
+          <Formulario>
+            <Form onSubmit={manejarRealizarVenta}>
+              <PanelControl>
+                <Row style={{ rowGap: "9px" }}>
+                  <Form.Group style={{ maxHeight: "3.5em" }}>
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      VENDEDOR
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      readOnly
+                      type="text"
+                      value={vendedor}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="cliente"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      CLIENTE
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      as="select"
+                      value={cliente.id}
+                      onChange={(e) =>
+                        manejarCambiarCliente(Number(e.target.value))
+                      }
+                    >
+                      {clientes.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.NOMBRE}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="productosCliente"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      PRODUCTOS DEL CLIENTE
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      as="select"
+                      defaultValue={0}
+                      onChange={(e) =>
+                        manejarSeleccionarProducto(Number(e.target.value))
+                      }
+                    >
+                      <option value={0}>Selecciona un producto</option>
+                      {productosCliente.map((pc) => (
+                        <option key={pc.id} value={pc.id}>
+                          {pc.producto_nombre}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="tipoVenta"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      TIPO DE VENTA
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      as="select"
+                      value={tipoVenta}
+                      onChange={(e) => setTipoVenta(e.target.value)}
+                    >
+                      <option value="MOSTRADOR">Mostrador</option>
+                      <option value="RUTA">Ruta</option>
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="tipoPago"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      TIPO DE PAGO
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      as="select"
+                      value={tipoPago}
+                      onChange={(e) => setTipoPago(e.target.value)}
+                    >
+                      <option value="CONTADO">Efectivo</option>
+                      <option value="CREDITO">Credito</option>
+                      <option value="CORTESIA">Cortesia</option>
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group controlId="status" style={{ maxHeight: "3.5em" }}>
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      ESTATUS
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      as="select"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      {tipoPago === "CORTESIA" || descuento !== 0 ? (
+                        <option value="PENDIENTE">Pendiente</option>
+                      ) : (
+                        <>
+                          <option value="REALIZADO">Realizado</option>
+                          <option value="PENDIENTE">Pendiente</option>
+                        </>
+                      )}
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="observaciones"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      OBSERVACIONES
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      required
+                      type="text"
+                      value={observaciones}
+                      onChange={(e) => setObservaciones(e.target.value)}
+                      autoComplete="off"
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group
+                    controlId="Descuento"
+                    style={{ maxHeight: "3.5em" }}
+                  >
+                    <Form.Label
+                      style={{
+                        fontSize: "13.5px",
+                        color: "white",
+                        fontWeight: "bold",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      DESCUENTO
+                    </Form.Label>
+                    <Form.Control
+                      style={{
+                        height: "45%",
+                        padding: "0px",
+                        paddingLeft: "8px",
+                      }}
+                      required
+                      type="number"
+                      value={descuento}
+                      min={0}
+                      max={100}
+                      autoComplete="off"
+                      onChange={(e) => setDescuento(parseInt(e.target.value))}
+                    />
+                  </Form.Group>
+                </Row>
+              </PanelControl>
+              <Herramientas>
+                <BotonVenta disabled={deshabilitarVenta} type="submit">
+                  Realizar venta
+                </BotonVenta>
+              </Herramientas>
+            </Form>
+          </Formulario>
+        </Principal>
+        {/* Mostrar venta */}
+        <ImprimirTicket
+          estado={imprimirTicket}
+          datosVenta={venta}
+          reset={reset}
+          DESCUENTO={descuento}
+          manejarFinalizarVenta={manejarFinalizarVenta}
+        />
         {mostrarVenta && (
           <VentanaMostrarVenta
             venta={venta}
@@ -497,7 +640,7 @@ const RealizarVenta = () => {
             descuento={descuento}
           />
         )}
-        </div>
+      </div>
     )
   );
 };
@@ -508,7 +651,7 @@ const crearProductosVenta = (productosVenta) => {
 
     const cantidadVenta = pv.cantidadVenta;
 
-    const precioVenta = (pv.PRECIO) * pv.cantidadVenta;
+    const precioVenta = pv.PRECIO * pv.cantidadVenta;
 
     return { productoId, cantidadVenta, precioVenta };
   });
@@ -530,12 +673,11 @@ const calcularMonto = (tipoPago, nuevosProductosVenta) => {
 };
 
 const getTime = (factor) => {
-  if(factor < 10){
-     return '0' + factor;
+  if (factor < 10) {
+    return "0" + factor;
+  } else {
+    return factor;
   }
-  else{
-      return factor;
-  }
-}
+};
 
 export default RealizarVenta;

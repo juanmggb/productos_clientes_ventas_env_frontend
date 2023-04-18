@@ -6,7 +6,14 @@ import {
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-import { usuarioInfoReducer } from "./reducers/usuarioReducers";
+import {
+  usuarioInfoReducer,
+  usuarioListaReducer,
+  usuarioDetallesReducer,
+  usuarioActualizarReducer,
+  usuarioRegistrarReducer,
+  usuarioBorrarReducer,
+} from "./reducers/usuarioReducers";
 import {
   productoListaReducer,
   productoDetallesReducer,
@@ -33,6 +40,11 @@ import {
 const reducer = combineReducers({
   // Usuario reducers
   usuarioInfo: usuarioInfoReducer,
+  usuarioLista: usuarioListaReducer,
+  usuarioDetalles: usuarioDetallesReducer,
+  usuarioActualizar: usuarioActualizarReducer,
+  usuarioRegistrar: usuarioRegistrarReducer,
+  usuarioBorrar: usuarioBorrarReducer,
   // Producto reducers
   productoLista: productoListaReducer,
   productoDetalles: productoDetallesReducer,
@@ -56,37 +68,37 @@ const reducer = combineReducers({
 
 const middleware = [thunk];
 
-const tokens = localStorage.getItem("tokens")
-  ? JSON.parse(localStorage.getItem("tokens"))
+const token = localStorage.getItem("accessToken")
+  ? JSON.parse(localStorage.getItem("accessToken"))
   : null;
 
-const productos = localStorage.getItem("productos")
-  ? JSON.parse(localStorage.getItem("productos"))
-  : null;
+// const productos = localStorage.getItem("productos")
+//   ? JSON.parse(localStorage.getItem("productos"))
+//   : null;
 
-const clientes = localStorage.getItem("clientes")
-  ? JSON.parse(localStorage.getItem("clientes"))
-  : null;
+// const clientes = localStorage.getItem("clientes")
+//   ? JSON.parse(localStorage.getItem("clientes"))
+//   : null;
 
-const ventas = localStorage.getItem("ventas")
-  ? JSON.parse(localStorage.getItem("ventas"))
-  : null;
+// const ventas = localStorage.getItem("ventas")
+//   ? JSON.parse(localStorage.getItem("ventas"))
+//   : null;
 
 const initialState = {
   usuarioInfo: {
-    tokens,
+    token,
   },
-  productoLista: {
-    productos,
-  },
+  // productoLista: {
+  //   productos,
+  // },
 
-  clienteLista: {
-    clientes,
-  },
+  // clienteLista: {
+  //   clientes,
+  // },
 
-  ventaLista: {
-    ventas,
-  },
+  // ventaLista: {
+  //   ventas,
+  // },
 };
 
 const store = createStore(

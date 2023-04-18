@@ -24,13 +24,13 @@ export const pedirVentasLista = () => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -53,13 +53,13 @@ export const obtenerVentaDetalles = (id) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
     const { data } = await axios.get(
@@ -79,13 +79,13 @@ export const actualizarVenta = (venta) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -111,13 +111,13 @@ export const registrarVenta = (venta) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 

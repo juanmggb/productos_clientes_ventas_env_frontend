@@ -39,6 +39,7 @@ const ProductoDetalles = ({ match }) => {
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
+  const [imagen, setImagen] = useState(null);
 
   useEffect(() => {
     // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
@@ -62,15 +63,16 @@ const ProductoDetalles = ({ match }) => {
   const manejarActualizarProducto = (e) => {
     e.preventDefault();
     // Disparar la accion de actualizar producto
-    dispatch(
-      actualizarProducto({
-        // El id es para el endpoint, no como informacion de actualizacion
-        id: productoId,
-        NOMBRE: nombre,
-        CANTIDAD: cantidad,
-        PRECIO: precio,
-      })
-    );
+
+    const formData = new FormData();
+
+    formData.append("NOMBRE", nombre);
+    formData.append("CANTIDAD", cantidad);
+    formData.append("PRECIO", precio);
+    if (imagen) {
+      formData.append("IMAGEN", imagen);
+    }
+    dispatch(actualizarProducto(productoId, formData));
   };
 
   const manejarRegresar = () => {
@@ -78,6 +80,8 @@ const ProductoDetalles = ({ match }) => {
     dispatch({ type: RESET_PRODUCTO_DETALLES });
     navigate("/productos");
   };
+
+  // console.log(imagen ? "Exist" : "No exist");
 
   return loading ? (
     <Loader />
@@ -122,6 +126,15 @@ const ProductoDetalles = ({ match }) => {
               onChange={(e) => setPrecio(e.target.value)}
             ></Form.Control>
           </Form.Group>
+
+          <Form.Group controlId="imagen">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={(e) => setImagen(e.target.files[0])}
+            ></Form.Control>
+          </Form.Group>
+
           <Button type="submit">Actualizar producto</Button>
         </Form>
       </div>

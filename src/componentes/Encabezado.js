@@ -2,62 +2,65 @@ import React, { useEffect } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import styled from 'styled-components';
-import useTamañoPantalla from './useTamañoPantalla';
+import styled from "styled-components";
+import useTamañoPantalla from "./useTamañoPantalla";
 import { useState } from "react";
 import jwt_decode from "jwt-decode";
 
 const Logo = styled.img`
   height: 40px;
   width: 110px;
-  margin-left: ${props => (props.ancho>1200) ? '60%':(props.ancho>995) ? '40%':'35%'};
-  display: ${props => props.ancho < 993 ? 'none':''} 
+  margin-left: ${(props) =>
+    props.ancho > 1200 ? "60%" : props.ancho > 995 ? "40%" : "35%"};
+  display: ${(props) => (props.ancho < 993 ? "none" : "")};
 `;
 
 const Usuario = styled.img`
   height: 45px;
   width: 45px;
   border-radius: 22.5px;
-  margin-left: ${props => props.ancho>1200 ? '80%':props.ancho > 995 ? '60%':'55%'};
-  display: ${props => props.ancho < 993 ? 'none':''};
+  margin-left: ${(props) =>
+    props.ancho > 1200 ? "80%" : props.ancho > 995 ? "60%" : "55%"};
+  display: ${(props) => (props.ancho < 993 ? "none" : "")};
 `;
 
 const LogoMovil = styled(Logo)`
-  display: ${props => props.ancho < 993 ? props.estado ? 'inline-block':'none':'none'};
+  display: ${(props) =>
+    props.ancho < 993 ? (props.estado ? "inline-block" : "none") : "none"};
   margin-left: 0%;
   justify-items: left;
   width: 100px;
 `;
 
 const UsuarioMovil = styled(Usuario)`
-  display: ${props => props.ancho < 993 ? props.estado ? 'inline-block':'none':'none'};
+  display: ${(props) =>
+    props.ancho < 993 ? (props.estado ? "inline-block" : "none") : "none"};
   margin: 0;
 `;
 
 const Encabezado = () => {
   const usuarioInfo = useSelector((state) => state.usuarioInfo);
-  const { tokens } = usuarioInfo;
+  const { token } = usuarioInfo;
   const [username, setUsername] = useState("");
-  const {ancho, alto} = useTamañoPantalla();
-  const [estadoSesion, setEstadoSesion] = useState(false)
+  const { ancho, alto } = useTamañoPantalla();
+  const [estadoSesion, setEstadoSesion] = useState(false);
 
   useEffect(() => {
-    if(!tokens){
+    if (!token) {
       setEstadoSesion(false);
-    }else{
-      var decoded = jwt_decode(tokens.access);
+    } else {
+      var decoded = jwt_decode(token);
       setUsername(decoded.username);
       setEstadoSesion(true);
     }
-  },[tokens, username])
+  }, [token, username]);
 
-  const usuarioImagen = '../imagenes/' + username + '.png';
-  const defecto= '../Imagenes/Logo.png';
-  
+  const usuarioImagen = JSON.parse(localStorage.getItem("imagen"));
+  const defecto = "../Imagenes/Logo.png";
+
   const manejarErrorImagen = (e) => {
     e.target.src = defecto;
-  }
-
+  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -65,14 +68,23 @@ const Encabezado = () => {
         <div>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <LinkContainer to="/">
-            <Navbar.Brand>{(ancho>400) ? 'OptAppAI':''}</Navbar.Brand> 
+            <Navbar.Brand>{ancho > 400 ? "OptAppAI" : ""}</Navbar.Brand>
           </LinkContainer>
         </div>
-        <LogoMovil src={'../Imagenes/logo.png'} ancho= {ancho} estado={estadoSesion}/>
-        <UsuarioMovil src={usuarioImagen || defecto} onError={manejarErrorImagen} ancho={ancho} estado={estadoSesion}/>
+        <LogoMovil
+          src={"../Imagenes/logo.png"}
+          ancho={ancho}
+          estado={estadoSesion}
+        />
+        <UsuarioMovil
+          src={`http://127.0.0.1:8000/${usuarioImagen}`}
+          onError={manejarErrorImagen}
+          ancho={ancho}
+          estado={estadoSesion}
+        />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {!tokens ? (
+            {!token ? (
               <LinkContainer to="/login">
                 <Nav.Link>Login</Nav.Link>
               </LinkContainer>
@@ -104,8 +116,22 @@ const Encabezado = () => {
                     <NavDropdown.Item>Realizar Venta</NavDropdown.Item>
                   </LinkContainer>
                 </NavDropdown>
-                <Logo src={'../Imagenes/logo.png'} ancho= {ancho}/>
-                <Usuario src={usuarioImagen || defecto} onError={manejarErrorImagen} ancho={ancho}/>
+
+                <NavDropdown title="Usuarios" id="basic-nav-dropdown">
+                  <LinkContainer to="/usuarios">
+                    <NavDropdown.Item>Lista de Usuarios</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/registrar-usuario">
+                    <NavDropdown.Item>Registrar Usuario</NavDropdown.Item>
+                  </LinkContainer>
+                </NavDropdown>
+
+                <Logo src={"../Imagenes/logo.png"} ancho={ancho} />
+                <Usuario
+                  src={`http://127.0.0.1:8000/${usuarioImagen}`}
+                  onError={manejarErrorImagen}
+                  ancho={ancho}
+                />
               </>
             )}
           </Nav>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -39,6 +39,17 @@ const ClienteDetalles = ({ match }) => {
   const [nombre, setNombre] = useState("");
   const [preciosCliente, setPreciosCliente] = useState([]);
 
+  const [contacto, setContacto] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [tipoPago, setTipoPago] = useState("EFECTIVO");
+  const [calle, setCalle] = useState("");
+  const [numero, setNumero] = useState("");
+  const [colonia, setColonia] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [codigoPostal, setCodigoPostal] = useState("");
+
   useEffect(() => {
     // Si la actualizacion fue correcta, reset clienteActualizar y redireccionar a la pagina de clientes
     if (successActualizar) {
@@ -52,6 +63,18 @@ const ClienteDetalles = ({ match }) => {
       dispatch(obtenerClienteDetalles(clienteId));
     } else {
       setNombre(cliente.NOMBRE);
+
+      setContacto(cliente.CONTACTO);
+      setTelefono(cliente.TELEFONO);
+      setCorreo(cliente.CORREO);
+      setTipoPago(cliente.TIPO_PAGO);
+
+      setCalle(cliente.DIRECCION.CALLE);
+      setNumero(cliente.DIRECCION.NUMERO);
+      setColonia(cliente.DIRECCION.COLONIA);
+      setCiudad(cliente.DIRECCION.CIUDAD);
+      setMunicipio(cliente.DIRECCION.MUNICIPIO);
+      setCodigoPostal(cliente.DIRECCION.CP);
       // El estado es un arreglo igual al arreglo de envia el backend
       setPreciosCliente(cliente.precios_cliente);
     }
@@ -88,6 +111,19 @@ const ClienteDetalles = ({ match }) => {
         // El id es para el endpoint, no como informacion de actualizacion
         id: clienteId,
         NOMBRE: nombre,
+        CONTACTO: contacto,
+        TELEFONO: telefono,
+        CORREO: correo,
+        TIPO_PAGO: tipoPago,
+        nuevaDireccion: {
+          direccionClienteId: cliente.DIRECCION.id,
+          CALLE: calle,
+          NUMERO: numero,
+          COLONIA: colonia,
+          CIUDAD: ciudad,
+          MUNICIPIO: municipio,
+          CP: codigoPostal,
+        },
         nuevosPreciosCliente: nuevosPreciosCliente,
       })
     );
@@ -105,7 +141,7 @@ const ClienteDetalles = ({ match }) => {
     <Mensaje variant="danger">{error}</Mensaje>
   ) : (
     cliente && (
-      <div style={{ padding: "25px", width: "50%" }}>
+      <div style={{ padding: "25px", width: "100%" }}>
         {loadingActualizar && <Loader />}
         {errorActualizar && (
           <Mensaje variant="danger">{errorActualizar}</Mensaje>
@@ -116,27 +152,147 @@ const ClienteDetalles = ({ match }) => {
           Regresar
         </Button>
         <Form onSubmit={manejarActualizarCliente}>
-          <Form.Group controlId="nombre">
-            <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+          <Row>
+            <Col sm={12} md={4}>
+              <h3>Datos del cliente</h3>
+              <Form.Group controlId="nombre">
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-          {preciosCliente.map((p) => (
-            <Form.Group controlId={p.producto_nombre} key={p.id}>
-              <Form.Label>Producto: {p.producto_nombre}</Form.Label>
-              <Form.Control
-                type="number"
-                value={p.PRECIO}
-                onChange={(e) =>
-                  manejarCambioPrecio(Number(e.target.value), Number(p.id))
-                }
-              ></Form.Control>
-            </Form.Group>
-          ))}
+              {/* Contacto */}
+              <Form.Group controlId="contacto">
+                <Form.Label>CONTACTO</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  value={contacto}
+                  onChange={(e) => setContacto(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Telefono */}
+              <Form.Group controlId="telefono">
+                <Form.Label>TELEFONO</Form.Label>
+                <Form.Control
+                  required
+                  type="number"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Correo */}
+              <Form.Group controlId="correo">
+                <Form.Label>CORREO</Form.Label>
+                <Form.Control
+                  required
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Tipo de pago */}
+              <Form.Group controlId="tipoPago">
+                <Form.Label>TIPO DE PAGO</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={tipoPago}
+                  onChange={(e) => setTipoPago(e.target.value)}
+                >
+                  <option value="EFECTIVO">EFECTIVO</option>
+                  <option value="CREDITO">CREDITO</option>
+                </Form.Control>
+              </Form.Group>
+            </Col>
+
+            <Col sm={12} md={4}>
+              <h3>Datos de dirección</h3>
+              {/* Calle */}
+              <Form.Group controlId="calle">
+                <Form.Label>CALLE</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  value={calle}
+                  onChange={(e) => setCalle(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Numero */}
+              <Form.Group controlId="numero">
+                <Form.Label>NUMERO</Form.Label>
+                <Form.Control
+                  required
+                  type="number"
+                  value={numero}
+                  onChange={(e) => setNumero(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Colonia */}
+              <Form.Group controlId="colonia">
+                <Form.Label>COLONIA</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={colonia}
+                  onChange={(e) => setColonia(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Ciudad */}
+              <Form.Group controlId="ciudad">
+                <Form.Label>CIUDAD</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  value={ciudad}
+                  onChange={(e) => setCiudad(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Municipio */}
+              <Form.Group controlId="municipio">
+                <Form.Label>MUNICIPIO</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={municipio}
+                  onChange={(e) => setMunicipio(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              {/* Codigo postal */}
+              <Form.Group controlId="codigoPostal">
+                <Form.Label>CODIGO POSTAL</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={codigoPostal}
+                  onChange={(e) => setCodigoPostal(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+            </Col>
+
+            <Col sm={12} md={4}>
+              <h3>Datos de los precios</h3>
+              {preciosCliente.map((p) => (
+                <Form.Group controlId={p.producto_nombre} key={p.id}>
+                  <Form.Label>Producto: {p.producto_nombre}</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={p.PRECIO}
+                    onChange={(e) =>
+                      manejarCambioPrecio(Number(e.target.value), Number(p.id))
+                    }
+                  ></Form.Control>
+                </Form.Group>
+              ))}
+            </Col>
+          </Row>
 
           <Button type="submit">Actualizar cliente</Button>
         </Form>

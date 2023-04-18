@@ -19,6 +19,7 @@ import {
   SUCCESS_CLIENTE_REGISTRAR,
 } from "../constantes/clienteConstantes";
 import { RESET_VENTA_LISTA } from "../constantes/ventaConstantes";
+import { actualizarAccessToken } from "./usuarioActions";
 
 // Creador de acciones para pedir los clientes del backend
 export const pedirClientesLista = () => async (dispatch, getState) => {
@@ -26,13 +27,13 @@ export const pedirClientesLista = () => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -46,6 +47,11 @@ export const pedirClientesLista = () => async (dispatch, getState) => {
     localStorage.setItem("clientes", JSON.stringify(data));
   } catch (error) {
     dispatch({ type: FAIL_CLIENTE_LISTA, payload: error.message });
+
+    // Redirect user to "/" page if error is due to expired token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken("/productos"));
+    }
   }
 };
 
@@ -55,13 +61,13 @@ export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
     const { data } = await axios.get(
@@ -81,13 +87,13 @@ export const actualizarCliente = (cliente) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -111,13 +117,13 @@ export const registrarCliente = (cliente) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -140,13 +146,13 @@ export const borrarCliente = (id) => async (dispatch, getState) => {
 
   try {
     const {
-      usuarioInfo: { tokens },
+      usuarioInfo: { token },
     } = getState();
 
     const config = {
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${tokens.access}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
