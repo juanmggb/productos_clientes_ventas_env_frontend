@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Container, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { toast } from 'react-hot-toast';
+import { Icono } from '../styledComponents/alertaEliminar';
 import {
   borrarProducto,
   pedirProductosLista,
@@ -20,6 +23,76 @@ import {
   RESET_USUARIO_DETALLES,
 } from "../constantes/usuarioConstantes";
 import ImagenObjeto from "../componentes/ImagenObjeto";
+
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+
+  height: 90vh;
+  width: 100vw;
+  padding: 0px 10px;
+  user-select: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & div {
+    font-size: 1.8em;
+    height: 10vh;
+    padding-top: 10px;
+    color: white;
+  }
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    & div {
+    height: 10vsh;
+    font-weight: bold;
+    }
+  }
+`;
+
+// Estilos de la tabla
+const TableStyled = styled(Table)`
+
+  & tbody {
+    height: 75svh;
+    display: block;
+
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    color: white;
+  }
+
+  & thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;/* even columns width , fix width of table too*/
+
+    color: white;
+  }
+  
+  & th{
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  & td{
+    text-align: center;
+    vertical-align: middle;
+  }
+`;
 
 const UruariosLista = () => {
   // Funcion para disparar las acciones
@@ -41,10 +114,32 @@ const UruariosLista = () => {
   const isSmallViewport = useMediaQuery({ maxWidth: 768 });
   const shouldShow = !isSmallViewport;
 
+   // useEffect para mostrar las alertas
+   useEffect(() => {
+
+    if (loadingBorrar) {
+      toast.loading('Eliminando usuario');
+    }
+
+    if (successBorrar) {
+      toast.dismiss();
+      toast.success('Usuario eliminado exitosamente', {
+        duration: 2000
+      });
+    }
+    
+    if (errorBorrar) {
+      toast.dismiss();
+      toast.error('Error al eliminar usuario', {
+        duration: 2000
+      });
+    }
+
+  }, [successBorrar, errorBorrar, loadingBorrar])
+
   useEffect(() => {
     if (successBorrar) {
       dispatch({ type: RESET_USUARIO_BORRAR });
-      alert("La eliminación fue exitosa");
     }
 
     // Si no hay usuarios, disparar la accion de pedir usuarios
@@ -68,22 +163,51 @@ const UruariosLista = () => {
     }
   };
 
+  // Funcion para mostrar la alerta de eliminar producto
+  const alertaBorrarUsuario = (id) => {
+    toast((t) => (
+      <Container>
+        <Row>
+            Estás seguro de eliminar el usuario?
+        </Row>
+        <Row>
+        <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
+            <Icono
+              onClick={() => {
+                dispatch(borrarUsuario(id))
+                toast.dismiss(t.id);
+                }}>
+              <i class="fa-solid fa-circle-check fa-2xl" style={{color: '#67ce00'}}></i>
+            </Icono>
+          </Col>
+          <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
+            <Icono
+              onClick={() => {
+                toast.dismiss(t.id);
+                toast.error('Operacion cancelada', { duration: 2000});
+            }}>
+            <i class="fa-sharp fa-solid fa-circle-xmark fa-2xl" style={{color: '#ff0000'}}></i>
+            </Icono>
+          </Col>
+        </Row>
+      </Container>
+    ), {duration: 5000})
+  };
+
   return loading ? (
-    <Loader />
+    <Principal><Loader/></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+      <Principal>{ toast.error('Error en el servidor')}</Principal>
   ) : (
     usuarios && (
-      <div style={{ padding: "25px" }}>
-        {loadingBorrar && <Loader />}
-        {errorBorrar && <Mensaje variant="danger">{errorBorrar}</Mensaje>}
+      <Principal>
         {/* Esta el la parte que cambia en las paginas */}
-        <h1>Usuarios</h1>
-        <Table striped bordered hover>
+        <div>Usuarios</div>
+        <TableStyled striped hover>
           <thead>
             <tr>
               <th>ID</th>
-              <th>NOMBRE DE USUARIO</th>
+              <th>USUARIO</th>
               {shouldShow ? (
                 <>
                   <th>IMAGEN</th>
@@ -103,19 +227,19 @@ const UruariosLista = () => {
               )
               .map((u) => (
                 <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.username}</td>
+                  <td style = {{color: 'white'}}>{u.id}</td>
+                  <td style = {{color: 'white'}}>{u.username}</td>
                   {shouldShow ? (
                     <>
-                      <td>
+                      <td style = {{color: 'white'}}>
                         <ImagenObjeto
-                          src={`http://127.0.0.1:8000/${u.empleado.IMAGEN}`}
+                          src={`http://192.168.1.108:8000/${u.empleado.IMAGEN}`}
                           alt={u.name}
                         />
                       </td>
-                      <td>{u.name}</td>
-                      <td>
-                        {u.is_admin ? "AMINISTRADOR" : "NO ES ADMINISTRADOR"}
+                      <td style = {{color: 'white'}}>{u.name}</td>
+                      <td style = {{color: 'white'}}>
+                        {u.is_admin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR"}
                       </td>
                     </>
                   ) : null}
@@ -128,7 +252,7 @@ const UruariosLista = () => {
                   <td>
                     <Button
                       variant="danger"
-                      onClick={() => manejarBorrarUsuario(u.id)}
+                      onClick={() => alertaBorrarUsuario(u.id)}
                     >
                       <i className="fa-solid fa-trash"></i>
                     </Button>
@@ -136,8 +260,8 @@ const UruariosLista = () => {
                 </tr>
               ))}
           </tbody>
-        </Table>
-      </div>
+        </TableStyled>
+      </Principal>
     )
   );
 };

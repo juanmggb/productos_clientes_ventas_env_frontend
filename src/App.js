@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from 'react-hot-toast'
 import Encabezado from "./componentes/Encabezado";
 import ClienteDetalles from "./paginas/ClienteDetalles";
 import ClientesLista from "./paginas/ClientesLista";
@@ -41,6 +42,7 @@ function App() {
           <Route path="/usuarios/:id" element={<UsuarioDetalles />} />
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
         </Routes>
+        <Toaster/>
       </BrowserRouter>
     </div>
   );

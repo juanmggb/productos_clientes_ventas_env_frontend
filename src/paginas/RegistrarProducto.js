@@ -1,11 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Row, Col, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
+import styled from 'styled-components';
 import { registrarProducto } from "../actions/productoActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
 import { RESET_PRODUCTO_REGISTRAR } from "../constantes/productoConstantes";
+import Loader from '../componentes/Loader';
+
+// Estilos CSS con styled components
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+  
+  height: 90vh;
+  width: 100vw;
+  padding: 30px;
+  user-select: none;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  & h1 {
+    color: white;
+  }
+
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    & h1 {
+      font-weight: bold;
+    }
+  }
+`;
+
+// Estilos Form.Group
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction:column;
+  gap: 5px;
+  margin-bottom: 5px;
+`;
 
 const RegistrarProducto = () => {
   // Funcion para disparar acciones
@@ -18,7 +63,7 @@ const RegistrarProducto = () => {
   const productoRegistrar = useSelector((state) => state.productoRegistrar);
   const {
     loading: loadingRegistrar,
-    success: succcessRegistrar,
+    success: successRegistrar,
     error: errorRegistrar,
   } = productoRegistrar;
 
@@ -27,14 +72,32 @@ const RegistrarProducto = () => {
   const [precio, setPrecio] = useState(0);
   const [imagen, setImagen] = useState(null);
 
+  // useEffect para mostrar las alertas
+  useEffect(() => {
+
+    if (loadingRegistrar) {
+      toast.loading('Registrando producto');
+    }
+
+    if (successRegistrar) {
+      toast.remove();
+      toast.success('Producto registrado');
+    }
+    
+    if (errorRegistrar) {
+      toast.dismiss();
+      toast.error('Error al registrar producto');
+    }
+
+  }, [successRegistrar, errorRegistrar, loadingRegistrar])
+
   useEffect(() => {
     // Si el registro fue correcto, reset productoRegistrar y redireccionar a la pagina de productos
-    if (succcessRegistrar) {
+    if (successRegistrar) {
       dispatch({ type: RESET_PRODUCTO_REGISTRAR });
-      alert("El registro fue exitoso");
       navigate("/productos");
     }
-  }, [navigate, succcessRegistrar, dispatch]);
+  }, [navigate, successRegistrar, dispatch]);
 
   const manejarRegistrarProducto = (e) => {
     e.preventDefault();
@@ -54,52 +117,64 @@ const RegistrarProducto = () => {
 
   // Aqui no es necesario empezar con loading porque no hay un estado necesario al cargar el componente.
   return (
-    <div style={{ padding: "25px", width: "50%" }}>
-      {loadingRegistrar && <Loader />}
-      {errorRegistrar && <Mensaje variant="danger">{errorRegistrar}</Mensaje>}
+    <Principal>
       {/* Esta es la parte que cambia en las paginas */}
       <h1>Registrar producto</h1>
-      <Form onSubmit={manejarRegistrarProducto}>
-        <Form.Group controlId="nombre">
-          <Form.Label>NOMBRE</Form.Label>
-          <Form.Control
+      <Container>
+      <Form style = {{marginTop: '10px'}} onSubmit={manejarRegistrarProducto}>
+        <Row>
+          <Col lg={true} md={4}>
+          <FormGroupStyled controlId="nombre">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Nombre</Form.Label>
+            <Form.Control
+            style = {{color: 'black',
+                      fontWeight: 'bold'}}
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+            ></Form.Control>
+         </FormGroupStyled>
 
-        <Form.Group controlId="cantidad">
-          <Form.Label>CANTIDAD</Form.Label>
-          <Form.Control
+          <FormGroupStyled controlId="cantidad">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Cantidad</Form.Label>
+            <Form.Control
+            style = {{color: 'black',
+                      fontWeight: 'bold'}}
             type="number"
             value={cantidad}
             onChange={(e) => setCantidad(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group controlId="precio">
-          <Form.Label>PRECIO</Form.Label>
+            ></Form.Control>
+            </FormGroupStyled>
+        </Col>
+        
+        <Col lg={true} md={4}>   
+        <FormGroupStyled controlId="precio">
+          <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Precio</Form.Label>
           <Form.Control
+            style = {{color: 'black',
+                      fontWeight: 'bold'}}
             type="number"
             value={precio}
             onChange={(e) => setPrecio(e.target.value)}
           ></Form.Control>
-        </Form.Group>
+        </FormGroupStyled>
 
-        <Form.Group controlId="formImage">
-          <Form.Label>IMAGEN</Form.Label>
+        <FormGroupStyled controlId="formImage">
+          <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Imagen</Form.Label>
           <Form.Control
             type="file"
             onChange={(e) => setImagen(e.target.files[0])}
           />
-        </Form.Group>
+        </FormGroupStyled>
 
         <Button className="mt-3" type="submit">
           Registrar producto
-        </Button>
-      </Form>
-    </div>
+              </Button>
+          </Col> 
+          </Row>
+        </Form>
+      </Container>    
+    </Principal>
   );
 };
 

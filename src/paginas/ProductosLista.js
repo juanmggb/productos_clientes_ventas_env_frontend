@@ -1,19 +1,92 @@
 import React, { useEffect } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Container, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
+import styled from "styled-components";
 import {
   borrarProducto,
   pedirProductosLista,
 } from "../actions/productoActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
+import { Icono } from '../styledComponents/alertaEliminar';
 import {
   RESET_PRODUCTO_BORRAR,
   RESET_PRODUCTO_DETALLES,
 } from "../constantes/productoConstantes";
 import ImagenObjeto from "../componentes/ImagenObjeto";
 import { useMediaQuery } from "react-responsive";
+import Loader from "../componentes/Loader";
+
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+
+  height: 90vh;
+  width: 100vw;
+  padding: 0px 10px;
+  user-select: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & div {
+    font-size: 1.8em;
+    height: 10vh;
+    padding-top: 10px;
+    color: white;
+  }
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    & div {
+    height: 10vsh;
+    font-weight: bold;
+    }
+  }
+`;
+
+// Estilos de la tabla
+const TableStyled = styled(Table)`
+
+  & tbody {
+    height: 75svh;
+    display: block;
+
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    color: white;
+  }
+
+  & thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;/* even columns width , fix width of table too*/
+
+    color: white;
+  }
+  
+  & th{
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  & td{
+    text-align: center;
+    vertical-align: middle;
+  }
+`;
+
 
 const ProductosLista = () => {
   // Funcion para disparar las acciones
@@ -35,10 +108,33 @@ const ProductosLista = () => {
   const isSmallViewport = useMediaQuery({ maxWidth: 768 });
   const shouldShow = !isSmallViewport;
 
+    // useEffect para mostrar las alertas
+    useEffect(() => {
+
+    if (loadingBorrar) {
+      toast.loading('Eliminando producto');
+    }
+
+    if (successBorrar) {
+      toast.dismiss();
+      toast.success('Producto eliminado exitosamente', {
+        duration: 2000
+      });
+    }
+    
+    if (errorBorrar) {
+      toast.dismiss();
+      toast.error('Error al eliminar producto', {
+        duration: 2000
+      });
+    }
+
+  }, [successBorrar, errorBorrar, loadingBorrar])
+  
+  // Si se eliminó el producto
   useEffect(() => {
     if (successBorrar) {
       dispatch({ type: RESET_PRODUCTO_BORRAR });
-      alert("La eliminación fue exitosa");
     }
 
     // Si no hay productos, disparar la accion de pedir productos
@@ -53,26 +149,48 @@ const ProductosLista = () => {
     navigate(`/productos/${id}`);
   };
 
-  const manejarBorrarProducto = (id) => {
-    if (window.confirm("¿Está seguro de eliminar este producto")) {
-      dispatch(borrarProducto(id));
-    } else {
-      alert("Operación cancelada");
-    }
+  // Funcion para mostrar la alerta de eliminar producto
+  const alertaBorrarProducto = (id) => {
+    toast((t) => (
+      <Container>
+        <Row>
+            Estás seguro de eliminar el producto?
+        </Row>
+        <Row>
+        <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
+            <Icono
+              onClick={() => {
+                dispatch(borrarProducto(id))
+                toast.dismiss(t.id);
+                }}>
+              <i class="fa-solid fa-circle-check fa-2xl" style={{color: '#67ce00'}}></i>
+            </Icono>
+          </Col>
+          <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
+            <Icono
+              onClick={() => {
+                toast.dismiss(t.id);
+                toast.error('Operacion cancelada', { duration: 2000});
+            }}>
+            <i class="fa-sharp fa-solid fa-circle-xmark fa-2xl" style={{color: '#ff0000'}}></i>
+            </Icono>
+          </Col>
+        </Row>
+      </Container>
+    ), {duration: 5000})
   };
 
   return loading ? (
-    <Loader />
+    <Principal><Loader/></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+    <Principal>{
+      toast.error('Error en el servidor')
+    }</Principal>
   ) : (
     productos && (
-      <div style={{ padding: "25px" }}>
-        {loadingBorrar && <Loader />}
-        {errorBorrar && <Mensaje variant="danger">{errorBorrar}</Mensaje>}
-        {/* Esta el la parte que cambia en las paginas */}
-        <h1>Productos</h1>
-        <Table striped bordered hover>
+      <Principal >
+        <div>Productos</div>
+        <TableStyled striped hover>
           <thead>
             <tr>
               <th>ID</th>
@@ -92,19 +210,19 @@ const ProductosLista = () => {
           <tbody>
             {productos.map((p) => (
               <tr key={p.id}>
-                <td>{p.id}</td>
-                <td>{p.NOMBRE}</td>
+                <td style = {{color: 'white'}}>{p.id}</td>
+                <td style = {{color: 'white'}}>{p.NOMBRE}</td>
                 {shouldShow ? (
                   <>
-                    <td>
+                    <td style = {{color: 'white'}}>
                       <ImagenObjeto
                         src={`http://127.0.0.1:8000/${p.IMAGEN}`}
                         alt={p.NOMBRE}
                       />
                     </td>
                     {/* <td>{`http:/127.0.0.1:8000${p.IMAGEN}`}</td> */}
-                    <td>{p.CANTIDAD}</td>
-                    <td>{p.PRECIO}</td>
+                    <td style = {{color: 'white'}}>{p.CANTIDAD}</td>
+                    <td style = {{color: 'white'}}>{p.PRECIO}</td>
                   </>
                 ) : null}
 
@@ -116,7 +234,8 @@ const ProductosLista = () => {
                 <td>
                   <Button
                     variant="danger"
-                    onClick={() => manejarBorrarProducto(p.id)}
+                    onClick={() => {
+                      alertaBorrarProducto(p.id)}}
                   >
                     <i className="fa-solid fa-trash"></i>
                   </Button>
@@ -124,8 +243,8 @@ const ProductosLista = () => {
               </tr>
             ))}
           </tbody>
-        </Table>
-      </div>
+        </TableStyled>
+      </Principal>
     )
   );
 };

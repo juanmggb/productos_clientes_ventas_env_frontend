@@ -1,18 +1,22 @@
 import React, { Fragment } from "react";
-import { Modal, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
+import { toast } from 'react-hot-toast';
+import { ModalBodyStyled, ModalFooterStyled, ModalHeaderStyled, ModalStyled } from "../styledComponents/ModalStyled";
 
 const VentanaMostrarVentaActualizar = ({
   reporteActualizar,
   mostrarReporte,
   manejarCerrarVentana,
 }) => {
+
+  // Remover la notificacion de actualizando venta
   return (
     reporteActualizar && (
-      <Modal show={mostrarReporte} onHide={manejarCerrarVentana}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles de actualización</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <ModalStyled centered show={mostrarReporte} onHide={manejarCerrarVentana}>
+        <ModalHeaderStyled closeButton>
+          <h4>Detalles de actualización</h4>
+        </ModalHeaderStyled>
+        <ModalBodyStyled>
           <Table>
             <thead>
               <tr>
@@ -24,15 +28,17 @@ const VentanaMostrarVentaActualizar = ({
             <tbody>
               {Object.keys(reporteActualizar).map((llave, indice) => (
                 <tr key={indice}>
-                  <td>{llave}</td>
+                  <td style={{fontWeight: 'bold'}}>{llave}</td>
                   <td>{reporteActualizar[llave]["ANTES"]}</td>
                   <td>{reporteActualizar[llave]["DESPUES"]}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
-        </Modal.Body>
-      </Modal>
+        </ModalBodyStyled>
+        <ModalFooterStyled>
+        </ModalFooterStyled>
+      </ModalStyled>
     )
   );
 };

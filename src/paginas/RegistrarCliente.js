@@ -2,10 +2,73 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { registrarCliente } from "../actions/clienteActions";
+import { toast } from 'react-hot-toast';
+import styled from "styled-components";
 import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
+import { registrarCliente } from "../actions/clienteActions";
 import { RESET_CLIENTE_REGISTRAR } from "../constantes/clienteConstantes";
+
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+  
+  height: 90vh;
+  width: 100vw;
+  padding: 30px;
+  user-select: none;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  & h1, h3 {
+    color: white;
+  }
+
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    & h1 {
+      font-weight: bold;
+    }
+
+    & h3 {
+      font-weight: bold;
+      margin: 20px 0px 10px 0px;
+    }
+  }
+`;
+
+// Estilos Form.Group
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction:column;
+  gap: 5px;
+  margin-bottom: 5px;
+
+  & label {
+     color: white;
+     font-weight: bold;
+  }
+
+  & input, select {
+     color: black;
+     font-weight: bold;
+  }
+`;
 
 const RegistrarCliente = () => {
   // Funcion para disparar las acciones
@@ -40,11 +103,29 @@ const RegistrarCliente = () => {
   const [municipio, setMunicipio] = useState("");
   const [codigoPostal, setCodigoPostal] = useState("");
 
+  // useEffect para mostrar las alertas
+  useEffect(() => {
+
+    if (loadingRegistrar) {
+      toast.loading('Registrando cliente');
+    }
+
+    if (successRegistrar) {
+      toast.remove();
+      toast.success('Cliente registrado');
+    }
+    
+    if (errorRegistrar) {
+      toast.dismiss();
+      toast.error('Error al registrar cliente');
+    }
+
+  }, [successRegistrar, errorRegistrar, loadingRegistrar])
+
   useEffect(() => {
     // Si el registro fue correcto, reset clienteRegistrar y redireccionar a la pagina de clientes
     if (successRegistrar) {
       dispatch({ type: RESET_CLIENTE_REGISTRAR });
-      alert("El registro fue exitoso");
       navigate("/clientes");
     }
 
@@ -102,14 +183,12 @@ const RegistrarCliente = () => {
   };
 
   return loading ? (
-    <Loader />
+    <Principal><Loader/></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+      <Principal>{toast.error('Error en el servidor')}</Principal>
   ) : (
     productos && (
-      <div style={{ padding: "25px", width: "100%" }}>
-        {loadingRegistrar && <Loader />}
-        {errorRegistrar && <Mensaje variant="danger">{errorRegistrar}</Mensaje>}
+      <Principal>
         {/* Esta es la parte que cambia en las paginas */}
         <h1>Registrar cliente</h1>
         <Container>
@@ -118,52 +197,61 @@ const RegistrarCliente = () => {
               <Col sm={12} md={4}>
                 <h3>Datos del cliente</h3>
                 {/* Nombre */}
-                <Form.Group controlId="nombre">
-                  <Form.Label>NOMBRE</Form.Label>
+                <FormGroupStyled controlId="nombre">
+                      <Form.Label>
+                        Nombre
+                      </Form.Label>
                   <Form.Control
                     required
                     type="text"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Contacto */}
-                <Form.Group controlId="contacto">
-                  <Form.Label>CONTACTO</Form.Label>
+                <FormGroupStyled controlId="contacto">
+                      <Form.Label >
+                        Contacto
+                      </Form.Label>
                   <Form.Control
-                    required
                     type="text"
                     value={contacto}
                     onChange={(e) => setContacto(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Telefono */}
-                <Form.Group controlId="telefono">
-                  <Form.Label>TELEFONO</Form.Label>
+                <FormGroupStyled controlId="telefono">
+                  <Form.Label>
+                    Telefono
+                  </Form.Label>
                   <Form.Control
                     required
                     type="number"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Correo */}
-                <Form.Group controlId="correo">
-                  <Form.Label>CORREO</Form.Label>
+                <FormGroupStyled controlId="correo">
+                  <Form.Label>
+                    Correo
+                  </Form.Label>
                   <Form.Control
                     required
                     type="email"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Tipo de pago */}
-                <Form.Group controlId="tipoPago">
-                  <Form.Label>TIPO DE PAGO</Form.Label>
+                <FormGroupStyled controlId="tipoPago">
+                  <Form.Label>
+                    Tipo de pago
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     value={tipoPago}
@@ -172,78 +260,92 @@ const RegistrarCliente = () => {
                     <option value="EFECTIVO">EFECTIVO</option>
                     <option value="CREDITO">CREDITO</option>
                   </Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
               </Col>
               <Col sm={12} md={4}>
                 <h3>Datos de dirección</h3>
                 {/* Calle */}
-                <Form.Group controlId="calle">
-                  <Form.Label>CALLE</Form.Label>
+                <FormGroupStyled controlId="calle">
+                  <Form.Label >
+                    Calle
+                  </Form.Label>
                   <Form.Control
                     required
                     type="text"
                     value={calle}
                     onChange={(e) => setCalle(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Numero */}
-                <Form.Group controlId="numero">
-                  <Form.Label>NUMERO</Form.Label>
+                <FormGroupStyled controlId="numero">
+                  <Form.Label>
+                    Número
+                  </Form.Label>
                   <Form.Control
                     required
                     type="number"
                     value={numero}
                     onChange={(e) => setNumero(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Colonia */}
-                <Form.Group controlId="colonia">
-                  <Form.Label>COLONIA</Form.Label>
+                <FormGroupStyled controlId="colonia">
+                  <Form.Label>
+                    Colonia
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     value={colonia}
                     onChange={(e) => setColonia(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Ciudad */}
-                <Form.Group controlId="ciudad">
-                  <Form.Label>CIUDAD</Form.Label>
+                <FormGroupStyled controlId="ciudad">
+                  <Form.Label>
+                      Ciudad
+                  </Form.Label>
                   <Form.Control
                     required
                     type="text"
                     value={ciudad}
                     onChange={(e) => setCiudad(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Municipio */}
-                <Form.Group controlId="municipio">
-                  <Form.Label>MUNICIPIO</Form.Label>
+                <FormGroupStyled controlId="municipio">
+                  <Form.Label>
+                    Municipio
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     value={municipio}
                     onChange={(e) => setMunicipio(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
 
                 {/* Codigo postal */}
-                <Form.Group controlId="codigoPostal">
-                  <Form.Label>CODIGO POSTAL</Form.Label>
+                <FormGroupStyled controlId="codigoPostal">
+                  <Form.Label>
+                    C.P
+                  </Form.Label>
                   <Form.Control
-                    type="text"
+                    type="number"
                     value={codigoPostal}
                     onChange={(e) => setCodigoPostal(e.target.value)}
                   ></Form.Control>
-                </Form.Group>
+                </FormGroupStyled>
               </Col>
               <Col sm={12} md={4}>
                 <h3>Datos de los precios</h3>
                 {productosCliente.map((p) => (
-                  <Form.Group controlId={p.NOMBRE} key={p.id}>
-                    <Form.Label>PRODUCTO: {p.NOMBRE}</Form.Label>
+                  <FormGroupStyled controlId={p.NOMBRE} key={p.id}>
+                    <Form.Label>
+                      PRODUCTO: {p.NOMBRE}
+                    </Form.Label>
                     <Form.Control
                       type="number"
                       value={p.PRECIO}
@@ -254,15 +356,15 @@ const RegistrarCliente = () => {
                         )
                       }
                     ></Form.Control>
-                  </Form.Group>
+                  </FormGroupStyled>
                 ))}
               </Col>
             </Row>
 
-            <Button type="submit">Registrar cliente</Button>
+            <Button className="mt-3" type="submit">Registrar cliente</Button>
           </Form>
         </Container>
-      </div>
+      </Principal>
     )
   );
 };

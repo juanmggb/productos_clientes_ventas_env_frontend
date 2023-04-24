@@ -1,5 +1,7 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
+import { ModalStyled, ModalBodyStyled, ModalFooterStyled, ModalHeaderStyled } from "../styledComponents/ModalStyled";
+
 
 const VentanaMostrarVenta = ({
   venta,
@@ -10,11 +12,11 @@ const VentanaMostrarVenta = ({
   return (
     venta &&
     venta.productos_venta && (
-      <Modal show={mostrarVenta} onHide={manejarCerrarVentana}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles de Venta #{venta.id}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ color: "black" }}>
+      <ModalStyled centered show={mostrarVenta} onHide={manejarCerrarVentana}>
+        <ModalHeaderStyled>
+         <h4>Detalles de Venta #{venta.id}</h4>
+        </ModalHeaderStyled>
+        <ModalBodyStyled scrollable = 'True'>
           <p>
             <strong>VENDEDOR:</strong> {venta.VENDEDOR}
           </p>
@@ -57,8 +59,8 @@ const VentanaMostrarVenta = ({
               </li>
             ))}
           </ul>
-        </Modal.Body>
-        <Modal.Footer>
+        </ModalBodyStyled>
+        <ModalFooterStyled>
           <Button
             variant="secondary"
             onClick={() => {
@@ -72,8 +74,8 @@ const VentanaMostrarVenta = ({
           >
             Cerrar
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </ModalFooterStyled>
+      </ModalStyled>
     )
   );
 };

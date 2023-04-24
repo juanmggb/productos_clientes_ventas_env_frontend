@@ -11,14 +11,64 @@ import {
   logout,
 } from "../actions/usuarioActions";
 
-// const DatosGenerales = styled.div`
-//   padding: 25px;
-//   width: 100vw;
-//   display: flex;
-//   flex-direction: column;
-//   column-gap: 30px;
-//   align-items: left;
-// `;
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+  
+  height: 90vh;
+  width: 100vw;
+  padding: 30px;
+  user-select: none;
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    
+    gap: 30px;
+  }
+
+  // Estilos para pc
+  @media (min-width: 480px) {
+    & div {
+      width: 50vw;
+    }
+  }
+  
+`;
+
+// Estilos Form.Group
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction:column;
+  gap: 5px;
+  margin-bottom: 5px;
+
+  & label {
+     color: white;
+     font-weight: bold;
+  }
+
+  & input, select {
+     color: black;
+     font-weight: bold;
+  }
+`;
 
 const ImagenUsuario = styled.img`
   width: 100px;
@@ -85,46 +135,40 @@ const Home = () => {
   };
 
   return (
-    <Container>
-      <Row className="p-5 justify-content-center align-items-center">
-        <Col md={3} className="d-flex align-items-center">
-          <ImagenUsuario
-            src={`http://127.0.0.1:8000/${usuarioImagen}`}
-            onError={manejarErrorImagen}
-          />
-        </Col>
-        <Col md={9} className="d-flex flex-column">
-          <Form>
-            <Form.Group>
-              <Form.Label>NOMBRE DE USUARIO:</Form.Label>
-              <Form.Control
-                type="text"
-                readOnly
-                value={username}
-              ></Form.Control>
-            </Form.Group>
+    <Principal>
+        <ImagenUsuario
+              src={`http://192.168.1.108:8000${usuarioImagen}`}
+              onError={manejarErrorImagen}
+      />
+      <Form>
+        <FormGroupStyled>
+          <Form.Label>Usuario:</Form.Label>
+          <Form.Control
+            type="text"
+            readOnly
+            value={username}
+          ></Form.Control>
+        </FormGroupStyled>
 
-            <Form.Group>
-              <Form.Label>PERMISOS:</Form.Label>
-              <Form.Control
-                type="text"
-                readOnly
-                value={isAdmin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR"}
-              ></Form.Control>
-            </Form.Group>
+        <FormGroupStyled>
+          <Form.Label>Permisos:</Form.Label>
+          <Form.Control
+            type="text"
+            readOnly
+            value={isAdmin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR"}
+          ></Form.Control>
+        </FormGroupStyled>
 
-            <Form.Group>
-              <Form.Label>NOMBRE:</Form.Label>
-              <Form.Control type="text" readOnly value={name}></Form.Control>
-            </Form.Group>
+        <FormGroupStyled>
+          <Form.Label>Nombre:</Form.Label>
+          <Form.Control type="text" readOnly value={name}></Form.Control>
+        </FormGroupStyled>
 
-            <Button className="mt-3" onClick={manejarLogout}>
-              Cerrar Sesión
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
+        <Button className="mt-3" onClick={manejarLogout}>
+          Cerrar Sesión
+        </Button>
+      </Form>
+    </Principal>
   );
 };
 

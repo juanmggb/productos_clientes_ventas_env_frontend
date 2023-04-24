@@ -1,13 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Container, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { registrarProducto } from "../actions/productoActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
+import { toast } from 'react-hot-toast'
+import styled from "styled-components";
 import { RESET_PRODUCTO_REGISTRAR } from "../constantes/productoConstantes";
 import { RESET_USUARIO_REGISTRAR } from "../constantes/usuarioConstantes";
 import { registrarUsuario } from "../actions/usuarioActions";
+
+// Estilos CSS con styled components
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+  
+  height: 90vh;
+  width: 100vw;
+  padding: 30px;
+  user-select: none;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  & h1 {
+    color: white;
+  }
+
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+    
+    & input {
+      height: 6svh;
+    }
+
+    & select{
+      height: 6svh;
+      padding: 10px;
+    }
+
+    & h1 {
+      font-weight: bold;
+    }
+  }
+`;
+
+// Estilos Form.Group
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction:column;
+  gap: 5px;
+  margin-bottom: 5px;
+
+  & label {
+     color: white;
+     font-weight: bold;
+  }
+
+  & input, select {
+     color: black;
+     font-weight: bold;
+  }
+`;
 
 const RegistrarUsuario = () => {
   // Funcion para disparar acciones
@@ -20,7 +83,7 @@ const RegistrarUsuario = () => {
   const usuarioRegistrar = useSelector((state) => state.usuarioRegistrar);
   const {
     loading: loadingRegistrar,
-    success: succcessRegistrar,
+    success: successRegistrar,
     error: errorRegistrar,
   } = usuarioRegistrar;
 
@@ -31,20 +94,38 @@ const RegistrarUsuario = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [imagen, setImagen] = useState(null);
 
+    // useEffect para mostrar las alertas
+    useEffect(() => {
+
+      if (loadingRegistrar) {
+        toast.loading('Registrando usuario');
+      }
+  
+      if (successRegistrar) {
+        toast.remove();
+        toast.success('Usuario registrado');
+      }
+      
+      if (errorRegistrar) {
+        toast.dismiss();
+        toast.error('Error al registrar usuario');
+      }
+  
+    }, [successRegistrar, errorRegistrar, loadingRegistrar])
+
   useEffect(() => {
     // Si el registro fue correcto, reset productoRegistrar y redireccionar a la pagina de productos
-    if (succcessRegistrar) {
+    if (successRegistrar) {
       dispatch({ type: RESET_USUARIO_REGISTRAR });
-      alert("El registro fue exitoso");
       navigate("/usuarios");
     }
-  }, [navigate, succcessRegistrar, dispatch]);
+  }, [navigate, successRegistrar, dispatch]);
 
   const manejarRegistrarUsuario = (e) => {
     e.preventDefault();
 
     if (password1 !== password2) {
-      window.confirm("Las contraseñas deben ser iguales");
+      toast.error('Las contraseñas deben ser iguales', {duration: 1000});
     } else {
       const formData = new FormData();
 
@@ -64,54 +145,57 @@ const RegistrarUsuario = () => {
 
   // Aqui no es necesario empezar con loading porque no hay un estado necesario al cargar el componente.
   return (
-    <div style={{ padding: "25px", width: "50%" }}>
-      {loadingRegistrar && <Loader />}
-      {errorRegistrar && <Mensaje variant="danger">{errorRegistrar}</Mensaje>}
+    <Principal>
       {/* Esta es la parte que cambia en las paginas */}
       <h1>Registrar usuario</h1>
+      <Container>
       <Form onSubmit={manejarRegistrarUsuario}>
-        <Form.Group controlId="nombre">
-          <Form.Label>NOMBRE</Form.Label>
+       <Row>
+        <Col lg={true} md={4}>
+        <FormGroupStyled controlId="nombre">
+          <Form.Label>Nombre</Form.Label>
           <Form.Control
             required
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           ></Form.Control>
-        </Form.Group>
+        </FormGroupStyled>
 
-        <Form.Group controlId="nombreUsuario">
-          <Form.Label>NOMBRE DE USUARIO</Form.Label>
+        <FormGroupStyled controlId="nombreUsuario">
+          <Form.Label>Nombre de usuario</Form.Label>
           <Form.Control
             required
             type="text"
             value={nombreUsuario}
             onChange={(e) => setNombreUsuario(e.target.value)}
           ></Form.Control>
-        </Form.Group>
+        </FormGroupStyled>
 
-        <Form.Group controlId="password1">
-          <Form.Label>CONTRASEÑA</Form.Label>
+        <FormGroupStyled controlId="password1">
+          <Form.Label>Contraseña</Form.Label>
           <Form.Control
             required
             type="password"
             value={password1}
             onChange={(e) => setPassword1(e.target.value)}
           ></Form.Control>
-        </Form.Group>
+        </FormGroupStyled>
 
-        <Form.Group controlId="password2">
-          <Form.Label>CONFIRMAR CONTRASEÑA</Form.Label>
+        <FormGroupStyled controlId="password2">
+          <Form.Label>Confirmar contraseña</Form.Label>
           <Form.Control
             required
             type="password"
             value={password2}
             onChange={(e) => setPassword2(e.target.value)}
           ></Form.Control>
-        </Form.Group>
+        </FormGroupStyled>
+        </Col>
 
-        <Form.Group controlId="isAdmin">
-          <Form.Label>PERMISOS</Form.Label>
+        <Col lg={true} md={4}>
+        <FormGroupStyled controlId="isAdmin">
+          <Form.Label>Permisos</Form.Label>
           <Form.Select
             value={isAdmin}
             onChange={(e) => setIsAdmin(e.target.value)}
@@ -119,7 +203,7 @@ const RegistrarUsuario = () => {
             <option value={true}>ADMINISTRADOR</option>
             <option value={false}>NO ES ADMINISTRADOR</option>
           </Form.Select>
-        </Form.Group>
+        </FormGroupStyled>
 
         {/* <Form.Group controlId="formImage">
           <Form.Label>IMAGEN</Form.Label>
@@ -128,12 +212,15 @@ const RegistrarUsuario = () => {
             onChange={(e) => setImagen(e.target.files[0])}
           />
         </Form.Group> */}
-
+        
         <Button className="mt-3" type="submit">
           Registrar usuario
-        </Button>
+          </Button>
+          </Col>
+        </Row>
       </Form>
-    </div>
+      </Container>
+    </Principal>
   );
 };
 

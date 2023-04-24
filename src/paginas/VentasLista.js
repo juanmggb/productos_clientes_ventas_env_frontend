@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 import { pedirVentasLista } from "../actions/ventaActions";
 import Loader from "../componentes/Loader";
 import Mensaje from "../componentes/Mensaje";
@@ -207,12 +208,12 @@ const VentasLista = () => {
 	}
 
   return loading ? (
-    <Loader />
+    <Principal><Loader/></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+		  <Principal>{ toast.error('Error en el servidor')}</Principal>
   ) : (
     ventas && (
-      <div style={{ padding: "0px" }}>
+      <>
         <Principal>
           <PanelControl>
             <FiltroListaVentas
@@ -258,7 +259,7 @@ const VentasLista = () => {
             ventas={ventasFiltradas}
           />
         </Principal>        
-      </div>
+      </>
     )
   );
 };

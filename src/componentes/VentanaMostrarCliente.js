@@ -1,5 +1,11 @@
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import {
+  ModalStyled,
+  ModalHeaderStyled,
+  ModalBodyStyled,
+  ModalFooterStyled
+} from '../styledComponents/ModalStyled';
 
 const VentanaMostrarCliente = ({
   cliente,
@@ -9,64 +15,73 @@ const VentanaMostrarCliente = ({
   return (
     cliente &&
     cliente.precios_cliente && (
-      <Modal show={mostrarCliente} onHide={manejarCerrarVentana}>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles del Cliente #{cliente.id}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h3>Datos del cliente</h3>
+      <ModalStyled centered show={mostrarCliente} onHide={manejarCerrarVentana}>
+        <ModalHeaderStyled>
+          <h4>Detalles del Cliente #{cliente.id}</h4>
+        </ModalHeaderStyled>
+        <ModalBodyStyled>
+          <h5>Datos del cliente</h5>
           <p>
-            <strong>NOMBRE:</strong> {cliente.NOMBRE}
+            <strong>Nombre:</strong> {cliente.NOMBRE}
           </p>
           <p>
-            <strong>CONTACTO:</strong> {cliente.CONTACTO}
+            <strong>Contacto:</strong> {cliente.CONTACTO}
           </p>
           <p>
-            <strong>TELEFONO:</strong> {cliente.TELEFONO}
+            <strong>Telefono:</strong> {cliente.TELEFONO}
           </p>
           <p>
-            <strong>CORREO:</strong> {cliente.CORREO}
+            <strong>Correo:</strong> {cliente.CORREO}
           </p>
           <p>
-            <strong>TIPO DE PAGO:</strong> {cliente.TIPO_PAGO}
+            <strong>Tipo de pago:</strong> {cliente.TIPO_PAGO}
           </p>
-          <h3>Datos de la dirección</h3>
+          <h5>Datos de la dirección</h5>
 
           <p>
-            <strong>CALLE:</strong> {cliente.DIRECCION.CALLE}
+            <strong>Calle:</strong> {cliente.DIRECCION.CALLE}
           </p>
           <p>
-            <strong>NUMERO:</strong> {cliente.DIRECCION.NUMERO}
+            <strong>Número:</strong> {cliente.DIRECCION.NUMERO}
           </p>
           <p>
-            <strong>COLONIA:</strong> {cliente.DIRECCION.COLONIA}
+            <strong>Colonia:</strong> {cliente.DIRECCION.COLONIA}
           </p>
           <p>
-            <strong>CIUDAD:</strong> {cliente.DIRECCION.CIUDAD}
+            <strong>Ciudad:</strong> {cliente.DIRECCION.CIUDAD}
           </p>
           <p>
-            <strong>MUNICIPIO:</strong> {cliente.DIRECCION.MUNICIPIO}
+            <strong>Municipio:</strong> {cliente.DIRECCION.MUNICIPIO}
           </p>
           <p>
-            <strong>CODIGO POSTAL:</strong> {cliente.DIRECCION.CP}
+            <strong>C.P:</strong> {cliente.DIRECCION.CP}
           </p>
 
-          <h3>Datos de los precios</h3>
+          <h5>Datos de los precios</h5>
           <p>
-            <strong>PRECIOS DEL CLIENTE:</strong>{" "}
+            <strong>Precios del cliente:</strong>{" "}
             {cliente.precios_cliente.map((pc) => (
               <p>
                 {pc.producto_nombre}: {pc.PRECIO}
               </p>
             ))}
           </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={manejarCerrarVentana}>
+        </ModalBodyStyled>
+        <ModalFooterStyled>
+          <Button
+              variant="secondary"
+              onClick={() => {
+                manejarCerrarVentana();
+              }}
+              style={{
+                backgroundColor: "rgb(20,50,100)",
+                color: "white",
+                fontWeight: "bold",
+              }}>
             Cerrar
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </ModalFooterStyled>
+      </ModalStyled>
     )
   );
 };

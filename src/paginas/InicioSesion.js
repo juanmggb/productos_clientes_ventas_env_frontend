@@ -19,6 +19,7 @@ const Principal = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 `;
 
 const FormularioContenedor = styled.div`

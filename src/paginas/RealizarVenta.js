@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Form} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 import { pedirClientesLista } from "../actions/clienteActions";
 import { registrarVenta } from "../actions/ventaActions";
 import FormularioProductoVenta from "../componentes/FormularioProductoVenta";
@@ -26,9 +27,10 @@ const Principal = styled.div`
   font-weight: 400;
   border-radius: 0px;
   width: 100vw;
-  height: 91vh;
+  height: 90vh;
   padding: 10px;
   grid-gap: 10px;
+  overflow: hidden;
   display: grid;
   grid-template-columns: 2.5fr 8fr;
   grid-template-rows: 0.7fr 5.7fr 1.5fr;
@@ -41,37 +43,41 @@ const Principal = styled.div`
 const Encabezado = styled.div`
   grid-area: Encabezado;
   position: relative;
-  background-color: white;
+  border-radius: 5px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 5px;
   text-align: center;
+
+  background-color: white;
   box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
 `;
 
-const Formulario = styled.div`
-  position: relative;
+const Formulario = styled(Form)`
   grid-area: Formulario;
+  position: relative;
+  height: 100%;
+  width: 100%;
+
   display: grid;
-  grid-template-rows: 6fr 2.4fr;
+  grid-template-rows: 6fr 1fr;
   grid-template-areas:
     "PanelControl"
     "Herramientas";
-  height: 100%;
-  width: 100%;
 `;
 
 const PanelControl = styled.div`
-  position: relative;
   grid-area: PanelControl;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 15px;
-  padding-top: 0px;
-  height: 75.2vh;
+  position: relative;
   width: 100%;
+  height: 100%;
+  padding-bottom: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
 `;
 
 const ContenidoPrincipal = styled.div`
@@ -96,31 +102,37 @@ const ContenidoPrincipal = styled.div`
 `;
 
 const Herramientas = styled.div`
-  background: #ffffff;
-  color: black;
   grid-area: Herramientas;
-  padding: 15px;
-  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+
+  background: white;
+  color: black;
+  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
-  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
 `;
 
 const BotonVenta = styled(Button)`
   width: 50%;
-  height: 50px;
+  height: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   background-color: green;
   color: white;
+  box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.5);
+
   text-align: center;
   font-size: 0.9em;
   font-weight: bold;
-  border: none;
-  box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.5);
+
 
   &:hover:enabled {
-    background-color: #00a100;
+    background-color: red;
     box-shadow: 0px 2px 5px 2px rgba(0, 161, 0, 0.8);
   }
 
@@ -132,10 +144,54 @@ const BotonVenta = styled(Button)`
 const ClienteVenta = styled.div`
   width: 100%;
   height: 100%;
-  align-items: center;
-  justify-content: center;
+  
   font-size: 25px;
   font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+// Estilos del los campos del formulario
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  flex: 1;
+  max-height: 60px;
+`;
+
+// Estilos de Form.Control
+const FormControlStyled = styled(Form.Control)`
+  background-color: white;
+  color: black;
+
+  font-size: 100%;
+  font-weight: bold;
+
+  padding: 5px 0px 5px 5px;
+`;
+
+// Estilos del Form.Select
+const FormSelectSyled = styled(Form.Select)`
+  background-color: white;
+  color: black;
+
+  font-size: 100%;
+  font-weight: bold;
+
+  padding: 5px 0px 5px 5px;
+`;
+
+// Estilos de Form.Label
+const FormLabelStyled = styled(Form.Label)`
+  color: white;
+
+  margin: 0;
+  font-weight: bold;
+  font-size: 80%;
 `;
 
 const RealizarVenta = () => {
@@ -169,6 +225,25 @@ const RealizarVenta = () => {
   const [deshabilitarVenta, setDesabilitarVenta] = useState(true);
   const [mostrarVenta, setMostrarVenta] = useState(false);
   const [imprimirTicket, setImprimirTicket] = useState(false);
+
+  // useEffect para mostrar las alertas
+  useEffect(() => {
+
+    if (loadingRegistrar) {
+      toast.loading('Realizando venta');
+    }
+
+    if (venta) {
+      toast.remove();
+      toast.success('Venta realizada');
+    }
+    
+    if (errorRegistrar) {
+      toast.dismiss();
+      toast.error('Error al realizar venta');
+    }
+
+  }, [venta, errorRegistrar, loadingRegistrar])
 
   useEffect(() => {
     if (!token) {
@@ -240,9 +315,8 @@ const RealizarVenta = () => {
 
     const cantidadDisponible = productoSeleccionado.producto_cantidad;
     if (nuevaCantidad > cantidadDisponible) {
-      alert(
-        `La cantidad seleccionada debe ser inferior a ${productoSeleccionado.producto_cantidad}`
-      );
+      toast.error(`La cantidad seleccionada debe ser inferior a ${productoSeleccionado.producto_cantidad}`,
+        {duration: 2000});
     } else {
       if (nuevaCantidad <= 0) {
         nuevaCantidad = 1;
@@ -342,16 +416,13 @@ const RealizarVenta = () => {
   };
 
   return loading ? (
-    <Loader />
+    <Principal></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+      <Principal>{ toast.error('Error en el servidor') }</Principal>
   ) : (
     clientes && (
-      <div style={{ maxWidth: "100vw" }}>
-        {loadingRegistrar && <Loader />}
-        {errorRegistrar && <Mensaje variant="danger">{error}</Mensaje>}
+      <>
         {/* Esta es la parte que cambia en las paginas */}
-
         <Principal>
           <Encabezado>
             <ClienteVenta
@@ -370,55 +441,25 @@ const RealizarVenta = () => {
               manejarCancelarProducto={manejarCancelarProducto}
             />
           </ContenidoPrincipal>
-          <Formulario>
-            <Form onSubmit={manejarRealizarVenta}>
+          <Formulario onSubmit={manejarRealizarVenta}>
               <PanelControl>
-                <Row style={{ rowGap: "9px" }}>
-                  <Form.Group style={{ maxHeight: "3.5em" }}>
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled>
+                    <FormLabelStyled>
                       VENDEDOR
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
+                    </FormLabelStyled>
+                    <FormControlStyled
                       readOnly
                       type="text"
                       value={vendedor}
-                    ></Form.Control>
-                  </Form.Group>
+                    ></FormControlStyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="cliente"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="cliente" >
+                    <FormLabelStyled>
                       CLIENTE
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
-                      as="select"
-                      value={cliente.id}
+                    </FormLabelStyled>
+                    <FormSelectSyled
+                      value = {cliente.id}
                       onChange={(e) =>
                         manejarCambiarCliente(Number(e.target.value))
                       }
@@ -428,31 +469,15 @@ const RealizarVenta = () => {
                           {c.NOMBRE}
                         </option>
                       ))}
-                    </Form.Control>
-                  </Form.Group>
+                    </FormSelectSyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="productosCliente"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="productosCliente" >
+                    <FormLabelStyled>
                       PRODUCTOS DEL CLIENTE
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
-                      as="select"
-                      defaultValue={0}
+                    </FormLabelStyled>
+                    <FormSelectSyled
+                      value={0}
                       onChange={(e) =>
                         manejarSeleccionarProducto(Number(e.target.value))
                       }
@@ -463,86 +488,41 @@ const RealizarVenta = () => {
                           {pc.producto_nombre}
                         </option>
                       ))}
-                    </Form.Control>
-                  </Form.Group>
+                    </FormSelectSyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="tipoVenta"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="tipoVenta">
+                    <FormLabelStyled>
                       TIPO DE VENTA
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
-                      as="select"
+                    </FormLabelStyled>
+                    <FormSelectSyled
                       value={tipoVenta}
                       onChange={(e) => setTipoVenta(e.target.value)}
                     >
                       <option value="MOSTRADOR">Mostrador</option>
                       <option value="RUTA">Ruta</option>
-                    </Form.Control>
-                  </Form.Group>
+                    </FormSelectSyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="tipoPago"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="tipoPago">
+                    <FormLabelStyled>
                       TIPO DE PAGO
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
-                      as="select"
+                    </FormLabelStyled>
+                    <FormSelectSyled
                       value={tipoPago}
                       onChange={(e) => setTipoPago(e.target.value)}
                     >
                       <option value="CONTADO">Efectivo</option>
                       <option value="CREDITO">Credito</option>
                       <option value="CORTESIA">Cortesia</option>
-                    </Form.Control>
-                  </Form.Group>
+                    </FormSelectSyled>
+                  </FormGroupStyled>
 
-                  <Form.Group controlId="status" style={{ maxHeight: "3.5em" }}>
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="status" >
+                    <FormLabelStyled>
                       ESTATUS
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
-                      as="select"
+                    </FormLabelStyled>
+                    <FormSelectSyled
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
@@ -554,57 +534,27 @@ const RealizarVenta = () => {
                           <option value="PENDIENTE">Pendiente</option>
                         </>
                       )}
-                    </Form.Control>
-                  </Form.Group>
+                    </FormSelectSyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="observaciones"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="observaciones" >
+                    <FormLabelStyled>
                       OBSERVACIONES
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
+                    </FormLabelStyled>
+                    <FormControlStyled
                       required
                       type="text"
                       value={observaciones}
                       onChange={(e) => setObservaciones(e.target.value)}
                       autoComplete="off"
-                    ></Form.Control>
-                  </Form.Group>
+                    ></FormControlStyled>
+                  </FormGroupStyled>
 
-                  <Form.Group
-                    controlId="Descuento"
-                    style={{ maxHeight: "3.5em" }}
-                  >
-                    <Form.Label
-                      style={{
-                        fontSize: "13.5px",
-                        color: "white",
-                        fontWeight: "bold",
-                        marginBottom: "4px",
-                      }}
-                    >
+                  <FormGroupStyled controlId="Descuento" >
+                    <FormLabelStyled>
                       DESCUENTO
-                    </Form.Label>
-                    <Form.Control
-                      style={{
-                        height: "45%",
-                        padding: "0px",
-                        paddingLeft: "8px",
-                      }}
+                    </FormLabelStyled>
+                    <FormControlStyled
                       required
                       type="number"
                       value={descuento}
@@ -613,16 +563,14 @@ const RealizarVenta = () => {
                       autoComplete="off"
                       onChange={(e) => setDescuento(parseInt(e.target.value))}
                     />
-                  </Form.Group>
-                </Row>
+                  </FormGroupStyled>
               </PanelControl>
               <Herramientas>
                 <BotonVenta disabled={deshabilitarVenta} type="submit">
                   Realizar venta
                 </BotonVenta>
               </Herramientas>
-            </Form>
-          </Formulario>
+        </Formulario>
         </Principal>
         {/* Mostrar venta */}
         <ImprimirTicket
@@ -640,7 +588,7 @@ const RealizarVenta = () => {
             descuento={descuento}
           />
         )}
-      </div>
+      </>
     )
   );
 };

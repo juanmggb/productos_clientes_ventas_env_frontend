@@ -19,9 +19,8 @@ const Usuario = styled.img`
   height: 45px;
   width: 45px;
   border-radius: 22.5px;
-  margin-left: ${(props) =>
-    props.ancho > 1200 ? "80%" : props.ancho > 995 ? "60%" : "55%"};
   display: ${(props) => (props.ancho < 993 ? "none" : "")};
+  margin-left: ${(props) => props.ancho > 1200 ? "65%" : props.ancho > 995 ? "60%" : "55%"};
 `;
 
 const LogoMovil = styled(Logo)`
@@ -30,12 +29,63 @@ const LogoMovil = styled(Logo)`
   margin-left: 0%;
   justify-items: left;
   width: 100px;
+
+  // Estilos de smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    position: relative;
+    left: -15px;
+  }
 `;
 
 const UsuarioMovil = styled(Usuario)`
   display: ${(props) =>
     props.ancho < 993 ? (props.estado ? "inline-block" : "none") : "none"};
   margin: 0;
+
+  @media (max-width: 480px) and (orientation: portrait) {
+    position: relative;
+    right: 0px;
+  }
+`;
+// Estilos del Container
+const ContainerStyled = styled(Container)`
+
+   // Estilos para smartphone
+   @media (max-width: 480px) and (orientation: portrait) {
+    padding: 10px;
+   }
+`;
+
+// Estilos del Navbar 
+const NavbarStyled = styled(Navbar)`
+  height: 10vh;
+  z-index: 1;
+  
+  background-color: #d9e3f1;
+  
+  // Estilos de smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 10;
+   }
+`;
+
+// Estilos del Navbar.Collapse
+const NavbarCollapseStyled = styled(Navbar.Collapse)`
+  background-color: #d9e3f1;
+
+  // Estilos para smartphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    position: relative;
+    padding: 10px 10px 0px 50px;
+    left: -50px;
+    border-radius: 10px;
+    width: 200px;
+  }
+`;
+
+// Estilos de Nav
+const NavStyled = styled(Nav)`
+  background: red;
 `;
 
 const Encabezado = () => {
@@ -63,12 +113,12 @@ const Encabezado = () => {
   };
 
   return (
-    <Navbar bg="light" expand="lg">
-      <Container>
+    <NavbarStyled expand="lg">
+      <ContainerStyled>
         <div>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <LinkContainer to="/">
-            <Navbar.Brand>{ancho > 400 ? "OptAppAI" : ""}</Navbar.Brand>
+            <Navbar.Brand>{ancho > 480 ? "OptAppAI" : ""}</Navbar.Brand>
           </LinkContainer>
         </div>
         <LogoMovil
@@ -76,13 +126,15 @@ const Encabezado = () => {
           ancho={ancho}
           estado={estadoSesion}
         />
-        <UsuarioMovil
-          src={`http://127.0.0.1:8000/${usuarioImagen}`}
-          onError={manejarErrorImagen}
-          ancho={ancho}
-          estado={estadoSesion}
-        />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <LinkContainer to = '/'>
+          <UsuarioMovil
+            src={`http://192.168.1.108:8000${usuarioImagen}`}
+            onError={manejarErrorImagen}
+            ancho={ancho}
+            estado={estadoSesion}
+          />
+        </LinkContainer>
+        <NavbarCollapseStyled id="basic-navbar-nav">
           <Nav className="me-auto">
             {!token ? (
               <LinkContainer to="/login">
@@ -90,8 +142,8 @@ const Encabezado = () => {
               </LinkContainer>
             ) : (
               <>
-                <NavDropdown title="Productos" id="basic-nav-dropdown">
-                  <LinkContainer to="/productos">
+                <NavDropdown  title="Productos" id="basic-nav-dropdown">
+                  <LinkContainer  to="/productos">
                     <NavDropdown.Item>Lista de Productos</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to="/registrar-producto">
@@ -117,7 +169,7 @@ const Encabezado = () => {
                   </LinkContainer>
                 </NavDropdown>
 
-                <NavDropdown title="Usuarios" id="basic-nav-dropdown">
+                <NavDropdown title="Usuarios" id="basic-nav-dropdown" style = {{paddingBottom: '10px'}}>
                   <LinkContainer to="/usuarios">
                     <NavDropdown.Item>Lista de Usuarios</NavDropdown.Item>
                   </LinkContainer>
@@ -128,16 +180,17 @@ const Encabezado = () => {
 
                 <Logo src={"../Imagenes/logo.png"} ancho={ancho} />
                 <Usuario
-                  src={`http://127.0.0.1:8000/${usuarioImagen}`}
+                  src={`http://192.168.1.108:8000${usuarioImagen}`}
                   onError={manejarErrorImagen}
-                  ancho={ancho}
+                    ancho={ancho}
+                  onClick = {() => {}}
                 />
               </>
             )}
           </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        </NavbarCollapseStyled>
+      </ContainerStyled>
+    </NavbarStyled>
   );
 };
 

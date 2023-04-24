@@ -1,17 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Row, Col, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import {toast} from 'react-hot-toast'
+import styled  from "styled-components";
 import {
   actualizarProducto,
   obtenerProductoDetalles,
 } from "../actions/productoActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
 import {
   RESET_PRODUCTO_ACTUALIZAR,
   RESET_PRODUCTO_DETALLES,
 } from "../constantes/productoConstantes";
+import Loader from "../componentes/Loader";
+
+// Estilos CSS con styled components
+// Estilos de la página principal
+const Principal = styled.div`
+  position: fixed;
+  background: linear-gradient(
+    rgb(54, 54, 82),
+    15%,
+    rgb(84, 106, 144),
+    60%,
+    rgb(68, 111, 151)
+  );
+
+  height: 90vh;
+  width: 100vw;
+  padding: 30px;
+  user-select: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & h1 {
+    color: white;
+  }
+
+  & button {
+    margin: 10px 0px;
+  }
+
+  // Estilos para smarthphone
+  @media (max-width: 480px) and (orientation: portrait) {
+    height: 90svh;
+
+    & h1 {
+    font-weight: bold;
+    }
+  }
+
+  // Estilos pc
+  @media (min-width: 480px) {
+    gap: 30px;
+
+    & button {
+      width: 200px;
+    }
+  }
+`;
+
+// Estilos Form.Group
+const FormGroupStyled = styled(Form.Group)`
+  display: flex;
+  flex-direction:column;
+  gap: 5px;
+  margin-bottom: 5px;
+`;
 
 const ProductoDetalles = ({ match }) => {
   // Obtener el id del producto
@@ -41,11 +98,29 @@ const ProductoDetalles = ({ match }) => {
   const [precio, setPrecio] = useState(0);
   const [imagen, setImagen] = useState(null);
 
+  // useEffect para mostrar las alertas
+  useEffect(() => {
+    
+    if (loadingActualizar) {
+      toast.remove();
+      toast.loading('Actualizando producto');
+    }
+
+    if (successActualizar) {
+      toast.remove();
+      toast.success('Producto actualizado');
+    }
+    
+    if (errorActualizar) {
+      toast.dismiss();
+      toast.error('Error al actualizar');
+    }
+  }, [successActualizar, errorActualizar, loadingActualizar])
+
   useEffect(() => {
     // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
     if (successActualizar) {
       dispatch({ type: RESET_PRODUCTO_ACTUALIZAR });
-      alert("La actualización fue exitosa");
       navigate("/productos");
     }
 
@@ -84,60 +159,72 @@ const ProductoDetalles = ({ match }) => {
   // console.log(imagen ? "Exist" : "No exist");
 
   return loading ? (
-    <Loader />
+    <Principal><Loader/></Principal>
   ) : error ? (
-    <Mensaje variant="danger">{error}</Mensaje>
+      <Principal>{
+        toast.error('Error en el servidor')
+      }</Principal>
   ) : (
-    producto && (
-      <div style={{ padding: "25px", width: "50%" }}>
-        {loadingActualizar && <Loader />}
-        {errorActualizar && (
-          <Mensaje variant="danger">{errorActualizar}</Mensaje>
-        )}
+        producto && (
+      <Principal>
         {/* Esta es la parte que cambia en las paginas */}
         <h1>Producto #{producto.id}</h1>
-        <Button variant="primary" onClick={manejarRegresar}>
+        <Button onClick={manejarRegresar}>
           Regresar
         </Button>
+        <Container>
         <Form onSubmit={manejarActualizarProducto}>
-          <Form.Group controlId="nombre">
-            <Form.Label>Nombre</Form.Label>
+        <Row>
+          <Col lg={true} md={4}>  
+          <FormGroupStyled controlId="nombre">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Nombre</Form.Label>
             <Form.Control
+              style = {{color: 'black',
+                fontWeight: 'bold'}}
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
             ></Form.Control>
-          </Form.Group>
+          </FormGroupStyled>
 
-          <Form.Group controlId="cantidad">
-            <Form.Label>Cantidad</Form.Label>
+          <FormGroupStyled controlId="cantidad">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Cantidad</Form.Label>
             <Form.Control
+              style = {{color: 'black',
+               fontWeight: 'bold'}}
               type="number"
               value={cantidad}
               onChange={(e) => setCantidad(e.target.value)}
             ></Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId="precio">
-            <Form.Label>Precio</Form.Label>
+            </FormGroupStyled>
+            </Col>  
+          
+          <Col lg={true} md={4}>
+          <FormGroupStyled controlId="precio">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Precio</Form.Label>
             <Form.Control
+              style = {{color: 'black',
+                fontWeight: 'bold'}}
               type="number"
               value={precio}
               onChange={(e) => setPrecio(e.target.value)}
             ></Form.Control>
-          </Form.Group>
+          </FormGroupStyled>
 
-          <Form.Group controlId="imagen">
-            <Form.Label>Imagen</Form.Label>
+          <FormGroupStyled controlId="imagen">
+            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Imagen</Form.Label>
             <Form.Control
               type="file"
               onChange={(e) => setImagen(e.target.files[0])}
             ></Form.Control>
-          </Form.Group>
+          </FormGroupStyled>
 
           <Button type="submit">Actualizar producto</Button>
-        </Form>
-      </div>
+          </Col>
+          </Row>
+          </Form>
+        </Container>
+      </Principal>
     )
   );
 };
