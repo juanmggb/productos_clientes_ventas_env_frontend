@@ -2,18 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Container, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from 'react-hot-toast';
-import styled from 'styled-components';
-import {
-  actualizarProducto,
-  obtenerProductoDetalles,
-} from "../actions/productoActions";
+import { toast } from "react-hot-toast";
+import styled from "styled-components";
+
 import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
-import {
-  RESET_PRODUCTO_ACTUALIZAR,
-  RESET_PRODUCTO_DETALLES,
-} from "../constantes/productoConstantes";
 import {
   actualizarUsuario,
   obtenerUsuarioDetalles,
@@ -57,13 +49,12 @@ const Principal = styled.div`
     height: 90svh;
 
     & h1 {
-    font-weight: bold;
+      font-weight: bold;
     }
   }
 
   // Estilos pc
   @media (min-width: 480px) {
-
     & button {
       width: 200px;
     }
@@ -77,18 +68,19 @@ const Principal = styled.div`
 // Estilos Form.Group
 const FormGroupStyled = styled(Form.Group)`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   gap: 5px;
   margin-bottom: 5px;
 
   & label {
-     color: white;
-     font-weight: bold;
+    color: white;
+    font-weight: bold;
   }
 
-  & input, select {
-     color: black;
-     font-weight: bold;
+  & input,
+  select {
+    color: black;
+    font-weight: bold;
   }
 `;
 
@@ -121,22 +113,21 @@ const UsuarioDetalles = ({ match }) => {
 
   // useEffect para mostrar las alertas
   useEffect(() => {
-  
     if (loadingActualizar) {
       toast.remove();
-      toast.loading('Actualizando usuario');
+      toast.loading("Actualizando usuario");
     }
 
     if (successActualizar) {
       toast.remove();
-      toast.success('Usuario actualizado');
+      toast.success("Usuario actualizado");
     }
-    
+
     if (errorActualizar) {
       toast.dismiss();
-      toast.error('Error al actualizar usuario');
+      toast.error("Error al actualizar usuario");
     }
-    }, [successActualizar, errorActualizar, loadingActualizar])
+  }, [successActualizar, errorActualizar, loadingActualizar]);
 
   useEffect(() => {
     // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
@@ -182,9 +173,11 @@ const UsuarioDetalles = ({ match }) => {
   // console.log(imagen ? "Exist" : "No exist");
 
   return loading ? (
-    <Principal><Loader /></Principal>
+    <Principal>
+      <Loader />
+    </Principal>
   ) : error ? (
-      <Principal>{ toast.error('Error en el servidor') }</Principal>
+    <Principal>{toast.error("Error en el servidor")}</Principal>
   ) : (
     usuario && (
       <Principal>
@@ -194,46 +187,46 @@ const UsuarioDetalles = ({ match }) => {
           Regresar
         </Button>
         <Container centered>
-        <Form onSubmit={manejarActualizarUsuario}>
-        <Row>
-          <Col>
-          <FormGroupStyled controlId="nombre">
-            <Form.Label>NOMBRE</Form.Label>
-            <Form.Control
-              readOnly
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            ></Form.Control>
-          </FormGroupStyled>
+          <Form onSubmit={manejarActualizarUsuario}>
+            <Row>
+              <Col>
+                <FormGroupStyled controlId="nombre">
+                  <Form.Label>NOMBRE</Form.Label>
+                  <Form.Control
+                    readOnly
+                    type="text"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                  ></Form.Control>
+                </FormGroupStyled>
 
-          <FormGroupStyled controlId="nombreUsuario">
-            <Form.Label>NOMBRE DE USUARIO</Form.Label>
-            <Form.Control
-              readOnly
-              type="text"
-              value={nombreUsuario}
-              onChange={(e) => setNombreUsuario(e.target.value)}
-            ></Form.Control>
-          </FormGroupStyled>
+                <FormGroupStyled controlId="nombreUsuario">
+                  <Form.Label>NOMBRE DE USUARIO</Form.Label>
+                  <Form.Control
+                    readOnly
+                    type="text"
+                    value={nombreUsuario}
+                    onChange={(e) => setNombreUsuario(e.target.value)}
+                  ></Form.Control>
+                </FormGroupStyled>
 
-          <FormGroupStyled controlId="isAdmin">
-            <Form.Label>PERMISOS</Form.Label>
-            <Form.Select
-              value={isAdmin}
-              onChange={(e) => setIsAdmin(e.target.value)}
-            >
-              <option value={true}>ADMINISTRADOR</option>
-              <option value={false}>NO ES ADMINISTRADOR</option>
-            </Form.Select>
-          </FormGroupStyled>
+                <FormGroupStyled controlId="isAdmin">
+                  <Form.Label>PERMISOS</Form.Label>
+                  <Form.Select
+                    value={isAdmin}
+                    onChange={(e) => setIsAdmin(e.target.value)}
+                  >
+                    <option value={true}>ADMINISTRADOR</option>
+                    <option value={false}>NO ES ADMINISTRADOR</option>
+                  </Form.Select>
+                </FormGroupStyled>
 
-          <Button className="mt-3" type="submit">
-            Actualizar usuario
-          </Button>
-          </Col>
-          </Row>
-        </Form>
+                <Button className="mt-3" type="submit">
+                  Actualizar usuario
+                </Button>
+              </Col>
+            </Row>
+          </Form>
         </Container>
       </Principal>
     )

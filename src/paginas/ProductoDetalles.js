@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Row, Col, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import {toast} from 'react-hot-toast'
-import styled  from "styled-components";
+import { toast } from "react-hot-toast";
+import styled from "styled-components";
 import {
   actualizarProducto,
   obtenerProductoDetalles,
@@ -48,7 +48,7 @@ const Principal = styled.div`
     height: 90svh;
 
     & h1 {
-    font-weight: bold;
+      font-weight: bold;
     }
   }
 
@@ -65,7 +65,7 @@ const Principal = styled.div`
 // Estilos Form.Group
 const FormGroupStyled = styled(Form.Group)`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   gap: 5px;
   margin-bottom: 5px;
 `;
@@ -94,28 +94,28 @@ const ProductoDetalles = ({ match }) => {
   } = productoActualizar;
 
   const [nombre, setNombre] = useState("");
+  const [cantidadInicial, setCantidadInicial] = useState();
   const [cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
   const [imagen, setImagen] = useState(null);
 
   // useEffect para mostrar las alertas
   useEffect(() => {
-    
     if (loadingActualizar) {
       toast.remove();
-      toast.loading('Actualizando producto');
+      toast.loading("Actualizando producto");
     }
 
     if (successActualizar) {
       toast.remove();
-      toast.success('Producto actualizado');
+      toast.success("Producto actualizado");
     }
-    
+
     if (errorActualizar) {
       toast.dismiss();
-      toast.error('Error al actualizar');
+      toast.error("Error al actualizar");
     }
-  }, [successActualizar, errorActualizar, loadingActualizar])
+  }, [successActualizar, errorActualizar, loadingActualizar]);
 
   useEffect(() => {
     // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
@@ -131,23 +131,33 @@ const ProductoDetalles = ({ match }) => {
     } else {
       setNombre(producto.NOMBRE);
       setCantidad(producto.CANTIDAD);
+      setCantidadInicial(producto.CANTIDAD);
       setPrecio(producto.PRECIO);
     }
   }, [dispatch, producto, productoId, successActualizar, navigate]);
+
+  // Get admin permision
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
 
   const manejarActualizarProducto = (e) => {
     e.preventDefault();
     // Disparar la accion de actualizar producto
 
-    const formData = new FormData();
+    if (!isAdmin && cantidad < cantidadInicial) {
+      alert(
+        `Solo un administrador puede reducir el número de productos. Ingresa un valo superior a la cantidad inicial ${cantidadInicial}`
+      );
+    } else {
+      const formData = new FormData();
 
-    formData.append("NOMBRE", nombre);
-    formData.append("CANTIDAD", cantidad);
-    formData.append("PRECIO", precio);
-    if (imagen) {
-      formData.append("IMAGEN", imagen);
+      formData.append("NOMBRE", nombre);
+      formData.append("CANTIDAD", cantidad);
+      formData.append("PRECIO", precio);
+      if (imagen) {
+        formData.append("IMAGEN", imagen);
+      }
+      dispatch(actualizarProducto(productoId, formData));
     }
-    dispatch(actualizarProducto(productoId, formData));
   };
 
   const manejarRegresar = () => {
@@ -156,74 +166,102 @@ const ProductoDetalles = ({ match }) => {
     navigate("/productos");
   };
 
-  // console.log(imagen ? "Exist" : "No exist");
-
   return loading ? (
-    <Principal><Loader/></Principal>
+    <Principal>
+      <Loader />
+    </Principal>
   ) : error ? (
-      <Principal>{
-        toast.error('Error en el servidor')
-      }</Principal>
+    <Principal>{toast.error("Error en el servidor")}</Principal>
   ) : (
-        producto && (
+    producto && (
       <Principal>
         {/* Esta es la parte que cambia en las paginas */}
         <h1>Producto #{producto.id}</h1>
-        <Button onClick={manejarRegresar}>
-          Regresar
-        </Button>
-        <Container>
-        <Form onSubmit={manejarActualizarProducto}>
-        <Row>
-          <Col lg={true} md={4}>  
-          <FormGroupStyled controlId="nombre">
-            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Nombre</Form.Label>
-            <Form.Control
-              style = {{color: 'black',
-                fontWeight: 'bold'}}
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            ></Form.Control>
-          </FormGroupStyled>
+        <Button onClick={manejarRegresar}>Regresar</Button>
+        {isAdmin ? (
+          <Container>
+            <Form onSubmit={manejarActualizarProducto}>
+              <Row>
+                <Col lg={true} md={4}>
+                  <FormGroupStyled controlId="nombre">
+                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
+                      Nombre
+                    </Form.Label>
+                    <Form.Control
+                      style={{ color: "black", fontWeight: "bold" }}
+                      type="text"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                    ></Form.Control>
+                  </FormGroupStyled>
 
-          <FormGroupStyled controlId="cantidad">
-            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Cantidad</Form.Label>
-            <Form.Control
-              style = {{color: 'black',
-               fontWeight: 'bold'}}
-              type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
-            ></Form.Control>
-            </FormGroupStyled>
-            </Col>  
-          
-          <Col lg={true} md={4}>
-          <FormGroupStyled controlId="precio">
-            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Precio</Form.Label>
-            <Form.Control
-              style = {{color: 'black',
-                fontWeight: 'bold'}}
-              type="number"
-              value={precio}
-              onChange={(e) => setPrecio(e.target.value)}
-            ></Form.Control>
-          </FormGroupStyled>
+                  <FormGroupStyled controlId="cantidad">
+                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
+                      Cantidad
+                    </Form.Label>
+                    <Form.Control
+                      style={{ color: "black", fontWeight: "bold" }}
+                      type="number"
+                      value={cantidad}
+                      onChange={(e) => setCantidad(e.target.value)}
+                    ></Form.Control>
+                  </FormGroupStyled>
+                </Col>
 
-          <FormGroupStyled controlId="imagen">
-            <Form.Label style = {{color: 'white', fontWeight: 'bold'}}>Imagen</Form.Label>
-            <Form.Control
-              type="file"
-              onChange={(e) => setImagen(e.target.files[0])}
-            ></Form.Control>
-          </FormGroupStyled>
+                <Col lg={true} md={4}>
+                  <FormGroupStyled controlId="precio">
+                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
+                      Precio
+                    </Form.Label>
+                    <Form.Control
+                      style={{ color: "black", fontWeight: "bold" }}
+                      type="number"
+                      value={precio}
+                      onChange={(e) => setPrecio(e.target.value)}
+                    ></Form.Control>
+                  </FormGroupStyled>
 
-          <Button type="submit">Actualizar producto</Button>
-          </Col>
-          </Row>
+                  <FormGroupStyled controlId="imagen">
+                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
+                      Imagen
+                    </Form.Label>
+                    <Form.Control
+                      type="file"
+                      onChange={(e) => setImagen(e.target.files[0])}
+                    ></Form.Control>
+                  </FormGroupStyled>
+
+                  <Button type="submit">Actualizar producto</Button>
+                </Col>
+              </Row>
+            </Form>
+          </Container>
+        ) : (
+          <Form onSubmit={manejarActualizarProducto}>
+            <Row>
+              <Col ms={12}>
+                <FormGroupStyled controlId="cantidad">
+                  <Form.Label
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Cantidad
+                  </Form.Label>
+                  <Form.Control
+                    style={{ color: "black", fontWeight: "bold" }}
+                    type="number"
+                    value={cantidad}
+                    min={cantidad}
+                    onChange={(e) => setCantidad(e.target.value)}
+                  ></Form.Control>
+                </FormGroupStyled>
+                <Button type="submit">Actualizar producto</Button>
+              </Col>
+            </Row>
           </Form>
-        </Container>
+        )}
       </Principal>
     )
   );

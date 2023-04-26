@@ -7,6 +7,11 @@ import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 import {
+  cuentaDetallesReducer,
+  cuentaActualizarReducer,
+} from "./reducers/cuentaReducers";
+
+import {
   usuarioInfoReducer,
   usuarioListaReducer,
   usuarioDetallesReducer,
@@ -38,6 +43,9 @@ import {
 } from "./reducers/ventaReducers";
 
 const reducer = combineReducers({
+  // Cuenta reducers
+  cuentaDetalles: cuentaDetallesReducer,
+  cuentaActualizar: cuentaActualizarReducer,
   // Usuario reducers
   usuarioInfo: usuarioInfoReducer,
   usuarioLista: usuarioListaReducer,

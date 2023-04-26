@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from "react-hot-toast";
 import Encabezado from "./componentes/Encabezado";
 import ClienteDetalles from "./paginas/ClienteDetalles";
 import ClientesLista from "./paginas/ClientesLista";
@@ -15,6 +15,7 @@ import VentasLista from "./paginas/VentasLista";
 import UsuariosLista from "./paginas/UsuariosLista";
 import UsuarioDetalles from "./paginas/UsuarioDetalles";
 import RegistrarUsuario from "./paginas/RegistrarUsuario";
+import CuentaDetalles from "./paginas/CuentaDetalles";
 function App() {
   return (
     <div className="App">
@@ -41,8 +42,10 @@ function App() {
           <Route path="/usuarios" element={<UsuariosLista />} />
           <Route path="/usuarios/:id" element={<UsuarioDetalles />} />
           <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
+          {/* Cuenta */}
+          <Route path="/cuenta" element={<CuentaDetalles />} />
         </Routes>
-        <Toaster/>
+        <Toaster />
       </BrowserRouter>
     </div>
   );

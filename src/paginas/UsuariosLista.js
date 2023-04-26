@@ -3,8 +3,8 @@ import { Button, Table, Container, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { toast } from 'react-hot-toast';
-import { Icono } from '../styledComponents/alertaEliminar';
+import { toast } from "react-hot-toast";
+import { Icono } from "../styledComponents/alertaEliminar";
 import {
   borrarProducto,
   pedirProductosLista,
@@ -55,15 +55,14 @@ const Principal = styled.div`
     height: 90svh;
 
     & div {
-    height: 10vsh;
-    font-weight: bold;
+      height: 10vsh;
+      font-weight: bold;
     }
   }
 `;
 
 // Estilos de la tabla
 const TableStyled = styled(Table)`
-
   & tbody {
     height: 75svh;
     display: block;
@@ -75,20 +74,21 @@ const TableStyled = styled(Table)`
     color: white;
   }
 
-  & thead, tbody tr {
+  & thead,
+  tbody tr {
     display: table;
     width: 100%;
-    table-layout: fixed;/* even columns width , fix width of table too*/
+    table-layout: fixed; /* even columns width , fix width of table too*/
 
     color: white;
   }
-  
-  & th{
+
+  & th {
     text-align: center;
     vertical-align: middle;
   }
 
-  & td{
+  & td {
     text-align: center;
     vertical-align: middle;
   }
@@ -114,28 +114,26 @@ const UruariosLista = () => {
   const isSmallViewport = useMediaQuery({ maxWidth: 768 });
   const shouldShow = !isSmallViewport;
 
-   // useEffect para mostrar las alertas
-   useEffect(() => {
-
+  // useEffect para mostrar las alertas
+  useEffect(() => {
     if (loadingBorrar) {
-      toast.loading('Eliminando usuario');
+      toast.loading("Eliminando usuario");
     }
 
     if (successBorrar) {
       toast.dismiss();
-      toast.success('Usuario eliminado exitosamente', {
-        duration: 2000
-      });
-    }
-    
-    if (errorBorrar) {
-      toast.dismiss();
-      toast.error('Error al eliminar usuario', {
-        duration: 2000
+      toast.success("Usuario eliminado exitosamente", {
+        duration: 2000,
       });
     }
 
-  }, [successBorrar, errorBorrar, loadingBorrar])
+    if (errorBorrar) {
+      toast.dismiss();
+      toast.error("Error al eliminar usuario", {
+        duration: 2000,
+      });
+    }
+  }, [successBorrar, errorBorrar, loadingBorrar]);
 
   useEffect(() => {
     if (successBorrar) {
@@ -165,39 +163,62 @@ const UruariosLista = () => {
 
   // Funcion para mostrar la alerta de eliminar producto
   const alertaBorrarUsuario = (id) => {
-    toast((t) => (
-      <Container>
-        <Row>
-            Estás seguro de eliminar el usuario?
-        </Row>
-        <Row>
-        <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
-            <Icono
-              onClick={() => {
-                dispatch(borrarUsuario(id))
-                toast.dismiss(t.id);
-                }}>
-              <i class="fa-solid fa-circle-check fa-2xl" style={{color: '#67ce00'}}></i>
-            </Icono>
-          </Col>
-          <Col style={{display: 'flex', justifyContent: 'center', padding: '5px'}}>
-            <Icono
-              onClick={() => {
-                toast.dismiss(t.id);
-                toast.error('Operacion cancelada', { duration: 2000});
-            }}>
-            <i class="fa-sharp fa-solid fa-circle-xmark fa-2xl" style={{color: '#ff0000'}}></i>
-            </Icono>
-          </Col>
-        </Row>
-      </Container>
-    ), {duration: 5000})
+    toast(
+      (t) => (
+        <Container>
+          <Row>Estás seguro de eliminar el usuario?</Row>
+          <Row>
+            <Col
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "5px",
+              }}
+            >
+              <Icono
+                onClick={() => {
+                  dispatch(borrarUsuario(id));
+                  toast.dismiss(t.id);
+                }}
+              >
+                <i
+                  class="fa-solid fa-circle-check fa-2xl"
+                  style={{ color: "#67ce00" }}
+                ></i>
+              </Icono>
+            </Col>
+            <Col
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "5px",
+              }}
+            >
+              <Icono
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  toast.error("Operacion cancelada", { duration: 2000 });
+                }}
+              >
+                <i
+                  class="fa-sharp fa-solid fa-circle-xmark fa-2xl"
+                  style={{ color: "#ff0000" }}
+                ></i>
+              </Icono>
+            </Col>
+          </Row>
+        </Container>
+      ),
+      { duration: 5000 }
+    );
   };
 
   return loading ? (
-    <Principal><Loader/></Principal>
+    <Principal>
+      <Loader />
+    </Principal>
   ) : error ? (
-      <Principal>{ toast.error('Error en el servidor')}</Principal>
+    <Principal>{toast.error("Error en el servidor")}</Principal>
   ) : (
     usuarios && (
       <Principal>
@@ -207,10 +228,11 @@ const UruariosLista = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>USUARIO</th>
+
+              <th>IMAGEN</th>
               {shouldShow ? (
                 <>
-                  <th>IMAGEN</th>
+                  <th>USUARIO</th>
                   <th>NOMBRE</th>
                   <th>PERMISOS</th>
                 </>
@@ -227,18 +249,19 @@ const UruariosLista = () => {
               )
               .map((u) => (
                 <tr key={u.id}>
-                  <td style = {{color: 'white'}}>{u.id}</td>
-                  <td style = {{color: 'white'}}>{u.username}</td>
+                  <td style={{ color: "white" }}>{u.id}</td>
+                  <td style={{ color: "white" }}>
+                    <ImagenObjeto
+                      src={`http://127.0.0.1:8000/${u.empleado.IMAGEN}`}
+                      alt={u.name}
+                    />
+                  </td>
                   {shouldShow ? (
                     <>
-                      <td style = {{color: 'white'}}>
-                        <ImagenObjeto
-                          src={`http://192.168.1.108:8000/${u.empleado.IMAGEN}`}
-                          alt={u.name}
-                        />
-                      </td>
-                      <td style = {{color: 'white'}}>{u.name}</td>
-                      <td style = {{color: 'white'}}>
+                      <td style={{ color: "white" }}>{u.username}</td>
+
+                      <td style={{ color: "white" }}>{u.name}</td>
+                      <td style={{ color: "white" }}>
                         {u.is_admin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR"}
                       </td>
                     </>

@@ -1,8 +1,8 @@
 import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import styled from 'styled-components';
+import styled from "styled-components";
 
-const Productos = styled.div`  
+const Productos = styled.div`
   position: relative;
   width: 100%;
   display: grid;
@@ -27,12 +27,13 @@ const ProductoContenedor = styled.div`
   grid-gap: 10px;
   grid-template-columns: 120px 1fr 3.2fr;
   grid-template-rows: 13.5px 1fr;
-  grid-template-areas: 'ImagenProducto DatosProducto DatosProducto'
-                      'ImagenProducto SeleccionadorCantidad OpcionesProducto';
+  grid-template-areas:
+    "ImagenProducto DatosProducto DatosProducto"
+    "ImagenProducto SeleccionadorCantidad OpcionesProducto";
   border-radius: 10px;
 `;
 
-const FlexDiv = styled.div `
+const FlexDiv = styled.div`
   padding-top: 10px;
   border-radius: 2px;
   display: flex;
@@ -45,28 +46,33 @@ const FlexDiv = styled.div `
 
 const ImagenProducto = styled(FlexDiv)`
   grid-area: ImagenProducto;
-  position:  relative;
+  position: relative;
   padding: 0px;
 `;
 
 const Imagen = styled.img`
-  position:absolute;
+  position: absolute;
   width: 90%;
   height: 90%;
   border-radius: 5px;
 `;
 
-const DatosProducto =  styled(FlexDiv)`
+const DatosProducto = styled(FlexDiv)`
   grid-area: DatosProducto;
   height: 100%;
   width: 100%;
   display: flex;
   justify-content: space-around;
   flex-direction: row;
+  justify-content: space-evenly;
   padding: 10px;
   padding-top: 20px;
 `;
 
+const DatoProducto = styled.span`
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+`;
 const SeleccionadorCantidad = styled(FlexDiv)`
   grid-area: SeleccionadorCantidad;
   position: relative;
@@ -77,15 +83,15 @@ const SeleccionadorCantidad = styled(FlexDiv)`
 `;
 
 const OpcionesProducto = styled(FlexDiv)`
-    display: flex;
-    width: 100%;
-    height: 100%;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    padding-top: 5px;
-    padding-bottom: 1.3%;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  padding-top: 5px;
+  padding-bottom: 1.3%;
 `;
 
 const FormularioProductoVenta = ({
@@ -94,55 +100,67 @@ const FormularioProductoVenta = ({
   manejarConfirmarProducto,
   manejarCancelarProducto,
 }) => {
-  if(!productos.length) return <Mensaje>No hay productos agregados</Mensaje>
+  console.log(productos);
+  if (!productos.length) return <Mensaje>No hay productos agregados</Mensaje>;
   return (
     <Productos>
-      {
-        productos.map(producto =>{
-          return(
-            <ProductoContenedor key={producto.id}>
+      {productos.map((producto) => {
+        return (
+          <ProductoContenedor key={producto.id}>
             <DatosProducto>
-                    CLAVE: {producto.id} | NOMBRE: {producto.producto_nombre} | PRECIO: $
-                    {producto.PRECIO} | CANTIDAD DISPONIBLE: {producto.producto_cantidad}
+              <DatoProducto>CLAVE: {producto.id}</DatoProducto>{" "}
+              <DatoProducto>NOMBRE: {producto.producto_nombre}</DatoProducto>
+              <DatoProducto>PRECIO: ${producto.PRECIO}</DatoProducto>{" "}
+              <DatoProducto>
+                CANTIDAD DISPONIBLE: {producto.producto_cantidad}
+              </DatoProducto>
             </DatosProducto>
             <ImagenProducto>
-                <Imagen src= {'../Imagenes/'+producto.producto_nombre+'.jpg'}/>
+              <Imagen
+                src={`http://127.0.0.1:8000${producto.producto_imagen}`}
+              />
             </ImagenProducto>
             <SeleccionadorCantidad>
-                <Form.Group controlId={producto.id}>
-                    <Form.Control
-                    style= {{backgroundColor: 'rgba(220,220,255)', fontWeight: 'bold'}}
-                    disabled={producto.confirmado}
-                    type="number"
-                    value={producto.cantidadVenta}
-                    onChange={(e) =>
+              <Form.Group controlId={producto.id}>
+                <Form.Control
+                  style={{
+                    backgroundColor: "rgba(220,220,255)",
+                    fontWeight: "bold",
+                  }}
+                  disabled={producto.confirmado}
+                  type="number"
+                  value={producto.cantidadVenta}
+                  onChange={(e) =>
                     manejarCambioCantidad(Number(e.target.value), producto.id)
-                    }/>
-                </Form.Group>
+                  }
+                />
+              </Form.Group>
             </SeleccionadorCantidad>
             <OpcionesProducto>
-                <Button
-                  style= {{backgroundColor: 'green', color: 'white'}}
-                  disabled={producto.confirmado}
-                  onClick={() => manejarConfirmarProducto(producto.id)}>
-                  Confirmar
-                </Button>
-                <Button
-                  style= {{backgroundColor: 'blue', color: 'white'}}
-                  disabled={!producto.confirmado}
-                  onClick={() => manejarConfirmarProducto(producto.id)}>
-                  Modificar
-                </Button>
-                <Button 
-                  style= {{backgroundColor: 'red', color: 'white'}}
-                  onClick={() => manejarCancelarProducto(producto.id)}>
-                  Eliminar
-                </Button>
+              <Button
+                style={{ backgroundColor: "green", color: "white" }}
+                disabled={producto.confirmado}
+                onClick={() => manejarConfirmarProducto(producto.id)}
+              >
+                Confirmar
+              </Button>
+              <Button
+                style={{ backgroundColor: "blue", color: "white" }}
+                disabled={!producto.confirmado}
+                onClick={() => manejarConfirmarProducto(producto.id)}
+              >
+                Modificar
+              </Button>
+              <Button
+                style={{ backgroundColor: "red", color: "white" }}
+                onClick={() => manejarCancelarProducto(producto.id)}
+              >
+                Eliminar
+              </Button>
             </OpcionesProducto>
-        </ProductoContenedor>
-          )
-        })
-      }
+          </ProductoContenedor>
+        );
+      })}
     </Productos>
   );
 };

@@ -28,7 +28,7 @@ export const login = (username, password) => async (dispatch) => {
   dispatch({ type: REQUEST_LOGIN_USUARIO });
 
   try {
-    const { data } = await axios.post("http://192.168.1.108:8000/api/token/", {
+    const { data } = await axios.post("http://127.0.0.1:8000/api/token/", {
       username,
       password,
     });
@@ -54,6 +54,12 @@ export const logout = () => async (dispatch) => {
   localStorage.removeItem("isAdmin");
   localStorage.removeItem("refreshToken");
 
+  // I don't remember why i din't delete this
+  localStorage.removeItem("imagen");
+  localStorage.removeItem("usuarios");
+  localStorage.removeItem("productos");
+  localStorage.removeItem("clientes");
+
   dispatch({ type: LOGOUT_USUARIO });
   window.location.href = "/login";
 };
@@ -64,7 +70,7 @@ export const actualizarAccessToken = (link) => async (dispatch) => {
   try {
     // Send a post request to the backend to get a new access token using the refresh token
     const { data } = await axios.post(
-      "http://192.168.1.108:8000/api/token/refresh/",
+      "http://127.0.0.1:8000/api/token/refresh/",
       {
         refresh: refreshToken,
       }
@@ -99,7 +105,7 @@ export const pedirUsuariosLista = () => async (dispatch, getState) => {
     };
 
     const { data } = await axios.get(
-      "http://192.168.1.108:8000/api/usuarios/",
+      "http://127.0.0.1:8000/api/usuarios/",
       config
     );
 
@@ -132,7 +138,7 @@ export const obtenerUsuarioDetalles = (id) => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.get(
-      `http://192.168.1.108:8000/api/usuarios/${id}/`,
+      `http://127.0.0.1:8000/api/usuarios/${id}/`,
       config
     );
 
@@ -158,7 +164,7 @@ export const actualizarUsuario = (usuario) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `http://192.168.1.108:8000/api/modificar-usuario/${usuario.id}/`,
+      `http://127.0.0.1:8000/api/modificar-usuario/${usuario.id}/`,
       usuario,
       config
     );
@@ -190,7 +196,7 @@ export const registrarUsuario = (formData) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      "http://192.168.1.108:8000/api/crear-cuenta/",
+      "http://127.0.0.1:8000/api/crear-cuenta/",
       formData,
       config
     );
@@ -222,7 +228,7 @@ export const borrarUsuario = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.delete(
-      `http://192.168.1.108:8000/api/modificar-usuario/${id}/`,
+      `http://127.0.0.1:8000/api/modificar-usuario/${id}/`,
       config
     );
 

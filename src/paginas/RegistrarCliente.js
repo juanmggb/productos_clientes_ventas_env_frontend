@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import styled from "styled-components";
 import Loader from "../componentes/Loader";
 import { registrarCliente } from "../actions/clienteActions";
 import { RESET_CLIENTE_REGISTRAR } from "../constantes/clienteConstantes";
+import { pedirProductosLista } from "../actions/productoActions";
 
 // Estilos de la página principal
 const Principal = styled.div`
@@ -18,12 +19,12 @@ const Principal = styled.div`
     60%,
     rgb(68, 111, 151)
   );
-  
+
   height: 90vh;
   width: 100vw;
   padding: 30px;
   user-select: none;
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,7 +34,8 @@ const Principal = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
 
-  & h1, h3 {
+  & h1,
+  h3 {
     color: white;
   }
 
@@ -55,18 +57,19 @@ const Principal = styled.div`
 // Estilos Form.Group
 const FormGroupStyled = styled(Form.Group)`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   gap: 5px;
   margin-bottom: 5px;
 
   & label {
-     color: white;
-     font-weight: bold;
+    color: white;
+    font-weight: bold;
   }
 
-  & input, select {
-     color: black;
-     font-weight: bold;
+  & input,
+  select {
+    color: black;
+    font-weight: bold;
   }
 `;
 
@@ -105,22 +108,20 @@ const RegistrarCliente = () => {
 
   // useEffect para mostrar las alertas
   useEffect(() => {
-
     if (loadingRegistrar) {
-      toast.loading('Registrando cliente');
+      toast.loading("Registrando cliente");
     }
 
     if (successRegistrar) {
       toast.remove();
-      toast.success('Cliente registrado');
-    }
-    
-    if (errorRegistrar) {
-      toast.dismiss();
-      toast.error('Error al registrar cliente');
+      toast.success("Cliente registrado");
     }
 
-  }, [successRegistrar, errorRegistrar, loadingRegistrar])
+    if (errorRegistrar) {
+      toast.dismiss();
+      toast.error("Error al registrar cliente");
+    }
+  }, [successRegistrar, errorRegistrar, loadingRegistrar]);
 
   useEffect(() => {
     // Si el registro fue correcto, reset clienteRegistrar y redireccionar a la pagina de clientes
@@ -130,7 +131,8 @@ const RegistrarCliente = () => {
     }
 
     if (!productos) {
-      navigate("/registrar-producto");
+      // navigate("/registrar-producto");
+      dispatch(pedirProductosLista());
     } else {
       // Esto permite que el nuevo cliente tenga el precio por defecto de todos los productos en la base de datos
       setProductosCliente(productos);
@@ -183,9 +185,11 @@ const RegistrarCliente = () => {
   };
 
   return loading ? (
-    <Principal><Loader/></Principal>
+    <Principal>
+      <Loader />
+    </Principal>
   ) : error ? (
-      <Principal>{toast.error('Error en el servidor')}</Principal>
+    <Principal>{toast.error("Error en el servidor")}</Principal>
   ) : (
     productos && (
       <Principal>
@@ -198,9 +202,7 @@ const RegistrarCliente = () => {
                 <h3>Datos del cliente</h3>
                 {/* Nombre */}
                 <FormGroupStyled controlId="nombre">
-                      <Form.Label>
-                        Nombre
-                      </Form.Label>
+                  <Form.Label>Nombre</Form.Label>
                   <Form.Control
                     required
                     type="text"
@@ -211,9 +213,7 @@ const RegistrarCliente = () => {
 
                 {/* Contacto */}
                 <FormGroupStyled controlId="contacto">
-                      <Form.Label >
-                        Contacto
-                      </Form.Label>
+                  <Form.Label>Contacto</Form.Label>
                   <Form.Control
                     type="text"
                     value={contacto}
@@ -223,9 +223,7 @@ const RegistrarCliente = () => {
 
                 {/* Telefono */}
                 <FormGroupStyled controlId="telefono">
-                  <Form.Label>
-                    Telefono
-                  </Form.Label>
+                  <Form.Label>Telefono</Form.Label>
                   <Form.Control
                     required
                     type="number"
@@ -236,9 +234,7 @@ const RegistrarCliente = () => {
 
                 {/* Correo */}
                 <FormGroupStyled controlId="correo">
-                  <Form.Label>
-                    Correo
-                  </Form.Label>
+                  <Form.Label>Correo</Form.Label>
                   <Form.Control
                     required
                     type="email"
@@ -249,9 +245,7 @@ const RegistrarCliente = () => {
 
                 {/* Tipo de pago */}
                 <FormGroupStyled controlId="tipoPago">
-                  <Form.Label>
-                    Tipo de pago
-                  </Form.Label>
+                  <Form.Label>Tipo de pago</Form.Label>
                   <Form.Control
                     as="select"
                     value={tipoPago}
@@ -266,9 +260,7 @@ const RegistrarCliente = () => {
                 <h3>Datos de dirección</h3>
                 {/* Calle */}
                 <FormGroupStyled controlId="calle">
-                  <Form.Label >
-                    Calle
-                  </Form.Label>
+                  <Form.Label>Calle</Form.Label>
                   <Form.Control
                     required
                     type="text"
@@ -279,9 +271,7 @@ const RegistrarCliente = () => {
 
                 {/* Numero */}
                 <FormGroupStyled controlId="numero">
-                  <Form.Label>
-                    Número
-                  </Form.Label>
+                  <Form.Label>Número</Form.Label>
                   <Form.Control
                     required
                     type="number"
@@ -292,9 +282,7 @@ const RegistrarCliente = () => {
 
                 {/* Colonia */}
                 <FormGroupStyled controlId="colonia">
-                  <Form.Label>
-                    Colonia
-                  </Form.Label>
+                  <Form.Label>Colonia</Form.Label>
                   <Form.Control
                     type="text"
                     value={colonia}
@@ -304,9 +292,7 @@ const RegistrarCliente = () => {
 
                 {/* Ciudad */}
                 <FormGroupStyled controlId="ciudad">
-                  <Form.Label>
-                      Ciudad
-                  </Form.Label>
+                  <Form.Label>Ciudad</Form.Label>
                   <Form.Control
                     required
                     type="text"
@@ -317,9 +303,7 @@ const RegistrarCliente = () => {
 
                 {/* Municipio */}
                 <FormGroupStyled controlId="municipio">
-                  <Form.Label>
-                    Municipio
-                  </Form.Label>
+                  <Form.Label>Municipio</Form.Label>
                   <Form.Control
                     type="text"
                     value={municipio}
@@ -329,9 +313,7 @@ const RegistrarCliente = () => {
 
                 {/* Codigo postal */}
                 <FormGroupStyled controlId="codigoPostal">
-                  <Form.Label>
-                    C.P
-                  </Form.Label>
+                  <Form.Label>C.P</Form.Label>
                   <Form.Control
                     type="number"
                     value={codigoPostal}
@@ -343,9 +325,7 @@ const RegistrarCliente = () => {
                 <h3>Datos de los precios</h3>
                 {productosCliente.map((p) => (
                   <FormGroupStyled controlId={p.NOMBRE} key={p.id}>
-                    <Form.Label>
-                      PRODUCTO: {p.NOMBRE}
-                    </Form.Label>
+                    <Form.Label>PRODUCTO: {p.NOMBRE}</Form.Label>
                     <Form.Control
                       type="number"
                       value={p.PRECIO}
@@ -361,7 +341,9 @@ const RegistrarCliente = () => {
               </Col>
             </Row>
 
-            <Button className="mt-3" type="submit">Registrar cliente</Button>
+            <Button className="mt-3" type="submit">
+              Registrar cliente
+            </Button>
           </Form>
         </Container>
       </Principal>

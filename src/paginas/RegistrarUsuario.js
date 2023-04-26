@@ -3,7 +3,7 @@ import { Button, Form, Container, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { registrarProducto } from "../actions/productoActions";
-import { toast } from 'react-hot-toast'
+import { toast } from "react-hot-toast";
 import styled from "styled-components";
 import { RESET_PRODUCTO_REGISTRAR } from "../constantes/productoConstantes";
 import { RESET_USUARIO_REGISTRAR } from "../constantes/usuarioConstantes";
@@ -20,12 +20,12 @@ const Principal = styled.div`
     60%,
     rgb(68, 111, 151)
   );
-  
+
   height: 90vh;
   width: 100vw;
   padding: 30px;
   user-select: none;
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,12 +38,12 @@ const Principal = styled.div`
   // Estilos para smarthphone
   @media (max-width: 480px) and (orientation: portrait) {
     height: 90svh;
-    
+
     & input {
       height: 6svh;
     }
 
-    & select{
+    & select {
       height: 6svh;
       padding: 10px;
     }
@@ -57,18 +57,19 @@ const Principal = styled.div`
 // Estilos Form.Group
 const FormGroupStyled = styled(Form.Group)`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   gap: 5px;
   margin-bottom: 5px;
 
   & label {
-     color: white;
-     font-weight: bold;
+    color: white;
+    font-weight: bold;
   }
 
-  & input, select {
-     color: black;
-     font-weight: bold;
+  & input,
+  select {
+    color: black;
+    font-weight: bold;
   }
 `;
 
@@ -94,24 +95,22 @@ const RegistrarUsuario = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [imagen, setImagen] = useState(null);
 
-    // useEffect para mostrar las alertas
-    useEffect(() => {
+  // useEffect para mostrar las alertas
+  useEffect(() => {
+    if (loadingRegistrar) {
+      toast.loading("Registrando usuario");
+    }
 
-      if (loadingRegistrar) {
-        toast.loading('Registrando usuario');
-      }
-  
-      if (successRegistrar) {
-        toast.remove();
-        toast.success('Usuario registrado');
-      }
-      
-      if (errorRegistrar) {
-        toast.dismiss();
-        toast.error('Error al registrar usuario');
-      }
-  
-    }, [successRegistrar, errorRegistrar, loadingRegistrar])
+    if (successRegistrar) {
+      toast.remove();
+      toast.success("Usuario registrado");
+    }
+
+    if (errorRegistrar) {
+      toast.dismiss();
+      toast.error("Error al registrar usuario");
+    }
+  }, [successRegistrar, errorRegistrar, loadingRegistrar]);
 
   useEffect(() => {
     // Si el registro fue correcto, reset productoRegistrar y redireccionar a la pagina de productos
@@ -125,7 +124,7 @@ const RegistrarUsuario = () => {
     e.preventDefault();
 
     if (password1 !== password2) {
-      toast.error('Las contraseñas deben ser iguales', {duration: 1000});
+      toast.error("Las contraseñas deben ser iguales", { duration: 1000 });
     } else {
       const formData = new FormData();
 
@@ -149,76 +148,76 @@ const RegistrarUsuario = () => {
       {/* Esta es la parte que cambia en las paginas */}
       <h1>Registrar usuario</h1>
       <Container>
-      <Form onSubmit={manejarRegistrarUsuario}>
-       <Row>
-        <Col lg={true} md={4}>
-        <FormGroupStyled controlId="nombre">
-          <Form.Label>Nombre</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-          ></Form.Control>
-        </FormGroupStyled>
+        <Form onSubmit={manejarRegistrarUsuario}>
+          <Row>
+            <Col lg={true} md={4}>
+              <FormGroupStyled controlId="nombre">
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                ></Form.Control>
+              </FormGroupStyled>
 
-        <FormGroupStyled controlId="nombreUsuario">
-          <Form.Label>Nombre de usuario</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            value={nombreUsuario}
-            onChange={(e) => setNombreUsuario(e.target.value)}
-          ></Form.Control>
-        </FormGroupStyled>
+              <FormGroupStyled controlId="nombreUsuario">
+                <Form.Label>Nombre de usuario</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  value={nombreUsuario}
+                  onChange={(e) => setNombreUsuario(e.target.value)}
+                ></Form.Control>
+              </FormGroupStyled>
 
-        <FormGroupStyled controlId="password1">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control
-            required
-            type="password"
-            value={password1}
-            onChange={(e) => setPassword1(e.target.value)}
-          ></Form.Control>
-        </FormGroupStyled>
+              <FormGroupStyled controlId="password1">
+                <Form.Label>Contraseña</Form.Label>
+                <Form.Control
+                  required
+                  type="password"
+                  value={password1}
+                  onChange={(e) => setPassword1(e.target.value)}
+                ></Form.Control>
+              </FormGroupStyled>
 
-        <FormGroupStyled controlId="password2">
-          <Form.Label>Confirmar contraseña</Form.Label>
-          <Form.Control
-            required
-            type="password"
-            value={password2}
-            onChange={(e) => setPassword2(e.target.value)}
-          ></Form.Control>
-        </FormGroupStyled>
-        </Col>
+              <FormGroupStyled controlId="password2">
+                <Form.Label>Confirmar contraseña</Form.Label>
+                <Form.Control
+                  required
+                  type="password"
+                  value={password2}
+                  onChange={(e) => setPassword2(e.target.value)}
+                ></Form.Control>
+              </FormGroupStyled>
+            </Col>
 
-        <Col lg={true} md={4}>
-        <FormGroupStyled controlId="isAdmin">
-          <Form.Label>Permisos</Form.Label>
-          <Form.Select
-            value={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.value)}
-          >
-            <option value={true}>ADMINISTRADOR</option>
-            <option value={false}>NO ES ADMINISTRADOR</option>
-          </Form.Select>
-        </FormGroupStyled>
+            <Col lg={true} md={4}>
+              <FormGroupStyled controlId="isAdmin">
+                <Form.Label>Permisos</Form.Label>
+                <Form.Select
+                  value={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.value)}
+                >
+                  <option value={true}>ADMINISTRADOR</option>
+                  <option value={false}>NO ES ADMINISTRADOR</option>
+                </Form.Select>
+              </FormGroupStyled>
 
-        {/* <Form.Group controlId="formImage">
-          <Form.Label>IMAGEN</Form.Label>
-          <Form.Control
-            type="file"
-            onChange={(e) => setImagen(e.target.files[0])}
-          />
-        </Form.Group> */}
-        
-        <Button className="mt-3" type="submit">
-          Registrar usuario
-          </Button>
-          </Col>
-        </Row>
-      </Form>
+              <Form.Group controlId="formImage">
+                <Form.Label>IMAGEN</Form.Label>
+                <Form.Control
+                  type="file"
+                  onChange={(e) => setImagen(e.target.files[0])}
+                />
+              </Form.Group>
+
+              <Button className="mt-3" type="submit">
+                Registrar usuario
+              </Button>
+            </Col>
+          </Row>
+        </Form>
       </Container>
     </Principal>
   );

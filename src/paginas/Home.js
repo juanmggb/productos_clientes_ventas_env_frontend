@@ -21,12 +21,12 @@ const Principal = styled.div`
     60%,
     rgb(68, 111, 151)
   );
-  
+
   height: 90vh;
   width: 100vw;
   padding: 30px;
   user-select: none;
-  
+
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -39,7 +39,7 @@ const Principal = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    
+
     gap: 30px;
   }
 
@@ -49,24 +49,24 @@ const Principal = styled.div`
       width: 50vw;
     }
   }
-  
 `;
 
 // Estilos Form.Group
 const FormGroupStyled = styled(Form.Group)`
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   gap: 5px;
   margin-bottom: 5px;
 
   & label {
-     color: white;
-     font-weight: bold;
+    color: white;
+    font-weight: bold;
   }
 
-  & input, select {
-     color: black;
-     font-weight: bold;
+  & input,
+  select {
+    color: black;
+    font-weight: bold;
   }
 `;
 
@@ -76,20 +76,6 @@ const ImagenUsuario = styled.img`
   border-radius: 40px;
 `;
 
-const Texto = styled.h3`
-  font-size: 30px;
-`;
-
-const LogOut = styled(Button)`
-  font-weight: bold;
-  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
-
-  &:hover {
-    background-color: rgb(30, 60, 120);
-    box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.2);
-  }
-`;
-const usuarioImagen = JSON.parse(localStorage.getItem("imagen"));
 const Home = () => {
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
@@ -104,12 +90,6 @@ const Home = () => {
   const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [imagen, setImagen] = useState("");
-
-  // const usuarioImagen = "../Imagenes/" + username + ".png";
-  const defecto = "../Imagenes/Logo.png";
-  const manejarErrorImagen = (e) => {
-    e.target.src = defecto;
-  };
 
   useEffect(() => {
     // Si el usuario no ha iniciado sesion, redirecciona a la pagina de login
@@ -136,18 +116,11 @@ const Home = () => {
 
   return (
     <Principal>
-        <ImagenUsuario
-              src={`http://192.168.1.108:8000${usuarioImagen}`}
-              onError={manejarErrorImagen}
-      />
+      <ImagenUsuario src={`http://127.0.0.1:8000${imagen}`} />
       <Form>
         <FormGroupStyled>
           <Form.Label>Usuario:</Form.Label>
-          <Form.Control
-            type="text"
-            readOnly
-            value={username}
-          ></Form.Control>
+          <Form.Control type="text" readOnly value={username}></Form.Control>
         </FormGroupStyled>
 
         <FormGroupStyled>

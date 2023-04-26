@@ -1,154 +1,78 @@
 import React, { useEffect } from "react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import styled from "styled-components";
-import useTamañoPantalla from "./useTamañoPantalla";
+
 import { useState } from "react";
-import jwt_decode from "jwt-decode";
-
-const Logo = styled.img`
-  height: 40px;
-  width: 110px;
-  margin-left: ${(props) =>
-    props.ancho > 1200 ? "60%" : props.ancho > 995 ? "40%" : "35%"};
-  display: ${(props) => (props.ancho < 993 ? "none" : "")};
-`;
-
-const Usuario = styled.img`
-  height: 45px;
-  width: 45px;
-  border-radius: 22.5px;
-  display: ${(props) => (props.ancho < 993 ? "none" : "")};
-  margin-left: ${(props) => props.ancho > 1200 ? "65%" : props.ancho > 995 ? "60%" : "55%"};
-`;
-
-const LogoMovil = styled(Logo)`
-  display: ${(props) =>
-    props.ancho < 993 ? (props.estado ? "inline-block" : "none") : "none"};
-  margin-left: 0%;
-  justify-items: left;
-  width: 100px;
-
-  // Estilos de smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    position: relative;
-    left: -15px;
-  }
-`;
-
-const UsuarioMovil = styled(Usuario)`
-  display: ${(props) =>
-    props.ancho < 993 ? (props.estado ? "inline-block" : "none") : "none"};
-  margin: 0;
-
-  @media (max-width: 480px) and (orientation: portrait) {
-    position: relative;
-    right: 0px;
-  }
-`;
-// Estilos del Container
-const ContainerStyled = styled(Container)`
-
-   // Estilos para smartphone
-   @media (max-width: 480px) and (orientation: portrait) {
-    padding: 10px;
-   }
-`;
-
-// Estilos del Navbar 
-const NavbarStyled = styled(Navbar)`
-  height: 10vh;
-  z-index: 1;
-  
-  background-color: #d9e3f1;
-  
-  // Estilos de smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 10;
-   }
-`;
-
-// Estilos del Navbar.Collapse
-const NavbarCollapseStyled = styled(Navbar.Collapse)`
-  background-color: #d9e3f1;
-
-  // Estilos para smartphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    position: relative;
-    padding: 10px 10px 0px 50px;
-    left: -50px;
-    border-radius: 10px;
-    width: 200px;
-  }
-`;
-
-// Estilos de Nav
-const NavStyled = styled(Nav)`
-  background: red;
-`;
 
 const Encabezado = () => {
   const usuarioInfo = useSelector((state) => state.usuarioInfo);
   const { token } = usuarioInfo;
+
   const [username, setUsername] = useState("");
-  const { ancho, alto } = useTamañoPantalla();
-  const [estadoSesion, setEstadoSesion] = useState(false);
+  const [imagen, setImagen] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  // const { ancho, alto } = useTamañoPantalla();
 
   useEffect(() => {
-    if (!token) {
-      setEstadoSesion(false);
-    } else {
-      var decoded = jwt_decode(token);
-      setUsername(decoded.username);
-      setEstadoSesion(true);
+    if (token) {
+      setUsername(JSON.parse(localStorage.getItem("username")));
+      setImagen(JSON.parse(localStorage.getItem("imagen")));
+      setIsAdmin(JSON.parse(localStorage.getItem("isAdmin")));
     }
   }, [token, username]);
 
-  const usuarioImagen = JSON.parse(localStorage.getItem("imagen"));
-  const defecto = "../Imagenes/Logo.png";
-
-  const manejarErrorImagen = (e) => {
-    e.target.src = defecto;
-  };
-
   return (
-    <NavbarStyled expand="lg">
-      <ContainerStyled>
-        <div>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <LinkContainer to="/">
-            <Navbar.Brand>{ancho > 480 ? "OptAppAI" : ""}</Navbar.Brand>
+    <Navbar expand="lg">
+      <Container className="d-flex justify-content-space-between">
+        {/* Imagen de la cuenta */}
+        {token && (
+          <LinkContainer to="/cuenta">
+            <Nav.Link>
+              <Image
+                src={`http://127.0.0.1:8000${imagen}`}
+                alt="imagen de usuario"
+                width="50px"
+                style={{ marginRight: "20px", borderRadius: "50%" }}
+              />
+              {username}
+            </Nav.Link>
           </LinkContainer>
-        </div>
-        <LogoMovil
-          src={"../Imagenes/logo.png"}
-          ancho={ancho}
-          estado={estadoSesion}
-        />
-        <LinkContainer to = '/'>
-          <UsuarioMovil
-            src={`http://192.168.1.108:8000${usuarioImagen}`}
-            onError={manejarErrorImagen}
-            ancho={ancho}
-            estado={estadoSesion}
-          />
+        )}
+
+        {/* Logo de la empresa */}
+        <LinkContainer to="/">
+          <Nav.Link className="text-center">
+            <Image
+              src="http://127.0.0.1:8000/media/imagenes/logo.png"
+              alt="imagen de usuario"
+              width="100px"
+              style={{ marginRight: "20px" }}
+            />
+            Hielo Gran Pacífico
+          </Nav.Link>
         </LinkContainer>
-        <NavbarCollapseStyled id="basic-navbar-nav">
-          <Nav className="me-auto">
+
+        {/* Menu de navegacion */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        <Navbar.Collapse id="basic-navbar-nav" style={{ flexGrow: 0 }}>
+          <Nav className="me-auto mx-5 px-5">
             {!token ? (
               <LinkContainer to="/login">
                 <Nav.Link>Login</Nav.Link>
               </LinkContainer>
             ) : (
               <>
-                <NavDropdown  title="Productos" id="basic-nav-dropdown">
-                  <LinkContainer  to="/productos">
+                <NavDropdown title="Productos" id="basic-nav-dropdown">
+                  <LinkContainer to="/productos">
                     <NavDropdown.Item>Lista de Productos</NavDropdown.Item>
                   </LinkContainer>
-                  <LinkContainer to="/registrar-producto">
-                    <NavDropdown.Item>Registrar Producto</NavDropdown.Item>
-                  </LinkContainer>
+                  {isAdmin && (
+                    <LinkContainer to="/registrar-producto">
+                      <NavDropdown.Item>Registrar Producto</NavDropdown.Item>
+                    </LinkContainer>
+                  )}
                 </NavDropdown>
 
                 <NavDropdown title="Clientes" id="basic-nav-dropdown">
@@ -169,28 +93,26 @@ const Encabezado = () => {
                   </LinkContainer>
                 </NavDropdown>
 
-                <NavDropdown title="Usuarios" id="basic-nav-dropdown" style = {{paddingBottom: '10px'}}>
-                  <LinkContainer to="/usuarios">
-                    <NavDropdown.Item>Lista de Usuarios</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/registrar-usuario">
-                    <NavDropdown.Item>Registrar Usuario</NavDropdown.Item>
-                  </LinkContainer>
-                </NavDropdown>
-
-                <Logo src={"../Imagenes/logo.png"} ancho={ancho} />
-                <Usuario
-                  src={`http://192.168.1.108:8000${usuarioImagen}`}
-                  onError={manejarErrorImagen}
-                    ancho={ancho}
-                  onClick = {() => {}}
-                />
+                {isAdmin && (
+                  <NavDropdown
+                    title="Usuarios"
+                    id="basic-nav-dropdown"
+                    style={{ paddingBottom: "10px" }}
+                  >
+                    <LinkContainer to="/usuarios">
+                      <NavDropdown.Item>Lista de Usuarios</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/registrar-usuario">
+                      <NavDropdown.Item>Registrar Usuario</NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
+                )}
               </>
             )}
           </Nav>
-        </NavbarCollapseStyled>
-      </ContainerStyled>
-    </NavbarStyled>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 
