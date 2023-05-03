@@ -116,7 +116,7 @@ const Home = () => {
 
   return (
     <Principal>
-      <ImagenUsuario src={`http://127.0.0.1:8000${imagen}`} />
+      <ImagenUsuario src={`http://89.116.52.95:8080${imagen}`} />
       <Form>
         <FormGroupStyled>
           <Form.Label>Usuario:</Form.Label>
