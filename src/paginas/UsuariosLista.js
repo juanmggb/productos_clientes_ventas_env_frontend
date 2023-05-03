@@ -252,7 +252,7 @@ const UruariosLista = () => {
                   <td style={{ color: "white" }}>{u.id}</td>
                   <td style={{ color: "white" }}>
                     <ImagenObjeto
-                      src={`http://127.0.0.1:8000/${u.empleado.IMAGEN}`}
+                      src={`http://89.116.52.95:8080/${u.empleado.IMAGEN}`}
                       alt={u.name}
                     />
                   </td>
