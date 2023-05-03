@@ -30,7 +30,7 @@ const Encabezado = () => {
           <LinkContainer to="/cuenta">
             <Nav.Link>
               <Image
-                src={`http://127.0.0.1:8000${imagen}`}
+                src={`http://89.116.52.95:8080${imagen}`}
                 alt="imagen de usuario"
                 width="50px"
                 style={{ marginRight: "20px", borderRadius: "50%" }}
@@ -44,7 +44,7 @@ const Encabezado = () => {
         <LinkContainer to="/">
           <Nav.Link className="text-center">
             <Image
-              src="http://127.0.0.1:8000/media/imagenes/logo.png"
+              src="http://89.116.52.95:8080/media/imagenes/logo.png"
               alt="imagen de usuario"
               width="100px"
               style={{ marginRight: "20px" }}
