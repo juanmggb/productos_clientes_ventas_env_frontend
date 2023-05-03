@@ -181,7 +181,7 @@ function CuentaDetalles() {
           <Row>
             <Col className="col-12 col-lg-6 d-flex justify-content-center">
               <ImgStyled
-                src={`http://127.0.0.1:8000${imagenInicial}`}
+                src={`http://89.116.52.95:8080${imagenInicial}`}
                 alt="Imagen de cuenta"
                 width="200px"
                 className="mx-auto my-auto "
