@@ -255,7 +255,7 @@ const ProductosLista = () => {
                 <td style={{ color: "white" }}>{p.id}</td>
                 <td style={{ color: "white" }}>
                   <ImagenObjeto
-                    src={`http://127.0.0.1:8000/${p.IMAGEN}`}
+                    src={`http://89.116.52.95:8080/${p.IMAGEN}`}
                     alt={p.NOMBRE}
                   />
                 </td>
