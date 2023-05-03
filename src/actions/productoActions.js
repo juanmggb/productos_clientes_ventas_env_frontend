@@ -42,7 +42,7 @@ export const pedirProductosLista = () => async (dispatch, getState) => {
     };
 
     const { data } = await axios.get(
-      "http://127.0.0.1:8000/api/productos/",
+      "http://89.116.52.95:8080/api/productos/",
       config
     );
 
@@ -75,7 +75,7 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.get(
-      `http://127.0.0.1:8000/api/productos/${id}/`,
+      `http://89.116.52.95:8080/api/productos/${id}/`,
       config
     );
 
@@ -103,7 +103,7 @@ export const actualizarProducto =
       };
 
       const { data } = await axios.put(
-        `http://127.0.0.1:8000/api/modificar-producto/${id}/`,
+        `http://89.116.52.95:8080/api/modificar-producto/${id}/`,
         formData,
         config
       );
@@ -136,7 +136,7 @@ export const registrarProducto = (formData) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      "http://127.0.0.1:8000/api/crear-producto/",
+      "http://89.116.52.95:8080/api/crear-producto/",
       formData,
       config
     );
@@ -169,7 +169,7 @@ export const borrarProducto = (id) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.delete(
-      `http://127.0.0.1:8000/api/modificar-producto/${id}/`,
+      `http://89.116.52.95:8080/api/modificar-producto/${id}/`,
       config
     );
 
