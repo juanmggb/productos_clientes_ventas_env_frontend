@@ -117,7 +117,7 @@ const FormularioProductoVenta = ({
             </DatosProducto>
             <ImagenProducto>
               <Imagen
-                src={`http://127.0.0.1:8000${producto.producto_imagen}`}
+                src={`http://89.116.52.95:8080${producto.producto_imagen}`}
               />
             </ImagenProducto>
             <SeleccionadorCantidad>
