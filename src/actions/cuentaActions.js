@@ -23,7 +23,7 @@ export const obtenerCuentaDetalles = () => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.get(
-      `http://127.0.0.1:8000/api/cuenta-detalles/`,
+      `http://89.116.52.95:8080/api/cuenta-detalles/`,
       config
     );
 
@@ -48,7 +48,7 @@ export const actualizarCuenta = (formData) => async (dispatch, getState) => {
       },
     };
     const { data } = await axios.put(
-      `http://127.0.0.1:8000/api/modificar-cuenta/`,
+      `http://89.116.52.95:8080/api/modificar-cuenta/`,
       formData,
       config
     );
