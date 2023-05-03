@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Encabezado from "./componentes/Encabezado";
 import ClienteDetalles from "./paginas/ClienteDetalles";
@@ -19,7 +19,7 @@ import CuentaDetalles from "./paginas/CuentaDetalles";
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <HashRouter>
         <Encabezado />
         <Routes>
           {/* Home */}
@@ -46,7 +46,7 @@ function App() {
           <Route path="/cuenta" element={<CuentaDetalles />} />
         </Routes>
         <Toaster />
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }
