@@ -1,77 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import styled from "styled-components";
-import Loader from "../componentes/Loader";
+import Loader from "../componentes/general/Loader";
 import { registrarCliente } from "../actions/clienteActions";
 import { RESET_CLIENTE_REGISTRAR } from "../constantes/clienteConstantes";
-import { pedirProductosLista } from "../actions/productoActions";
-
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  height: 90vh;
-  width: 100vw;
-  padding: 30px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  & h1,
-  h3 {
-    color: white;
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 90svh;
-
-    & h1 {
-      font-weight: bold;
-    }
-
-    & h3 {
-      font-weight: bold;
-      margin: 20px 0px 10px 0px;
-    }
-  }
-`;
-
-// Estilos Form.Group
-const FormGroupStyled = styled(Form.Group)`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
-
-  & label {
-    color: white;
-    font-weight: bold;
-  }
-
-  & input,
-  select {
-    color: black;
-    font-weight: bold;
-  }
-`;
+import { useForm } from "react-hook-form";
+import Mensaje from "../componentes/general/Mensaje";
+import VentanaFormularioPrecios from "../componentes/RegistrarCliente/VentanaFormularioPrecios";
+import {
+  StyledBoton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledRow,
+} from "./styles/RegistrarCliente.styles";
+import {
+  crearPreciosCliente,
+  useProductos,
+} from "./utilis/RegistrarCliente.utilis";
 
 const RegistrarCliente = () => {
   // Funcion para disparar las acciones
@@ -80,11 +28,11 @@ const RegistrarCliente = () => {
   // Funcion para navegar en la pagina
   const navigate = useNavigate();
 
-  // Obtener el estado desde el Redux store
+  // Obtener lista de productos del Redux
   const productoLista = useSelector((state) => state.productoLista);
   const { loading, productos, error } = productoLista;
 
-  // Obtener el estado desde el Redux store
+  // Obtener el estado registrar cliente del Redux
   const clienteRegistrar = useSelector((state) => state.clienteRegistrar);
   const {
     loading: loadingRegistrar,
@@ -92,21 +40,56 @@ const RegistrarCliente = () => {
     error: errorRegistrar,
   } = clienteRegistrar;
 
-  const [nombre, setNombre] = useState("");
-  const [productosCliente, setProductosCliente] = useState([]);
+  // Custom Hook para precios de productos del cliente
+  const { productosCliente, manejarCambioPrecio } = useProductos(
+    productos,
+    dispatch
+  );
+  // Hook para mostrar precios del cliente
+  const [mostrarPrecios, setMostrarPrecios] = useState(false);
 
-  const [contacto, setContacto] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [tipoPago, setTipoPago] = useState("EFECTIVO");
-  const [calle, setCalle] = useState("");
-  const [numero, setNumero] = useState("");
-  const [colonia, setColonia] = useState("");
-  const [ciudad, setCiudad] = useState("");
-  const [municipio, setMunicipio] = useState("");
-  const [codigoPostal, setCodigoPostal] = useState("");
+  // useForm para validar formulario
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  // useEffect para mostrar las alertas
+  // useEffect para mostrar las alertas de validacion del formulario
+  useEffect(() => {
+    if (errors.ciudad) {
+      toast.dismiss();
+      toast.error(errors.ciudad.message);
+    }
+
+    if (errors.numero) {
+      toast.dismiss();
+      toast.error(errors.numero.message);
+    }
+
+    if (errors.calle) {
+      toast.dismiss();
+      toast.error(errors.calle.message);
+    }
+
+    if (errors.telefono) {
+      toast.dismiss();
+      toast.error(errors.telefono.message);
+    }
+
+    if (errors.nombre) {
+      toast.dismiss();
+      toast.error(errors.nombre.message);
+    }
+  }, [
+    errors.nombre,
+    errors.telefono,
+    errors.calle,
+    errors.numero,
+    errors.ciudad,
+  ]);
+
+  // useEffect para mostrar las alertas de registro cliente
   useEffect(() => {
     if (loadingRegistrar) {
       toast.loading("Registrando cliente");
@@ -115,251 +98,218 @@ const RegistrarCliente = () => {
     if (successRegistrar) {
       toast.remove();
       toast.success("Cliente registrado");
+      // Reset cliente registrar para que no se ejecute este bloque de codigo cada vez que entra a registrar cliente
+      dispatch({ type: RESET_CLIENTE_REGISTRAR });
+      navigate("/clientes");
     }
 
     if (errorRegistrar) {
       toast.dismiss();
       toast.error("Error al registrar cliente");
     }
-  }, [successRegistrar, errorRegistrar, loadingRegistrar]);
+  }, [successRegistrar, errorRegistrar, loadingRegistrar, navigate, dispatch]);
 
-  useEffect(() => {
-    // Si el registro fue correcto, reset clienteRegistrar y redireccionar a la pagina de clientes
-    if (successRegistrar) {
-      dispatch({ type: RESET_CLIENTE_REGISTRAR });
-      navigate("/clientes");
-    }
-
-    if (!productos) {
-      // navigate("/registrar-producto");
-      dispatch(pedirProductosLista());
-    } else {
-      // Esto permite que el nuevo cliente tenga el precio por defecto de todos los productos en la base de datos
-      setProductosCliente(productos);
-    }
-  }, [dispatch, successRegistrar, productos, navigate]);
-
-  const manejarCambioPrecio = (nuevo_precio, productoId) => {
-    // Obtener el index del producto cuyo precio hay que cambiar
-    const indexProducto = productosCliente.findIndex(
-      (producto) => producto.id === productoId
-    );
-
-    // Crear una copia del arreglo de precios
-    const nuevosProductosCliente = [...productosCliente];
-
-    // Actualizar el precio con el index seleccionado
-    nuevosProductosCliente[indexProducto] = {
-      ...productosCliente[indexProducto],
-      PRECIO: nuevo_precio,
-    };
-
-    setProductosCliente(nuevosProductosCliente);
-  };
-
-  const manejarRegistrarCliente = (e) => {
-    e.preventDefault();
-    // Disparar la accion de actualizar cliente
-
+  // Funcion para registrar cliente
+  const manejarRegistrarCliente = (data) => {
     // Esta funcion permite crear un array de precios con el formato que recibe el backend
     const nuevosPreciosCliente = crearPreciosCliente(productosCliente);
 
     dispatch(
       registrarCliente({
-        NOMBRE: nombre,
-        CONTACTO: contacto,
-        TELEFONO: telefono,
-        CORREO: correo,
-        TIPO_PAGO: tipoPago,
+        NOMBRE: data.nombre,
+        CONTACTO: data.contacto,
+        TELEFONO: data.telefono,
+        CORREO: data.correo,
+        TIPO_PAGO: data.tipoPago,
         direccion: {
-          CALLE: calle,
-          NUMERO: numero,
-          COLONIA: colonia,
-          CIUDAD: ciudad,
-          MUNICIPIO: municipio,
-          CP: codigoPostal,
+          CALLE: data.calle,
+          NUMERO: data.numero,
+          COLONIA: data.colonia,
+          CIUDAD: data.ciudad,
+          MUNICIPIO: data.municipio,
+          CP: data.codigoPostal !== "" ? data.codigoPostal : null,
         },
         preciosCliente: nuevosPreciosCliente,
       })
     );
   };
 
-  return loading ? (
-    <Principal>
-      <Loader />
-    </Principal>
-  ) : error ? (
-    <Principal>{toast.error("Error en el servidor")}</Principal>
-  ) : (
+  // Renderizar loading si se estan cargando los clientes
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  // Renderizar mensaje de error si el servidor regresa un error al pedir la lista de clientes
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un error al cargar la lista de clientes
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  return (
     productos && (
-      <Principal>
-        {/* Esta es la parte que cambia en las paginas */}
-        <h1>Registrar cliente</h1>
-        <Container>
-          <Form onSubmit={manejarRegistrarCliente}>
-            <Row>
-              <Col sm={12} md={4}>
-                <h3>Datos del cliente</h3>
+      <>
+        <StyledContainer fluid>
+          <h1>Registrar cliente</h1>
+
+          <Form onSubmit={handleSubmit(manejarRegistrarCliente)}>
+            <StyledRow>
+              <StyledCol md={4}>
                 {/* Nombre */}
-                <FormGroupStyled controlId="nombre">
+                <StyledFormGroup controlId="nombre">
                   <Form.Label>Nombre</Form.Label>
                   <Form.Control
-                    required
+                    {...register("nombre", {
+                      required: "Por favor, introduce el nombre del cliente",
+                    })}
                     type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Contacto */}
-                <FormGroupStyled controlId="contacto">
-                  <Form.Label>Contacto</Form.Label>
+                <StyledFormGroup controlId="contacto">
+                  <Form.Label>Nombre Contacto (Opcional)</Form.Label>
                   <Form.Control
+                    {...register("contacto")}
                     type="text"
-                    value={contacto}
-                    onChange={(e) => setContacto(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Telefono */}
-                <FormGroupStyled controlId="telefono">
+                <StyledFormGroup controlId="telefono">
                   <Form.Label>Telefono</Form.Label>
                   <Form.Control
-                    required
+                    {...register("telefono", {
+                      required: "Por favor, introduce el teléfono del cliente",
+                    })}
                     type="number"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Correo */}
-                <FormGroupStyled controlId="correo">
-                  <Form.Label>Correo</Form.Label>
+                <StyledFormGroup controlId="correo">
+                  <Form.Label>Correo (Opcional)</Form.Label>
                   <Form.Control
-                    required
+                    {...register("correo")}
                     type="email"
-                    value={correo}
-                    onChange={(e) => setCorreo(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Tipo de pago */}
-                <FormGroupStyled controlId="tipoPago">
+                <StyledFormGroup controlId="tipoPago">
                   <Form.Label>Tipo de pago</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={tipoPago}
-                    onChange={(e) => setTipoPago(e.target.value)}
-                  >
+                  <Form.Control {...register("tipoPago")} as="select">
                     <option value="EFECTIVO">EFECTIVO</option>
                     <option value="CREDITO">CREDITO</option>
                   </Form.Control>
-                </FormGroupStyled>
-              </Col>
-              <Col sm={12} md={4}>
-                <h3>Datos de dirección</h3>
+                </StyledFormGroup>
+              </StyledCol>
+              <StyledCol md={4}>
                 {/* Calle */}
-                <FormGroupStyled controlId="calle">
+                <StyledFormGroup controlId="calle">
                   <Form.Label>Calle</Form.Label>
                   <Form.Control
-                    required
+                    {...register("calle", {
+                      required: "Por favor, introduce la calle del cliente",
+                    })}
                     type="text"
-                    value={calle}
-                    onChange={(e) => setCalle(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Numero */}
-                <FormGroupStyled controlId="numero">
-                  <Form.Label>Número</Form.Label>
+                <StyledFormGroup controlId="numero">
+                  <Form.Label>Número Dirección</Form.Label>
                   <Form.Control
-                    required
+                    {...register("numero", {
+                      required: "Por favor, introduce el número en la calle",
+                    })}
                     type="number"
-                    value={numero}
-                    onChange={(e) => setNumero(e.target.value)}
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Colonia */}
-                <FormGroupStyled controlId="colonia">
-                  <Form.Label>Colonia</Form.Label>
+                <StyledFormGroup controlId="colonia">
+                  <Form.Label>Colonia (Opcional)</Form.Label>
                   <Form.Control
+                    {...register("colonia")}
                     type="text"
-                    value={colonia}
-                    onChange={(e) => setColonia(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
-
+                </StyledFormGroup>
+                <StyledBoton
+                  type="button"
+                  onClick={() => setMostrarPrecios(true)}
+                >
+                  Modificar precios
+                </StyledBoton>
+              </StyledCol>
+              <StyledCol md={4}>
                 {/* Ciudad */}
-                <FormGroupStyled controlId="ciudad">
+                <StyledFormGroup controlId="ciudad">
                   <Form.Label>Ciudad</Form.Label>
                   <Form.Control
-                    required
+                    {...register("ciudad", {
+                      required: "Por favor, introduce la ciudad",
+                    })}
                     type="text"
-                    value={ciudad}
-                    onChange={(e) => setCiudad(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Municipio */}
-                <FormGroupStyled controlId="municipio">
-                  <Form.Label>Municipio</Form.Label>
+                <StyledFormGroup controlId="municipio">
+                  <Form.Label>Municipio (Opcional)</Form.Label>
                   <Form.Control
+                    {...register("municipio")}
                     type="text"
-                    value={municipio}
-                    onChange={(e) => setMunicipio(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
+                </StyledFormGroup>
 
                 {/* Codigo postal */}
-                <FormGroupStyled controlId="codigoPostal">
-                  <Form.Label>C.P</Form.Label>
+                <StyledFormGroup controlId="codigoPostal">
+                  <Form.Label>C.P (Opcional)</Form.Label>
                   <Form.Control
+                    {...register("codigoPostal")}
                     type="number"
-                    value={codigoPostal}
-                    onChange={(e) => setCodigoPostal(e.target.value)}
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
-              </Col>
-              <Col sm={12} md={4}>
-                <h3>Datos de los precios</h3>
-                {productosCliente.map((p) => (
-                  <FormGroupStyled controlId={p.NOMBRE} key={p.id}>
-                    <Form.Label>PRODUCTO: {p.NOMBRE}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={p.PRECIO}
-                      onChange={(e) =>
-                        manejarCambioPrecio(
-                          Number(e.target.value),
-                          Number(p.id)
-                        )
-                      }
-                    ></Form.Control>
-                  </FormGroupStyled>
-                ))}
-              </Col>
-            </Row>
-
-            <Button className="mt-3" type="submit">
-              Registrar cliente
-            </Button>
+                </StyledFormGroup>
+                <StyledBoton type="submit">Registrar cliente</StyledBoton>
+              </StyledCol>
+            </StyledRow>
           </Form>
-        </Container>
-      </Principal>
+        </StyledContainer>
+
+        {/* Formulario de precios del cliente */}
+        <VentanaFormularioPrecios
+          productos={productosCliente}
+          mostrarPrecios={mostrarPrecios}
+          manejarCerrarVentana={() => setMostrarPrecios(false)}
+          manejarCambioPrecio={manejarCambioPrecio}
+        />
+      </>
     )
   );
-};
-
-const crearPreciosCliente = (productosCliente) => {
-  const preciosCliente = productosCliente.map((productoCliente) => {
-    const productoId = productoCliente.id;
-    const precioCliente = productoCliente.PRECIO;
-
-    return { productoId, precioCliente };
-  });
-
-  return preciosCliente;
 };
 
 export default RegistrarCliente;

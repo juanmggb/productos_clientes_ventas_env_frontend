@@ -1,103 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Button, Table, Container, Row, Col } from "react-bootstrap";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import styled from "styled-components";
-import {
-  borrarProducto,
-  pedirProductosLista,
-} from "../actions/productoActions";
-import { Icono } from "../styledComponents/alertaEliminar";
 import {
   RESET_PRODUCTO_BORRAR,
   RESET_PRODUCTO_DETALLES,
 } from "../constantes/productoConstantes";
-import ImagenObjeto from "../componentes/ImagenObjeto";
-import { useMediaQuery } from "react-responsive";
-import Loader from "../componentes/Loader";
-import VentanaMostrarProducto from "../componentes/VentanaMostrarProducto";
-
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  height: 90vh;
-  width: 100vw;
-  padding: 0px 10px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  & div {
-    font-size: 1.8em;
-    height: 10vh;
-    padding-top: 10px;
-    color: white;
-  }
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 90svh;
-
-    & div {
-      height: 10vsh;
-      font-weight: bold;
-    }
-  }
-`;
-
-// Estilos de la tabla
-const TableStyled = styled(Table)`
-  & tbody {
-    height: 75svh;
-    display: block;
-
-    overflow: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-
-    color: white;
-  }
-
-  & thead,
-  tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed; /* even columns width , fix width of table too*/
-
-    color: white;
-  }
-
-  & th {
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  & td {
-    text-align: center;
-    vertical-align: middle;
-  }
-`;
+import Loader from "../componentes/general/Loader";
+import VentanaMostrarProducto from "../componentes/ProductosLista/VentanaMostrarProducto";
+import Mensaje from "../componentes/general/Mensaje";
+import ConfirmarBorrarObjeto from "../componentes/general/ConfirmarBorrarObjeto";
+import {
+  StyledCol,
+  StyledContainer,
+  StyledRow,
+} from "./styles/ProductosLista.styles";
+import TablaProductos from "../componentes/ProductosLista/TablaProductos";
+import { useMostrarDetallesProducto } from "./utilis/ProductosLista.utilis";
 
 const ProductosLista = () => {
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
   // Funcion para nevagar en la aplicacion
   const navigate = useNavigate();
-  // Obtener el estado desde el Redux store
+  // Obtener lista de productos del Redux
   const productoLista = useSelector((state) => state.productoLista);
   const { loading, productos, error } = productoLista;
 
-  // Obtener el estado desde el Redux sotore
+  // Obtener el estado borrar producto del Redux
   const productoBorrar = useSelector((state) => state.productoBorrar);
   const {
     loading: loadingBorrar,
@@ -105,16 +35,15 @@ const ProductosLista = () => {
     error: errorBorrar,
   } = productoBorrar;
 
-  const isSmallViewport = useMediaQuery({ maxWidth: 768 });
-  const shouldShow = !isSmallViewport;
+  // Hook para mostrar ventana con detalles del producto
+  const {
+    mostrarProducto,
+    producto,
+    manejarCerrarVentana,
+    manejarMostrarDetallesProducto,
+  } = useMostrarDetallesProducto(dispatch, productos);
 
-  const [mostrarProducto, setMostrarProducto] = useState(false);
-  const [producto, setProducto] = useState({});
-
-  // Get admin permision
-  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
-
-  // useEffect para mostrar las alertas
+  // useEffect para mostrar las alertas de borrar producto
   useEffect(() => {
     if (loadingBorrar) {
       toast.loading("Eliminando producto");
@@ -125,173 +54,79 @@ const ProductosLista = () => {
       toast.success("Producto eliminado exitosamente", {
         duration: 2000,
       });
-    }
-
-    if (errorBorrar) {
-      toast.dismiss();
-      toast.error("Error al eliminar producto", {
-        duration: 2000,
-      });
-    }
-  }, [successBorrar, errorBorrar, loadingBorrar]);
-
-  // Si se eliminó el producto
-  useEffect(() => {
-    if (successBorrar) {
+      // Reset producto borrar para no ejecutar este bloque de codigo cada vez que se ingresa a lista de productos
       dispatch({ type: RESET_PRODUCTO_BORRAR });
     }
 
-    // Si no hay productos, disparar la accion de pedir productos
-    if (!productos) {
-      dispatch(pedirProductosLista());
+    if (errorBorrar) {
+      toast.remove();
+      toast.error("Error al eliminar producto", {
+        duration: 4000,
+      });
     }
-  }, [dispatch, productos, successBorrar]);
+  }, [successBorrar, errorBorrar, loadingBorrar, dispatch]);
 
-  const manejarCerrarVentana = () => {
-    setMostrarProducto(false);
-  };
-
-  const manejarMostrarDetallesProducto = (productoId) => {
-    const clienteSeleccionado = {
-      ...productos.find((c) => c.id === productoId),
-    };
-    setProducto(clienteSeleccionado);
-    setMostrarProducto(true);
-  };
-
+  // Funcion para redireccionar a la pagina del producto
   const manejarProductoDetalles = (id) => {
-    // Redireccionar a la pagina del producto
+    // Resetar informacion de detalles del producto antes de redireccionar
     dispatch({ type: RESET_PRODUCTO_DETALLES });
     navigate(`/productos/${id}`);
   };
 
-  // Funcion para mostrar la alerta de eliminar producto
-  const alertaBorrarProducto = (e, id) => {
+  // Funcion para borrar el producto
+  const manejarBorrarProducto = (e, id) => {
     e.stopPropagation();
-    toast(
-      (t) => (
-        <Container>
-          <Row>Estás seguro de eliminar el producto?</Row>
-          <Row>
-            <Col
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                padding: "5px",
-              }}
-            >
-              <Icono
-                onClick={() => {
-                  dispatch(borrarProducto(id));
-                  toast.dismiss(t.id);
-                }}
-              >
-                <i
-                  class="fa-solid fa-circle-check fa-2xl"
-                  style={{ color: "#67ce00" }}
-                ></i>
-              </Icono>
-            </Col>
-            <Col
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                padding: "5px",
-              }}
-            >
-              <Icono
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  toast.error("Operacion cancelada", { duration: 2000 });
-                }}
-              >
-                <i
-                  class="fa-sharp fa-solid fa-circle-xmark fa-2xl"
-                  style={{ color: "#ff0000" }}
-                ></i>
-              </Icono>
-            </Col>
-          </Row>
-        </Container>
-      ),
-      { duration: 5000 }
-    );
+    toast((t) => <ConfirmarBorrarObjeto id={id} t={t} objeto={"producto"} />, {
+      duration: 5000,
+    });
   };
 
-  return loading ? (
-    <Principal>
-      <Loader />
-    </Principal>
-  ) : error ? (
-    <Principal>{toast.error("Error en el servidor")}</Principal>
-  ) : (
+  // Renderizar loading si se estan cargando los productos
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  // Renderizar mensaje de errors si el servidor regresa un error al pedir la lista de productos
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un error al cargar la lista de productos
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  // Si se obtienen los productos renderizar la tabla de productos
+  return (
     productos && (
-      <Principal>
-        <div>Productos</div>
-        <TableStyled striped hover>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>IMAGEN</th>
+      <>
+        <StyledContainer fluid>
+          <h1>Productos</h1>
+          <StyledRow>
+            <StyledCol>
+              {/* Tabla de productos */}
+              <TablaProductos
+                productos={productos}
+                manejarMostrarDetallesProducto={manejarMostrarDetallesProducto}
+                manejarProductoDetalles={manejarProductoDetalles}
+                manejarBorrarProducto={manejarBorrarProducto}
+              />
+            </StyledCol>
+          </StyledRow>
+        </StyledContainer>
 
-              {shouldShow ? (
-                <>
-                  <th>NOMBRE</th>
-                  <th>CANTIDAD</th>
-                  <th>PRECIO</th>
-                </>
-              ) : null}
-
-              <th>EDITAR</th>
-              {isAdmin && <th>BORRAR</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((p) => (
-              <tr
-                key={p.id}
-                onClick={() => manejarMostrarDetallesProducto(p.id)}
-              >
-                <td style={{ color: "white" }}>{p.id}</td>
-                <td style={{ color: "white" }}>
-                  <ImagenObjeto
-                    src={`http://89.116.52.95:8080/${p.IMAGEN}`}
-                    alt={p.NOMBRE}
-                  />
-                </td>
-                {shouldShow ? (
-                  <>
-                    <td style={{ color: "white" }}>{p.NOMBRE}</td>
-
-                    {/* <td>{`http:/127.0.0.1:8000${p.IMAGEN}`}</td> */}
-                    <td style={{ color: "white" }}>{p.CANTIDAD}</td>
-                    <td style={{ color: "white" }}>{p.PRECIO}</td>
-                  </>
-                ) : null}
-
-                <td>
-                  <Button onClick={() => manejarProductoDetalles(p.id)}>
-                    <i className="fa-solid fa-circle-info"></i>
-                  </Button>
-                </td>
-                {isAdmin && (
-                  <td>
-                    <Button
-                      variant="danger"
-                      onClick={(e) => {
-                        alertaBorrarProducto(e, p.id);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </Button>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </TableStyled>
-
-        {/* Mostrar venta */}
+        {/* Mostrar ventana con detalles del producto */}
         {mostrarProducto && (
           <VentanaMostrarProducto
             producto={producto}
@@ -299,7 +134,7 @@ const ProductosLista = () => {
             manejarCerrarVentana={manejarCerrarVentana}
           />
         )}
-      </Principal>
+      </>
     )
   );
 };

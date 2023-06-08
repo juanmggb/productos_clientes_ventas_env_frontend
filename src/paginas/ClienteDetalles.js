@@ -1,95 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from 'react-hot-toast';
-import styled from "styled-components";
+import { toast } from "react-hot-toast";
 import {
   actualizarCliente,
   obtenerClienteDetalles,
 } from "../actions/clienteActions";
-import Loader from "../componentes/Loader";
+import Loader from "../componentes/general/Loader";
 import {
   RESET_CLIENTE_ACTUALIZAR,
   RESET_CLIENTE_DETALLES,
 } from "../constantes/clienteConstantes";
-
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  height: 90vh;
-  width: 100vw;
-  padding: 30px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-
-  
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  & h1, h3 {
-    color: white;
-  }
-
-  & button {
-    margin: 10px 0px;
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 90svh;
-    gap: 0px;
-
-    & h1 {
-    font-weight: bold;
-    }
-
-    & h3 {
-      font-weight: bold;
-      margin: 20px 0px 10px 0px;
-    }
-  }
-
-  // Estilos pc
-  @media (min-width: 480px) {
-
-    & button {
-      width: 200px;
-    }
-  }
-`;
-
-// Estilos Form.Group
-const FormGroupStyled = styled(Form.Group)`
-  display: flex;
-  flex-direction:column;
-  gap: 5px;
-  margin-bottom: 5px;
-
-  & label {
-     color: white;
-     font-weight: bold;
-  }
-
-  & input, select {
-     color: black;
-     font-weight: bold;
-  }
-`;
-
+import Mensaje from "../componentes/general/Mensaje";
+import { useForm } from "react-hook-form";
+import VentanaFormularioPrecios from "../componentes/RegistrarCliente/VentanaFormularioPrecios";
+import {
+  StyledBoton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledRow,
+} from "./styles/ClienteDetalles.styles";
+import {
+  cambiarCampoNombrePrecios,
+  crearNuevosPreciosCliente,
+  usePrecios,
+} from "./utilis/ClienteDetalles.utilis";
 
 const ClienteDetalles = ({ match }) => {
   // Obtener el id del cliente
@@ -114,89 +51,102 @@ const ClienteDetalles = ({ match }) => {
     error: errorActualizar,
   } = clienteActualizar;
 
-  const [nombre, setNombre] = useState("");
-  const [preciosCliente, setPreciosCliente] = useState([]);
+  const { preciosCliente, setPreciosCliente, manejarCambioPrecio } =
+    usePrecios();
 
-  const [contacto, setContacto] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [tipoPago, setTipoPago] = useState("EFECTIVO");
-  const [calle, setCalle] = useState("");
-  const [numero, setNumero] = useState("");
-  const [colonia, setColonia] = useState("");
-  const [ciudad, setCiudad] = useState("");
-  const [municipio, setMunicipio] = useState("");
-  const [codigoPostal, setCodigoPostal] = useState("");
+  const [mostrarPrecios, setMostrarPrecios] = useState(false);
 
- // useEffect para mostrar las alertas
+  // useForm para validar datos del formulario
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+  // useEffect para mostrar las alertas de validacion del formulario
   useEffect(() => {
+    if (errors.ciudad) {
+      toast.dismiss();
+      toast.error(errors.ciudad.message);
+    }
 
+    if (errors.numero) {
+      toast.dismiss();
+      toast.error(errors.numero.message);
+    }
+
+    if (errors.calle) {
+      toast.dismiss();
+      toast.error(errors.calle.message);
+    }
+
+    if (errors.telefono) {
+      toast.dismiss();
+      toast.error(errors.telefono.message);
+    }
+
+    if (errors.nombre) {
+      toast.dismiss();
+      toast.error(errors.nombre.message);
+    }
+  }, [
+    errors.nombre,
+    errors.telefono,
+    errors.calle,
+    errors.numero,
+    errors.ciudad,
+  ]);
+
+  // useEffect para mostrar las alertas de actualizacion del cliente
+  useEffect(() => {
     if (loadingActualizar) {
-      toast.loading('Actualizando cliente');
+      toast.loading("Actualizando cliente");
     }
 
     if (successActualizar) {
       toast.remove();
-      toast.success('Cliente actualizado');
-    }
-    
-    if (errorActualizar) {
-      toast.dismiss();
-      toast.error('Error al actualizar cliente');
-    }
-
-  }, [successActualizar, errorActualizar, loadingActualizar]) 
-
-  useEffect(() => {
-    // Si la actualizacion fue correcta, reset clienteActualizar y redireccionar a la pagina de clientes
-    if (successActualizar) {
+      toast.success("Cliente actualizado");
+      // Reset cliente actualizar para que no se ejecute este bloque de codigo cada vez que se ingrese a cliente detalles
       dispatch({ type: RESET_CLIENTE_ACTUALIZAR });
       navigate("/clientes");
     }
 
+    if (errorActualizar) {
+      toast.dismiss();
+      toast.error("Error al actualizar cliente");
+    }
+  }, [
+    successActualizar,
+    errorActualizar,
+    loadingActualizar,
+    dispatch,
+    navigate,
+  ]);
+
+  useEffect(() => {
     // Si no hay cliente o el cliente no es el que seleccione, disparar la accion de obtener cliente
     if (!cliente || cliente.id !== Number(clienteId)) {
       dispatch(obtenerClienteDetalles(clienteId));
     } else {
-      setNombre(cliente.NOMBRE);
-
-      setContacto(cliente.CONTACTO);
-      setTelefono(cliente.TELEFONO);
-      setCorreo(cliente.CORREO);
-      setTipoPago(cliente.TIPO_PAGO);
-
-      setCalle(cliente.DIRECCION.CALLE);
-      setNumero(cliente.DIRECCION.NUMERO);
-      setColonia(cliente.DIRECCION.COLONIA);
-      setCiudad(cliente.DIRECCION.CIUDAD);
-      setMunicipio(cliente.DIRECCION.MUNICIPIO);
-      setCodigoPostal(cliente.DIRECCION.CP);
-      // El estado es un arreglo igual al arreglo de envia el backend
-      setPreciosCliente(cliente.precios_cliente);
+      //  reset es una función proporcionada por el useForm que puede utilizarse para establecer nuevos valores por defecto en el formulario en cualquier momento.
+      reset({
+        nombre: cliente.NOMBRE,
+        contacto: cliente.CONTACTO,
+        telefono: cliente.TELEFONO,
+        correo: cliente.CORREO,
+        tipoPago: cliente.TIPO_PAGO,
+        calle: cliente.DIRECCION.CALLE,
+        numero: cliente.DIRECCION.NUMERO,
+        colonia: cliente.DIRECCION.COLONIA,
+        ciudad: cliente.DIRECCION.CIUDAD,
+        municipio: cliente.DIRECCION.MUNICIPIO,
+        codigoPostal: cliente.DIRECCION.CP,
+      });
+      setPreciosCliente(cambiarCampoNombrePrecios(cliente.precios_cliente));
     }
-  }, [dispatch, cliente, clienteId, successActualizar, navigate]);
+  }, [dispatch, cliente, clienteId, navigate, reset, setPreciosCliente]);
 
-  // Esta funcion es necesaria debido a que el estado preciosCliente es una array y no es posible usar setPreciosCliente de forma directa en el formulario
-  const manejarCambioPrecio = (nuevo_precio, precioId) => {
-    // Obtener el index del producto cuyo precio hay que cambiar
-    const indexPrecio = preciosCliente.findIndex(
-      (precio) => precio.id === precioId
-    );
-
-    // Crear una copia del arreglo de precios
-    const nuevosPreciosCliente = [...preciosCliente];
-
-    // Actualizar el precio con el index seleccionado
-    nuevosPreciosCliente[indexPrecio] = {
-      ...preciosCliente[indexPrecio],
-      PRECIO: nuevo_precio,
-    };
-
-    setPreciosCliente(nuevosPreciosCliente);
-  };
-
-  const manejarActualizarCliente = (e) => {
-    e.preventDefault();
+  const manejarActualizarCliente = (data) => {
     // Disparar la accion de actualizar cliente
 
     // Esta funcion permite crear un array de precios con el formato que recibe el backend
@@ -206,19 +156,19 @@ const ClienteDetalles = ({ match }) => {
       actualizarCliente({
         // El id es para el endpoint, no como informacion de actualizacion
         id: clienteId,
-        NOMBRE: nombre,
-        CONTACTO: contacto,
-        TELEFONO: telefono,
-        CORREO: correo,
-        TIPO_PAGO: tipoPago,
+        NOMBRE: data.nombre,
+        CONTACTO: data.contacto,
+        TELEFONO: data.telefono,
+        CORREO: data.correo,
+        TIPO_PAGO: data.tipoPago,
         nuevaDireccion: {
           direccionClienteId: cliente.DIRECCION.id,
-          CALLE: calle,
-          NUMERO: numero,
-          COLONIA: colonia,
-          CIUDAD: ciudad,
-          MUNICIPIO: municipio,
-          CP: codigoPostal,
+          CALLE: data.calle,
+          NUMERO: data.numero,
+          COLONIA: data.colonia,
+          CIUDAD: data.ciudad,
+          MUNICIPIO: data.municipio,
+          CP: data.codigoPostal,
         },
         nuevosPreciosCliente: nuevosPreciosCliente,
       })
@@ -231,178 +181,190 @@ const ClienteDetalles = ({ match }) => {
     navigate("/clientes");
   };
 
-  return loading ? (
-    <Principal><Loader/></Principal>
-  ) : error ? (
-      <Principal>{toast.error('Error en el servidor')}</Principal>
-  ) : (
+  // Renderizar loading si se esta cargando la informacion del cliente
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  // Renderizar mensaje de error si el servidor regresa un error al pedir la informacion del cliente
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un error al cargar la lista de clientes
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  return (
     cliente && (
-      <Principal>
-        {/* Esta es la parte que cambia en las paginas */}
-        <h1>Cliente #{cliente.id}</h1>
-        <Button variant="primary" onClick={manejarRegresar}>
-          Regresar
-            </Button>
-        <Container>
-        <Form onSubmit={manejarActualizarCliente}>
-          <Row>
-            <Col sm={12} md={4}>
-              <h3>Datos del cliente</h3>
-              <FormGroupStyled controlId="nombre">
-                <Form.Label>Nombre</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
+      <>
+        <StyledContainer fluid>
+          <StyledRow>
+            <StyledCol>
+              <h1>Cliente #{cliente.id}</h1>
+              <StyledBoton onClick={manejarRegresar}>Regresar</StyledBoton>
+            </StyledCol>
+          </StyledRow>
 
-              {/* Contacto */}
-              <FormGroupStyled controlId="contacto">
-                <Form.Label>Contacto</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  value={contacto}
-                  onChange={(e) => setContacto(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Telefono */}
-              <FormGroupStyled controlId="telefono">
-                <Form.Label>Telefono</Form.Label>
-                <Form.Control
-                  required
-                  type="number"
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Correo */}
-              <FormGroupStyled controlId="correo">
-                <Form.Label>Correo</Form.Label>
-                <Form.Control
-                  required
-                  type="email"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Tipo de pago */}
-              <FormGroupStyled controlId="tipoPago">
-                <Form.Label>Tipo de pago</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={tipoPago}
-                  onChange={(e) => setTipoPago(e.target.value)}
-                >
-                  <option value="EFECTIVO">EFECTIVO</option>
-                  <option value="CREDITO">CREDITO</option>
-                </Form.Control>
-              </FormGroupStyled>
-            </Col>
-
-            <Col sm={12} md={4}>
-              <h3>Datos de dirección</h3>
-              {/* Calle */}
-              <FormGroupStyled controlId="calle">
-                <Form.Label>Calle</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  value={calle}
-                  onChange={(e) => setCalle(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Numero */}
-              <FormGroupStyled controlId="numero">
-                <Form.Label>Número</Form.Label>
-                <Form.Control
-                  required
-                  type="number"
-                  value={numero}
-                  onChange={(e) => setNumero(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Colonia */}
-              <FormGroupStyled controlId="colonia">
-                <Form.Label>Colonia</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={colonia}
-                  onChange={(e) => setColonia(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Ciudad */}
-              <FormGroupStyled controlId="ciudad">
-                <Form.Label>Ciudad</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  value={ciudad}
-                  onChange={(e) => setCiudad(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Municipio */}
-              <FormGroupStyled controlId="municipio">
-                <Form.Label>Municipio</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={municipio}
-                  onChange={(e) => setMunicipio(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-
-              {/* Codigo postal */}
-              <FormGroupStyled controlId="codigoPostal">
-                <Form.Label>C.P</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={codigoPostal}
-                  onChange={(e) => setCodigoPostal(e.target.value)}
-                ></Form.Control>
-              </FormGroupStyled>
-            </Col>
-
-            <Col sm={12} md={4}>
-              <h3>Datos de los precios</h3>
-              {preciosCliente.map((p) => (
-                <FormGroupStyled controlId={p.producto_nombre} key={p.id}>
-                  <Form.Label>Producto: {p.producto_nombre}</Form.Label>
+          <Form onSubmit={handleSubmit(manejarActualizarCliente)}>
+            <StyledRow>
+              <StyledCol md={4}>
+                <StyledFormGroup controlId="nombre">
+                  <Form.Label>Nombre</Form.Label>
                   <Form.Control
-                    type="number"
-                    value={p.PRECIO}
-                    onChange={(e) =>
-                      manejarCambioPrecio(Number(e.target.value), Number(p.id))
-                    }
+                    {...register("nombre", {
+                      required: "Por favor, introduce el nombre del cliente",
+                    })}
+                    type="text"
+                    autoComplete="off"
                   ></Form.Control>
-                </FormGroupStyled>
-              ))}
-            </Col>
-          </Row>
-          <Button className="mt-3" type="submit">Actualizar cliente</Button>
+                </StyledFormGroup>
+
+                {/* Contacto */}
+                <StyledFormGroup controlId="contacto">
+                  <Form.Label>Nombre Contacto (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("contacto")}
+                    type="text"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Telefono */}
+                <StyledFormGroup controlId="telefono">
+                  <Form.Label>Telefono</Form.Label>
+                  <Form.Control
+                    {...register("telefono", {
+                      required: "Por favor, introduce el teléfono del cliente",
+                    })}
+                    type="number"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Correo */}
+                <StyledFormGroup controlId="correo">
+                  <Form.Label>Correo (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("correo")}
+                    type="email"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Tipo de pago */}
+                <StyledFormGroup controlId="tipoPago">
+                  <Form.Label>Tipo de pago</Form.Label>
+                  <Form.Control {...register("tipoPago")} as="select">
+                    <option value="EFECTIVO">EFECTIVO</option>
+                    <option value="CREDITO">CREDITO</option>
+                  </Form.Control>
+                </StyledFormGroup>
+              </StyledCol>
+
+              <StyledCol md={4}>
+                {/* Calle */}
+                <StyledFormGroup controlId="calle">
+                  <Form.Label>Calle</Form.Label>
+                  <Form.Control
+                    {...register("calle", {
+                      required: "Por favor, introduce la calle del cliente",
+                    })}
+                    type="text"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Numero */}
+                <StyledFormGroup controlId="numero">
+                  <Form.Label>Número</Form.Label>
+                  <Form.Control
+                    {...register("numero", {
+                      required: "Por favor, introduce el número en la calle",
+                    })}
+                    type="number"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Colonia */}
+                <StyledFormGroup controlId="colonia">
+                  <Form.Label>Colonia (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("colonia")}
+                    type="text"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                <StyledBoton
+                  onClick={() => setMostrarPrecios(true)}
+                  type="button"
+                >
+                  Modificar precios
+                </StyledBoton>
+              </StyledCol>
+
+              <StyledCol md={4}>
+                {/* Ciudad */}
+                <StyledFormGroup controlId="ciudad">
+                  <Form.Label>Ciudad</Form.Label>
+                  <Form.Control
+                    {...register("ciudad", {
+                      required: "Por favor, introduce la ciudad",
+                    })}
+                    type="text"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Municipio */}
+                <StyledFormGroup controlId="municipio">
+                  <Form.Label>Municipio (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("municipio")}
+                    type="text"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Codigo postal */}
+                <StyledFormGroup controlId="codigoPostal">
+                  <Form.Label>C.P (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("codigoPostal")}
+                    type="number"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                <StyledBoton type="submit">Actualizar cliente</StyledBoton>
+              </StyledCol>
+            </StyledRow>
           </Form>
-        </Container>
-      </Principal>
+        </StyledContainer>
+
+        {/* Formulario de precios del cliente */}
+        <VentanaFormularioPrecios
+          productos={preciosCliente}
+          mostrarPrecios={mostrarPrecios}
+          manejarCerrarVentana={() => setMostrarPrecios(false)}
+          manejarCambioPrecio={manejarCambioPrecio}
+        />
+      </>
     )
   );
-};
-
-const crearNuevosPreciosCliente = (preciosCliente) => {
-  const nuevosPreciosCliente = preciosCliente.map((precioCliente) => {
-    const precioClienteId = precioCliente.id;
-    const nuevoPrecioCliente = precioCliente.PRECIO;
-
-    return { precioClienteId, nuevoPrecioCliente };
-  });
-
-  return nuevosPreciosCliente;
 };
 
 export default ClienteDetalles;

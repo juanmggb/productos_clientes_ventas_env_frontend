@@ -1,109 +1,24 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast, Toaster } from 'react-hot-toast';
 import { actualizarVenta, obtenerVentaDetalles } from "../actions/ventaActions";
-import VentanaMostrarVentaActualizar from "../componentes/VentanaMostrarVentaActualizar";
+
 import {
   RESET_VENTA_ACTUALIZAR,
   RESET_VENTA_DETALLES,
 } from "../constantes/ventaConstantes";
-
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  width: 100vw;
-  height: 90vh;
-  padding: 30px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  & h1 {
-    color: white;
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-  align-items: center;
-  gap: 30px;
-
-  & h1 {
-    font-weight: bold;
-  }
-  }
-`;
-
-// Estilos de los botones
-const ButtonStyled = styled(Button)`
-  height: 70px;
-  width: 180px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: rgb(217, 227, 241);
-  box-shadow: 4px 3px 10px 3px rgba(81, 141, 197, 0.6);
-
-  &:hover:enabled {
-    background-color: white;
-    color: black;
-    box-shadow: 4px 3px 10px 3px rgba(81, 141, 197, 0.6);
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 50px;
-    width: 120px
-  }
-`;
-
-// Estilos del formulario
-const FormStyled = styled(Form)`
-  height: 200px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 150px;
-
-    & button{
-      height: 50px;
-      width: 50vw;
-    }
-  }
-
-`;
-
-// Estilos del select del formulario
-const FormSelectStyled = styled(Form.Select)`
-  width: 50vw;
-
-  color: black;
-  font-weight: bold;
-
-  box-shadow: none;
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    width: 70vw;
-  }
-`;
+import Mensaje from "../componentes/general/Mensaje";
+import Loader from "../componentes/general/Loader";
+import VentanaMostrarVentaActualizar from "../componentes/VentaDetalles/VentanaMostrarVentaActualizar";
+import { toast } from "react-hot-toast";
+import {
+  StyledBoton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledRow,
+} from "./styles/VentaDetalles.styles";
+import { Form } from "react-bootstrap";
 
 const VentaDetalles = ({ match }) => {
   // Obtener el id de la venta
@@ -132,33 +47,34 @@ const VentaDetalles = ({ match }) => {
 
   const [mostrarReporte, setMostrarReporte] = useState(false);
 
-  // Toast components
-  // Modificar toast en caso de que sea exitosa la actualizacion
-  const actualizacionExitosa = () => {
-    toast.remove();
-    toast.success('Actualizacion exitosa', {
-        id: 'toastActualizando'
-      });
-  }
-
+  // useEffect para cargar datos de venta
   useEffect(() => {
-    // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
-    if (reporteActualizar) {
-      setMostrarReporte(true);
-      actualizacionExitosa();
-    }
-    
     // Si no hay venta o la venta no es la que seleccione, disparar la accion de
     // obtener venta
     if (!venta || venta.id !== Number(ventaId)) {
       dispatch(obtenerVentaDetalles(ventaId));
-    } else if (venta.STATUS === "CANCELADO" || venta.STATUS === "REALIZADO") {
-      alert("No es posible modificar el STATUS de la venta");
-      navigate("/ventas");
     } else {
       setStatus(venta.STATUS);
     }
-  }, [dispatch, venta, ventaId, reporteActualizar, navigate]);
+  }, [venta, dispatch, ventaId]);
+
+  // useEffect para mostrar reporte de actualizacion
+  useEffect(() => {
+    if (loadingActualizar) {
+      toast.remove();
+      toast.loading("Actualizando venta");
+    }
+
+    if (errorActualizar) {
+      toast.dismiss();
+      toast.error("Error al actualizar venta");
+    }
+    // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
+    if (reporteActualizar) {
+      toast.remove();
+      setMostrarReporte(true);
+    }
+  }, [reporteActualizar, errorActualizar, loadingActualizar]);
 
   const manejarActualizarVenta = (e) => {
     e.preventDefault();
@@ -174,6 +90,7 @@ const VentaDetalles = ({ match }) => {
 
   const manejarCerrarVentana = () => {
     setMostrarReporte(false);
+    // Reset venta actualizar para no mostrar VentanaMostrarVentaActualizar cada vez que se entra a venta detalles
     dispatch({ type: RESET_VENTA_ACTUALIZAR });
     navigate("/ventas");
   };
@@ -184,52 +101,71 @@ const VentaDetalles = ({ match }) => {
     navigate("/ventas");
   };
 
-  return loading ? (
-    <Principal>
-    </Principal>
-  ) : error ? (
-        <Principal>
-          {toast.error('Error en el servidor')}
-        </Principal>
-  ) : (
-        venta && (
-        <Principal>
-            {loadingActualizar && (
-              toast.loading('Actualizando venta', {id: 'toastActualizando'})
-            )}
-            {errorActualizar && (
-              toast.error('Error al actualizar venta', {id: 'toastActualizando'})
-            )}
-        {/* Esta es la parte que cambia en las paginas */}
-          <h1>Venta #{venta.id}</h1>
-          <ButtonStyled variant="primary" onClick={manejarRegresar}>
-            Regresar
-          </ButtonStyled>
-          <FormStyled onSubmit={manejarActualizarVenta}>
-            <Form.Group controlId="status">
-                  <Form.Label style={{color: "white"}}>STATUS</Form.Label>
-              <FormSelectStyled
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="PENDIENTE">Pendiente</option>
-                <option value="REALIZADO">Realizado</option>
-                <option value="CANCELADO">Cancelado</option>
-              </FormSelectStyled>
-            </Form.Group>
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
 
-            <ButtonStyled type="submit">Actualizar venta</ButtonStyled>
-          </FormStyled>
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un problema al cargar la informacion de la venta
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
 
-            {/* Mostrar venta */}
-            {mostrarReporte && (
-              <VentanaMostrarVentaActualizar
-                reporteActualizar={reporteActualizar}
-                mostrarReporte={mostrarReporte}
-                manejarCerrarVentana={manejarCerrarVentana}
-              />
-            )}
-       </Principal>
+  return (
+    venta && (
+      <>
+        <StyledContainer fluid>
+          <StyledRow>
+            <StyledCol md={6}>
+              <h1>Venta #{venta.id}</h1>
+              <StyledBoton variant="primary" onClick={manejarRegresar}>
+                Regresar
+              </StyledBoton>
+            </StyledCol>
+          </StyledRow>
+          <Form onSubmit={manejarActualizarVenta}>
+            <StyledRow>
+              <StyledCol>
+                <StyledFormGroup controlId="status">
+                  <Form.Label style={{ color: "white" }}>STATUS</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="REALIZADO">Realizado</option>
+                    <option value="CANCELADO">Cancelado</option>
+                  </Form.Control>
+                </StyledFormGroup>
+                <StyledBoton type="submit">Actualizar venta</StyledBoton>
+              </StyledCol>
+            </StyledRow>
+          </Form>
+        </StyledContainer>
+
+        {mostrarReporte && (
+          <VentanaMostrarVentaActualizar
+            reporteActualizar={reporteActualizar}
+            mostrarReporte={mostrarReporte}
+            manejarCerrarVentana={manejarCerrarVentana}
+          />
+        )}
+      </>
     )
   );
 };

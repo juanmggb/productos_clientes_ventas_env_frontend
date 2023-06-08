@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Row, Col, Container } from "react-bootstrap";
+import { Form, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import styled from "styled-components";
 import {
   actualizarProducto,
   obtenerProductoDetalles,
@@ -12,63 +11,15 @@ import {
   RESET_PRODUCTO_ACTUALIZAR,
   RESET_PRODUCTO_DETALLES,
 } from "../constantes/productoConstantes";
-import Loader from "../componentes/Loader";
-
-// Estilos CSS con styled components
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  height: 90vh;
-  width: 100vw;
-  padding: 30px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  & h1 {
-    color: white;
-  }
-
-  & button {
-    margin: 10px 0px;
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 90svh;
-
-    & h1 {
-      font-weight: bold;
-    }
-  }
-
-  // Estilos pc
-  @media (min-width: 480px) {
-    gap: 30px;
-
-    & button {
-      width: 200px;
-    }
-  }
-`;
-
-// Estilos Form.Group
-const FormGroupStyled = styled(Form.Group)`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
-`;
+import Loader from "../componentes/general/Loader";
+import Mensaje from "../componentes/general/Mensaje";
+import {
+  StyledBoton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledRow,
+} from "./styles/ProductoDetalles.styles";
 
 const ProductoDetalles = ({ match }) => {
   // Obtener el id del producto
@@ -109,21 +60,24 @@ const ProductoDetalles = ({ match }) => {
     if (successActualizar) {
       toast.remove();
       toast.success("Producto actualizado");
+      // Reset producto actualizar para que no se ejecute este bloque de codigo cada vez que se entra a producto detalles
+      dispatch({ type: RESET_PRODUCTO_ACTUALIZAR });
+      navigate("/productos");
     }
 
     if (errorActualizar) {
       toast.dismiss();
       toast.error("Error al actualizar");
     }
-  }, [successActualizar, errorActualizar, loadingActualizar]);
+  }, [
+    successActualizar,
+    errorActualizar,
+    loadingActualizar,
+    dispatch,
+    navigate,
+  ]);
 
   useEffect(() => {
-    // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
-    if (successActualizar) {
-      dispatch({ type: RESET_PRODUCTO_ACTUALIZAR });
-      navigate("/productos");
-    }
-
     // Si no hay producto o el producto no es el que seleccione, disparar la accion de
     // obtener producto
     if (!producto || producto.id !== Number(productoId)) {
@@ -136,16 +90,14 @@ const ProductoDetalles = ({ match }) => {
     }
   }, [dispatch, producto, productoId, successActualizar, navigate]);
 
-  // Get admin permision
-  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
-
   const manejarActualizarProducto = (e) => {
     e.preventDefault();
     // Disparar la accion de actualizar producto
 
     if (!isAdmin && cantidad < cantidadInicial) {
-      alert(
-        `Solo un administrador puede reducir el número de productos. Ingresa un valo superior a la cantidad inicial ${cantidadInicial}`
+      toast.dismiss();
+      toast.error(
+        `Solo un administrador puede reducir el número de productos. Por favor ingresa un valor superior a la cantidad inicial ${cantidadInicial}`
       );
     } else {
       const formData = new FormData();
@@ -166,105 +118,131 @@ const ProductoDetalles = ({ match }) => {
     navigate("/productos");
   };
 
-  return loading ? (
-    <Principal>
-      <Loader />
-    </Principal>
-  ) : error ? (
-    <Principal>{toast.error("Error en el servidor")}</Principal>
-  ) : (
-    producto && (
-      <Principal>
-        {/* Esta es la parte que cambia en las paginas */}
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+  // const isAdmin = false;
+
+  // Renderizar loading si se estan cargando la informacion del producto
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  // Renderizar mensaje de errors si el servidor regresa un error al pedir la informacion del producto
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un error al cargar la informacion del producto
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  if (isAdmin && producto)
+    return (
+      <StyledContainer fluid>
         <h1>Producto #{producto.id}</h1>
-        <Button onClick={manejarRegresar}>Regresar</Button>
-        {isAdmin ? (
-          <Container>
-            <Form onSubmit={manejarActualizarProducto}>
-              <Row>
-                <Col lg={true} md={4}>
-                  <FormGroupStyled controlId="nombre">
-                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                      Nombre
-                    </Form.Label>
-                    <Form.Control
-                      style={{ color: "black", fontWeight: "bold" }}
-                      type="text"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                    ></Form.Control>
-                  </FormGroupStyled>
+        <Row>
+          <StyledCol>
+            <StyledBoton onClick={manejarRegresar}>Regresar</StyledBoton>
+          </StyledCol>
+        </Row>
+        <Form onSubmit={manejarActualizarProducto}>
+          <StyledRow>
+            <StyledCol md={6}>
+              <StyledFormGroup controlId="nombre">
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={nombre}
+                  autoComplete="off"
+                  onChange={(e) => setNombre(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
 
-                  <FormGroupStyled controlId="cantidad">
-                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                      Cantidad
-                    </Form.Label>
-                    <Form.Control
-                      style={{ color: "black", fontWeight: "bold" }}
-                      type="number"
-                      value={cantidad}
-                      onChange={(e) => setCantidad(e.target.value)}
-                    ></Form.Control>
-                  </FormGroupStyled>
-                </Col>
+              <StyledFormGroup controlId="cantidad">
+                <Form.Label style={{ color: "white", fontWeight: "bold" }}>
+                  Cantidad
+                </Form.Label>
+                <Form.Control
+                  style={{ color: "black", fontWeight: "bold" }}
+                  type="number"
+                  value={cantidad}
+                  onChange={(e) => setCantidad(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
+            </StyledCol>
 
-                <Col lg={true} md={4}>
-                  <FormGroupStyled controlId="precio">
-                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                      Precio
-                    </Form.Label>
-                    <Form.Control
-                      style={{ color: "black", fontWeight: "bold" }}
-                      type="number"
-                      value={precio}
-                      onChange={(e) => setPrecio(e.target.value)}
-                    ></Form.Control>
-                  </FormGroupStyled>
+            <StyledCol md={6}>
+              <StyledFormGroup controlId="precio">
+                <Form.Label>Precio</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={precio}
+                  onChange={(e) => setPrecio(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
 
-                  <FormGroupStyled controlId="imagen">
-                    <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                      Imagen
-                    </Form.Label>
-                    <Form.Control
-                      type="file"
-                      onChange={(e) => setImagen(e.target.files[0])}
-                    ></Form.Control>
-                  </FormGroupStyled>
+              <StyledFormGroup controlId="imagen">
+                <Form.Label>Imagen</Form.Label>
+                <Form.Control
+                  type="file"
+                  onChange={(e) => setImagen(e.target.files[0])}
+                ></Form.Control>
+              </StyledFormGroup>
+            </StyledCol>
+          </StyledRow>
+          <Row>
+            <StyledCol>
+              <StyledBoton type="submit">Actualizar producto</StyledBoton>
+            </StyledCol>
+          </Row>
+        </Form>
+      </StyledContainer>
+    );
 
-                  <Button type="submit">Actualizar producto</Button>
-                </Col>
-              </Row>
-            </Form>
-          </Container>
-        ) : (
-          <Form onSubmit={manejarActualizarProducto}>
-            <Row>
-              <Col ms={12}>
-                <FormGroupStyled controlId="cantidad">
-                  <Form.Label
-                    style={{
-                      color: "white",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Cantidad
-                  </Form.Label>
-                  <Form.Control
-                    style={{ color: "black", fontWeight: "bold" }}
-                    type="number"
-                    value={cantidad}
-                    min={cantidad}
-                    onChange={(e) => setCantidad(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
-                <Button type="submit">Actualizar producto</Button>
-              </Col>
-            </Row>
-          </Form>
-        )}
-      </Principal>
-    )
-  );
+  if (producto)
+    return (
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <h1>Producto #{producto.id}</h1>
+            <StyledBoton onClick={manejarRegresar}>Regresar</StyledBoton>
+          </StyledCol>
+        </StyledRow>
+
+        <Form onSubmit={manejarActualizarProducto}>
+          <StyledRow>
+            <StyledCol>
+              <StyledFormGroup controlId="cantidad">
+                <Form.Label>Cantidad</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={cantidad}
+                  min={cantidad}
+                  onChange={(e) => setCantidad(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
+            </StyledCol>
+          </StyledRow>
+
+          <StyledRow>
+            <StyledCol>
+              <StyledBoton type="submit">Actualizar producto</StyledBoton>
+            </StyledCol>
+          </StyledRow>
+        </Form>
+      </StyledContainer>
+    );
 };
 
 export default ProductoDetalles;

@@ -1,111 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container, Form, FormGroup, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  actualizarCuenta,
-  obtenerCuentaDetalles,
-} from "../actions/cuentaActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
+import { actualizarCuenta } from "../actions/cuentaActions";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { logout } from "../actions/usuarioActions";
-import styled from "styled-components";
+import { logout } from "../actions/sesionActions";
 
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  overflow: scroll;
-
-  height: 100vh;
-  width: 100vw;
-  padding: 30px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 100vh;
-
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-
-    gap: 30px;
-  }
-
-  // Estilos para pc
-  @media (min-width: 480px) {
-    & div {
-      width: 50vw;
-    }
-  }
-`;
-
-// Estilos FormGroupStyled
-const FormGroupStyled = styled(Form.Group)`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
-
-  & label {
-    color: white;
-    font-weight: bold;
-  }
-
-  & input,
-  select {
-    color: black;
-    font-weight: bold;
-  }
-`;
-
-const ImgStyled = styled.img`
-  /* borderRadius: "50%", marginTop: "80px" */
-  border-radius: 50%;
-  margin-top: 100px !important;
-`;
+import { RESET_CUENTA_UPDATE } from "../constantes/cuentaConstantes";
+import { useForm } from "react-hook-form";
+import {
+  StyledButton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledImageUser,
+  StyledRow,
+} from "./styles/CuentaDetalles.styles";
+import { BASE_URL } from "../constantes/constantes";
 
 function CuentaDetalles() {
+  // Function para disparar las acciones
   const dispatch = useDispatch();
 
+  // Funcion para navegar en la app
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  // useForm para validar formulario
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      username: JSON.parse(localStorage.getItem("username")),
+      nombre: JSON.parse(localStorage.getItem("name")),
+      isAdmin: JSON.parse(localStorage.getItem("isAdmin")),
+    },
+  });
 
-  const [password1, setPassword1] = useState("");
-  const [password2, setPassword2] = useState("");
-
-  const [imagen, setImagen] = useState("");
-
-  const cuentaDetalles = useSelector((state) => state.cuentaDetalles);
-
-  const { loading, cuenta, error } = cuentaDetalles;
-
+  // Obtener actualizar cuenta desde el Redux
   const cuentaActualizar = useSelector((state) => state.cuentaActualizar);
-
   const {
     loading: loadingActualizar,
     success: successActualizar,
     error: errorActualizar,
   } = cuentaActualizar;
 
-  // useEffect para mostrar las alertas
+  // useEffect para mostrar las alertas de actualizacion
   useEffect(() => {
     if (loadingActualizar) {
       toast.loading("Actualizando cuenta");
@@ -122,151 +63,117 @@ function CuentaDetalles() {
     }
   }, [successActualizar, errorActualizar, loadingActualizar]);
 
+  // useEffect para mostrar las alertas de validacion del formulario
+  useEffect(() => {
+    if (errors.nombre) {
+      toast.dismiss();
+      toast.error(errors.nombre.message);
+    }
+
+    if (errors.username) {
+      toast.dismiss();
+      toast.error(errors.username.message);
+    }
+  }, [errors.nombre, errors.username]);
+
+  const [imagenCuenta, setImagenCuenta] = useState("");
+
+  // useEffect para obtener imagen de la cuenta al cargar el componente por primera vez
+  useEffect(() => {
+    // Obtener imagen del usuario desde el loccalStorage
+    setImagenCuenta(JSON.parse(localStorage.getItem("imagen")));
+  }, []);
+
+  // useEffect para redireccionar usuario si la cuenta ha sido actualizada
   useEffect(() => {
     if (successActualizar) {
-      // dispatch({ type: RESET_CUENTA_DETALLES });
-      // dispatch({ type: RESET_CUENTA_UPDATE });
-      // navigate("/usuarios");
+      dispatch({ type: RESET_CUENTA_UPDATE });
       dispatch(logout());
     }
+  }, [dispatch, navigate, successActualizar]);
 
-    if (!cuenta) {
-      dispatch(obtenerCuentaDetalles());
-    } else {
-      setUsername(cuenta.username);
-      setNombre(cuenta.name);
-      setIsAdmin(cuenta.is_admin);
-    }
-  }, [cuenta, dispatch, navigate, successActualizar]);
-
-  const imagenInicial = JSON.parse(localStorage.getItem("imagen"));
-
-  const manejarActualizarCuenta = (e) => {
-    e.preventDefault();
-
-    if (password1 !== password2) {
-      alert("Las contraseñas deben ser iguales");
+  const manejarActualizarCuenta = (data) => {
+    if (data.password1 !== data.password2) {
+      toast.dismiss();
+      toast.error("Las contraseñas deben ser iguales");
     } else {
       const formData = new FormData();
 
-      formData.append("username", username);
-      formData.append("name", nombre);
-      formData.append("is_admin", isAdmin);
-      if (imagen) {
-        formData.append("IMAGEN", imagen);
+      formData.append("username", data.username);
+      formData.append("name", data.nombre);
+      formData.append("is_admin", data.isAdmin);
+      if (data.imagen[0]) {
+        formData.append("IMAGEN", data.imagen[0]);
       }
 
-      if (password1) {
-        formData.append("password", password1);
+      if (data.password1) {
+        formData.append("password", data.password1);
       }
-
-      console.log("FormData:");
-      formData.forEach((value, key) => {
-        console.log(key + ": " + value);
-      });
+      // Disparar la accion para actualizar cuenta
       dispatch(actualizarCuenta(formData));
     }
   };
 
-  return loading ? (
-    <Principal>
-      <Loader />
-    </Principal>
-  ) : error ? (
-    <Principal>{toast.error("Error en el servidor")}</Principal>
-  ) : (
-    cuenta && (
-      <Principal>
-        <Container>
-          <Row>
-            <Col className="col-12 col-lg-6 d-flex justify-content-center">
-              <ImgStyled
-                src={`http://89.116.52.95:8080${imagenInicial}`}
-                alt="Imagen de cuenta"
-                width="200px"
-                className="mx-auto my-auto "
-              />
-            </Col>
-            <Col className="col-12 col-lg-6 d-flex justify-content-center align-content-center">
-              <Form onSubmit={manejarActualizarCuenta}>
-                <FormGroupStyled controlId="username" className="mb-3">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    NOMBRE DE USUARIO
-                  </Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+  return (
+    <StyledContainer fluid>
+      <StyledRow>
+        <StyledCol md={6}>
+          <StyledImageUser
+            src={`${BASE_URL}${imagenCuenta}`}
+            alt="Imagen de cuenta"
+          />
+        </StyledCol>
 
-                <FormGroupStyled controlId="nombre" className="mb-3">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    NOMBRE
-                  </Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+        <StyledCol md={6}>
+          <Form onSubmit={handleSubmit(manejarActualizarCuenta)}>
+            <StyledFormGroup controlId="username">
+              <Form.Label>NOMBRE DE USUARIO</Form.Label>
+              <Form.Control
+                {...register("username", {
+                  required: "Por favor, introduce el nombre de usuario",
+                })}
+                type="text"
+                autoComplete="off"
+              ></Form.Control>
+            </StyledFormGroup>
 
-                {/* <FormGroup controlId="isAdmin" className="mb-3">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    Permisos
-                  </Form.Label>
-                  <Form.Select
-                    value={isAdmin}
-                    onChange={(e) => setIsAdmin(e.target.value)}
-                  >
-                    <option value={true}>ADMINISTRADOR</option>
-                    <option value={false}>NO ES ADMINISTRADOR</option>
-                  </Form.Select>
-                </FormGroup> */}
+            <StyledFormGroup controlId="nombre">
+              <Form.Label>NOMBRE</Form.Label>
+              <Form.Control
+                {...register("nombre", {
+                  required: "Por favor, introduce el nombre",
+                })}
+                type="text"
+                autoComplete="off"
+              ></Form.Control>
+            </StyledFormGroup>
 
-                <FormGroupStyled controlId="password1" className="mb-3">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    CONTRASEÑA (OPCIONAL)
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={password1}
-                    onChange={(e) => setPassword1(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+            <StyledFormGroup controlId="password1">
+              <Form.Label>CONTRASEÑA (OPCIONAL)</Form.Label>
+              <Form.Control
+                {...register("password1")}
+                type="password"
+              ></Form.Control>
+            </StyledFormGroup>
 
-                <FormGroupStyled controlId="password2" className="mb-3">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    CONFIRMAR CONTRASEÑA (OPCIONAL)
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={password2}
-                    onChange={(e) => setPassword2(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+            <StyledFormGroup controlId="password2">
+              <Form.Label>CONFIRMAR CONTRASEÑA (OPCIONAL)</Form.Label>
+              <Form.Control
+                {...register("password2")}
+                type="password"
+              ></Form.Control>
+            </StyledFormGroup>
 
-                <FormGroupStyled controlId="formImage" className="mb-5">
-                  <Form.Label style={{ color: "white", fontWeight: "bold" }}>
-                    IMAGEN (OPCIONAL)
-                  </Form.Label>
-                  <Form.Control
-                    type="file"
-                    onChange={(e) => setImagen(e.target.files[0])}
-                  />
-                </FormGroupStyled>
+            <StyledFormGroup controlId="formImage">
+              <Form.Label>IMAGEN (OPCIONAL)</Form.Label>
+              <Form.Control {...register("imagen")} type="file" />
+            </StyledFormGroup>
 
-                <Button type="submit" className="mb-5">
-                  Actualizar Cuenta
-                </Button>
-              </Form>
-            </Col>
-          </Row>
-        </Container>
-      </Principal>
-    )
+            <StyledButton type="submit">Actualizar Cuenta</StyledButton>
+          </Form>
+        </StyledCol>
+      </StyledRow>
+    </StyledContainer>
   );
 }
 

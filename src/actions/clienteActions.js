@@ -10,7 +10,6 @@ import {
   REQUEST_CLIENTE_DETALLES,
   REQUEST_CLIENTE_LISTA,
   REQUEST_CLIENTE_REGISTRAR,
-  RESET_CLIENTE_DETALLES,
   RESET_CLIENTE_LISTA,
   SUCCESS_CLIENTE_ACTUALIZAR,
   SUCCESS_CLIENTE_BORRAR,
@@ -19,17 +18,21 @@ import {
   SUCCESS_CLIENTE_REGISTRAR,
 } from "../constantes/clienteConstantes";
 import { RESET_VENTA_LISTA } from "../constantes/ventaConstantes";
-import { actualizarAccessToken } from "./usuarioActions";
+import { actualizarAccessToken } from "./sesionActions";
+import { BASE_URL } from "../constantes/constantes";
 
 // Creador de acciones para pedir los clientes del backend
 export const pedirClientesLista = () => async (dispatch, getState) => {
   dispatch({ type: REQUEST_CLIENTE_LISTA });
 
+  // Intentar pedir lista de productos al backend
   try {
+    // Obtener el token desde el Redux store
     const {
       usuarioInfo: { token },
     } = getState();
 
+    // Crear header con el tipo de datos que se envia y el token para autenticacio
     const config = {
       headers: {
         "Content-type": "application/json",
@@ -37,20 +40,16 @@ export const pedirClientesLista = () => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.get(
-      "http://89.116.52.95:8080/api/clientes/",
-      config
-    );
+    // Recibir la respuesta del backend y guardarla en data
+    const { data } = await axios.get(`${BASE_URL}api/clientes/`, config);
 
     dispatch({ type: SUCCESS_CLIENTE_LISTA, payload: data });
-    // Guardar los clientes en el localStorage
-    localStorage.setItem("clientes", JSON.stringify(data));
   } catch (error) {
-    dispatch({ type: FAIL_CLIENTE_LISTA, payload: error.message });
-
-    // Redirect user to "/" page if error is due to expired token
+    // Si el backend responde con un error 401 (no autorizado) intentar actualizar el token
     if (error.response && error.response.status === 401) {
-      dispatch(actualizarAccessToken("/productos"));
+      dispatch(actualizarAccessToken(pedirClientesLista));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_LISTA, payload: error.message });
     }
   }
 };
@@ -59,25 +58,32 @@ export const pedirClientesLista = () => async (dispatch, getState) => {
 export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_CLIENTE_DETALLES });
 
+  // Intentar pedir cliente al backend
   try {
+    // Obtener token del Redux store
     const {
       usuarioInfo: { token },
     } = getState();
 
+    // Crear header con tipo de datos que se envia y token para autenticacion
     const config = {
       headers: {
         "Content-type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
-    const { data } = await axios.get(
-      `http://89.116.52.95:8080/api/clientes/${id}/`,
-      config
-    );
+
+    // Recibir respuesta del backend y guardar en data
+    const { data } = await axios.get(`${BASE_URL}api/clientes/${id}/`, config);
 
     dispatch({ type: SUCCESS_CLIENTE_DETALLES, payload: data });
   } catch (error) {
-    dispatch({ type: FAIL_CLIENTE_DETALLES, payload: error.message });
+    // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el access token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken(obtenerClienteDetalles, id));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_DETALLES, payload: error.message });
+    }
   }
 };
 
@@ -85,11 +91,14 @@ export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {
 export const actualizarCliente = (cliente) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_CLIENTE_ACTUALIZAR });
 
+  // Intentar pedir al backend actualizar los datos del cliente
   try {
+    // Obtener el token del Redux store
     const {
       usuarioInfo: { token },
     } = getState();
 
+    // Crear header con tipo de datos que se envian y token para autenticacion
     const config = {
       headers: {
         "Content-type": "application/json",
@@ -97,17 +106,25 @@ export const actualizarCliente = (cliente) => async (dispatch, getState) => {
       },
     };
 
+    // Recibir respuesta del backend y guardar en data
     const { data } = await axios.put(
-      `http://89.116.52.95:8080/api/modificar-cliente/${cliente.id}/`,
+      `${BASE_URL}api/modificar-cliente/${cliente.id}/`,
       cliente,
       config
     );
 
     dispatch({ type: SUCCESS_CLIENTE_ACTUALIZAR });
+    // Reset lista de clientes para actualizar la lista con la nueva informacion del cliente
     dispatch({ type: RESET_CLIENTE_LISTA });
+    // Reset lista de ventas para actualizar la lista con la nueva informacion del cliente
     dispatch({ type: RESET_VENTA_LISTA });
   } catch (error) {
-    dispatch({ type: FAIL_CLIENTE_ACTUALIZAR, payload: error.message });
+    // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken(actualizarCliente, cliente));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_ACTUALIZAR, payload: error.message });
+    }
   }
 };
 
@@ -115,11 +132,14 @@ export const actualizarCliente = (cliente) => async (dispatch, getState) => {
 export const registrarCliente = (cliente) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_CLIENTE_REGISTRAR });
 
+  // Intenar pedir al backend registrar un nuevo cliente
   try {
+    // Obtener el access token del Redux Store
     const {
       usuarioInfo: { token },
     } = getState();
 
+    // Crear el header con el tipo de datos enviados y el access token para autenticacion
     const config = {
       headers: {
         "Content-type": "application/json",
@@ -127,16 +147,24 @@ export const registrarCliente = (cliente) => async (dispatch, getState) => {
       },
     };
 
+    // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.post(
-      "http://89.116.52.95:8080/api/crear-cliente/",
+      `${BASE_URL}api/crear-cliente/`,
       cliente,
       config
     );
 
     dispatch({ type: SUCCESS_CLIENTE_REGISTRAR });
+
+    // Reset lista de clientes para actualizar la lista con el nuevo cliente
     dispatch({ type: RESET_CLIENTE_LISTA });
   } catch (error) {
-    dispatch({ type: FAIL_CLIENTE_REGISTRAR, payload: error.message });
+    // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el access token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken(registrarCliente, cliente));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_REGISTRAR, payload: error.message });
+    }
   }
 };
 
@@ -144,11 +172,14 @@ export const registrarCliente = (cliente) => async (dispatch, getState) => {
 export const borrarCliente = (id) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_CLIENTE_BORRAR });
 
+  // Intenar que el backend borre el cliente
   try {
+    // Obtener el token del Redux store
     const {
       usuarioInfo: { token },
     } = getState();
 
+    // Crear el header con el tipo de dato que se va a enviar y el token para autenticacion
     const config = {
       headers: {
         "Content-type": "application/json",
@@ -156,15 +187,23 @@ export const borrarCliente = (id) => async (dispatch, getState) => {
       },
     };
 
+    // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.delete(
-      `http://89.116.52.95:8080/api/modificar-cliente/${id}/`,
+      `${BASE_URL}api/modificar-cliente/${id}/`,
       config
     );
 
     dispatch({ type: SUCCESS_CLIENTE_BORRAR });
+    // Reset lista de clientes para actualizar la lista y remover el cliente eliminado
     dispatch({ type: RESET_CLIENTE_LISTA });
+    // Reset lista de ventas para eliminar el cliente de las ventas con ese cliente
     dispatch({ type: RESET_VENTA_LISTA });
   } catch (error) {
-    dispatch({ type: FAIL_CLIENTE_BORRAR, payload: error.message });
+    // Si el backend responde con error de tipo 401 (no autorizado) inntentar actualizar el token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken(borrarCliente, id));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_BORRAR, payload: error.message });
+    }
   }
 };

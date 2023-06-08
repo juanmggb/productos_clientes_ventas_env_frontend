@@ -1,0 +1,14 @@
+/* Variables de estilo */
+:root {
+  --primary-color: blue;
+  --secondary-color: red;
+  --font-size-label: 1.2rem;
+  --font-size-input: 1rem;
+
+  --font-weight-label: 700;
+  --font-weight-input: 700;
+
+  --font-color-label: #fff;
+  --font-color-input: #000;
+  --white-color: #fff;
+}

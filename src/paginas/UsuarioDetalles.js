@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Container, Col, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import styled from "styled-components";
 
-import Loader from "../componentes/Loader";
+import Loader from "../componentes/general/Loader";
 import {
   actualizarUsuario,
   obtenerUsuarioDetalles,
@@ -14,75 +13,14 @@ import {
   RESET_USUARIO_ACTUALIZAR,
   RESET_USUARIO_DETALLES,
 } from "../constantes/usuarioConstantes";
-
-// Estilos CSS con styled components
-// Estilos de la página principal
-const Principal = styled.div`
-  position: fixed;
-  background: linear-gradient(
-    rgb(54, 54, 82),
-    15%,
-    rgb(84, 106, 144),
-    60%,
-    rgb(68, 111, 151)
-  );
-
-  height: 90vh;
-  width: 100vw;
-  padding: 30px;
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  & h1 {
-    color: white;
-  }
-
-  & button {
-    margin: 10px 0px;
-  }
-
-  // Estilos para smarthphone
-  @media (max-width: 480px) and (orientation: portrait) {
-    height: 90svh;
-
-    & h1 {
-      font-weight: bold;
-    }
-  }
-
-  // Estilos pc
-  @media (min-width: 480px) {
-    & button {
-      width: 200px;
-    }
-
-    & div {
-      width: 50vw;
-    }
-  }
-`;
-
-// Estilos Form.Group
-const FormGroupStyled = styled(Form.Group)`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
-
-  & label {
-    color: white;
-    font-weight: bold;
-  }
-
-  & input,
-  select {
-    color: black;
-    font-weight: bold;
-  }
-`;
+import Mensaje from "../componentes/general/Mensaje";
+import {
+  StyledBoton,
+  StyledCol,
+  StyledContainer,
+  StyledFormGroup,
+  StyledRow,
+} from "./styles/UsuarioDetalles.styles";
 
 const UsuarioDetalles = ({ match }) => {
   // Obtener el id del usuario
@@ -95,11 +33,11 @@ const UsuarioDetalles = ({ match }) => {
   // Funcion para navegar en la pagina
   const navigate = useNavigate();
 
-  // Obtener el estado desde el Redux store
+  // Obtener la informacion del usuario del Redux
   const usuarioDetalles = useSelector((state) => state.usuarioDetalles);
   const { loading, usuario, error } = usuarioDetalles;
 
-  // Obtener el estado desde el Redux store
+  // Obtener el estado de actualizar cliente del Redux
   const usuarioActualizar = useSelector((state) => state.usuarioActualizar);
   const {
     loading: loadingActualizar,
@@ -107,6 +45,7 @@ const UsuarioDetalles = ({ match }) => {
     error: errorActualizar,
   } = usuarioActualizar;
 
+  //
   const [nombre, setNombre] = useState("");
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -121,23 +60,25 @@ const UsuarioDetalles = ({ match }) => {
     if (successActualizar) {
       toast.remove();
       toast.success("Usuario actualizado");
+      dispatch({ type: RESET_USUARIO_ACTUALIZAR });
+      navigate("/usuarios");
     }
 
     if (errorActualizar) {
       toast.dismiss();
       toast.error("Error al actualizar usuario");
     }
-  }, [successActualizar, errorActualizar, loadingActualizar]);
+  }, [
+    successActualizar,
+    errorActualizar,
+    loadingActualizar,
+    dispatch,
+    navigate,
+  ]);
 
+  // Si no hay producto o el producto no es el que seleccione, disparar la accion de
+  // obtener usuario
   useEffect(() => {
-    // Si la actualizacion fue correcta, reset productoActualizar y redireccionar a la pagina de productos
-    if (successActualizar) {
-      dispatch({ type: RESET_USUARIO_ACTUALIZAR });
-      navigate("/usuarios");
-    }
-
-    // Si no hay producto o el producto no es el que seleccione, disparar la accion de
-    // obtener usuario
     if (!usuario || usuario.id !== Number(usuarioId)) {
       dispatch(obtenerUsuarioDetalles(usuarioId));
     } else {
@@ -145,17 +86,11 @@ const UsuarioDetalles = ({ match }) => {
       setNombreUsuario(usuario.username);
       setIsAdmin(usuario.is_admin);
     }
-  }, [dispatch, usuario, usuarioId, navigate, successActualizar]);
-  // successActualizar
+  }, [dispatch, usuario, usuarioId]);
 
   const manejarActualizarUsuario = (e) => {
     e.preventDefault();
-    // Disparar la accion de actualizar producto
 
-    // formData.append("PRECIO", precio);
-    // if (imagen) {
-    //   formData.append("IMAGEN", imagen);
-    // }
     dispatch(
       actualizarUsuario({
         id: usuario.id,
@@ -170,65 +105,80 @@ const UsuarioDetalles = ({ match }) => {
     navigate("/usuarios");
   };
 
-  // console.log(imagen ? "Exist" : "No exist");
+  if (loading)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Loader />
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
 
-  return loading ? (
-    <Principal>
-      <Loader />
-    </Principal>
-  ) : error ? (
-    <Principal>{toast.error("Error en el servidor")}</Principal>
-  ) : (
+  if (error)
+    return (
+      <StyledContainer fluid>
+        <StyledRow style={{ height: "80%" }}>
+          <StyledCol>
+            <Mensaje variant="danger">
+              Hubo un problema al cargar la informacion del usuario
+            </Mensaje>
+          </StyledCol>
+        </StyledRow>
+      </StyledContainer>
+    );
+
+  return (
     usuario && (
-      <Principal>
-        {/* Esta es la parte que cambia en las paginas */}
-        <h1>Usuario #{usuario.id}</h1>
-        <Button variant="primary" onClick={manejarRegresar}>
-          Regresar
-        </Button>
-        <Container centered>
-          <Form onSubmit={manejarActualizarUsuario}>
-            <Row>
-              <Col>
-                <FormGroupStyled controlId="nombre">
-                  <Form.Label>NOMBRE</Form.Label>
-                  <Form.Control
-                    readOnly
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+      <StyledContainer fluid>
+        <StyledRow>
+          <StyledCol>
+            <h1>Usuario #{usuario.id}</h1>
+            <StyledBoton variant="primary" onClick={manejarRegresar}>
+              Regresar
+            </StyledBoton>
+          </StyledCol>
+        </StyledRow>
+        <Form onSubmit={manejarActualizarUsuario}>
+          <StyledRow>
+            <StyledCol md={8}>
+              <StyledFormGroup controlId="nombre">
+                <Form.Label>NOMBRE</Form.Label>
+                <Form.Control
+                  readOnly
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
 
-                <FormGroupStyled controlId="nombreUsuario">
-                  <Form.Label>NOMBRE DE USUARIO</Form.Label>
-                  <Form.Control
-                    readOnly
-                    type="text"
-                    value={nombreUsuario}
-                    onChange={(e) => setNombreUsuario(e.target.value)}
-                  ></Form.Control>
-                </FormGroupStyled>
+              <StyledFormGroup controlId="nombreUsuario">
+                <Form.Label>NOMBRE DE USUARIO</Form.Label>
+                <Form.Control
+                  readOnly
+                  type="text"
+                  value={nombreUsuario}
+                  onChange={(e) => setNombreUsuario(e.target.value)}
+                ></Form.Control>
+              </StyledFormGroup>
 
-                <FormGroupStyled controlId="isAdmin">
-                  <Form.Label>PERMISOS</Form.Label>
-                  <Form.Select
-                    value={isAdmin}
-                    onChange={(e) => setIsAdmin(e.target.value)}
-                  >
-                    <option value={true}>ADMINISTRADOR</option>
-                    <option value={false}>NO ES ADMINISTRADOR</option>
-                  </Form.Select>
-                </FormGroupStyled>
+              <StyledFormGroup controlId="isAdmin">
+                <Form.Label>PERMISOS</Form.Label>
+                <Form.Select
+                  value={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.value)}
+                >
+                  <option value={true}>ADMINISTRADOR</option>
+                  <option value={false}>NO ES ADMINISTRADOR</option>
+                </Form.Select>
+              </StyledFormGroup>
 
-                <Button className="mt-3" type="submit">
-                  Actualizar usuario
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </Container>
-      </Principal>
+              <StyledBoton type="submit">Actualizar usuario</StyledBoton>
+            </StyledCol>
+          </StyledRow>
+        </Form>
+      </StyledContainer>
     )
   );
 };

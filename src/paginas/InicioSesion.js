@@ -1,69 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Form, Image } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../actions/usuarioActions";
-import Loader from "../componentes/Loader";
-import Mensaje from "../componentes/Mensaje";
-import styled from "styled-components";
-
-//Estilos CSS
-const Principal = styled.div`
-  position: relative;
-  width: 100%;
-  height: 90vh;
-  background: linear-gradient(rgba(0, 0, 0, 0), 80%, rgba(0, 0, 0, 0.5)),
-    url("../imagenes/background1.jpg");
-  background-size: 100% 100%;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-`;
-
-const FormularioContenedor = styled.div`
-  position: relative;
-  height: 90%;
-  width: 350px;
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: 1fr;
-  grid-template-rows: 100px 5fr 0.8fr;
-  grid-template-areas:
-    "Logo"
-    "Form"
-    "Vacio";
-`;
-
-const LogoDiv = styled.div`
-  grid-area: Logo;
-  display: flex;
-  background-repeat: no-repeat;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Logo = styled.img`
-  height: 90%;
-  width: 200px;
-`;
-
-const Formulario = styled.form`
-  grid-area: Form;
-  border-radius: 10px;
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr 1.2fr;
-  grid-template-areas:
-    "User"
-    "Password"
-    "Ingresar";
-  justify-items: center;
-  align-items: center;
-  background-color: rgba(185, 185, 185, 0.6);
-`;
+import { login } from "../actions/sesionActions";
+import { toast } from "react-hot-toast";
+import {
+  StyledBackground,
+  StyledContainer,
+  StyledForm,
+  StyledLogoContainer,
+} from "./styles/InicioSesion.styles";
+import { BASE_URL } from "../constantes/constantes";
 
 const InicioSesion = () => {
   // Funcion para disparar las acciones
@@ -76,16 +23,34 @@ const InicioSesion = () => {
   const usuarioInfo = useSelector((state) => state.usuarioInfo);
   const { loading, token, error } = usuarioInfo;
 
+  // Hook para guardar las credenciales del usuario
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  // useState para mostrar mensajes de inicio de sesion
   useEffect(() => {
+    if (loading) {
+      toast.loading("Iniciando sesión");
+    }
+
     // Si el usuario ya ha iniciado sesion redirecciona a la pagina de inicio
     if (token) {
+      toast.dismiss();
+      toast.success("Se inició sesión correctamente", {
+        duration: 2000,
+      });
       navigate("/");
     }
-  }, [navigate, token]);
 
+    if (error) {
+      toast.remove();
+      toast.error("Por favor, introduce credenciales válidas", {
+        duration: 4000,
+      });
+    }
+  }, [navigate, token, error, loading]);
+
+  // Funcion para iniciar sesion
   const manejarSubmit = (e) => {
     e.preventDefault();
     // Disparar el creador de acciones login
@@ -93,72 +58,37 @@ const InicioSesion = () => {
   };
 
   return (
-    <>
-      {loading && <Loader />}
-      {error && <Mensaje variant="danger">{error}</Mensaje>}
-      {
-        <>
-          <Principal>
-            <FormularioContenedor>
-              <LogoDiv>
-                <Logo src={"../imagenes/Logo.png"} />
-              </LogoDiv>
-              <Formulario autoComplete="off" onSubmit={manejarSubmit}>
-                <Form.Group
-                  style={{ width: "90%", gridArea: "User" }}
-                  controlId="username"
-                >
-                  <Form.Label
-                    style={{
-                      width: "100%",
-                      fontWeight: "bold",
-                      color: "rgb(30,50,120)",
-                    }}
-                  >
-                    Nombre de usuario
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group
-                  style={{ width: "90%", gridArea: "Password" }}
-                  controlId="password"
-                >
-                  <Form.Label
-                    style={{
-                      width: "100%",
-                      fontWeight: "bold",
-                      color: "rgb(30,50,120)",
-                    }}
-                  >
-                    Contraseña
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </Form.Group>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  style={{
-                    color: "rgba(220,220,220)",
-                    backgroundColor: "rgba(30,60,90)",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Iniciar sesión
-                </Button>
-              </Formulario>
-            </FormularioContenedor>
-          </Principal>
-        </>
-      }
-    </>
+    <StyledBackground>
+      <StyledContainer>
+        <StyledLogoContainer>
+          <Image
+            src={`${BASE_URL}media/imagenes/general/logo.png`}
+            alt="Hielo Gran Pacifico Logo"
+          />
+        </StyledLogoContainer>
+        <StyledForm autoComplete="off" onSubmit={manejarSubmit}>
+          <Form.Group controlId="username">
+            <Form.Label>Nombre de usuario</Form.Label>
+            <Form.Control
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="password">
+            <Form.Label>Contraseña</Form.Label>
+            <Form.Control
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+          <Button type="submit" variant="primary">
+            Iniciar sesión
+          </Button>
+        </StyledForm>
+      </StyledContainer>
+    </StyledBackground>
   );
 };
 

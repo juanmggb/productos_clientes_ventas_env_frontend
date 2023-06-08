@@ -6,13 +6,9 @@ import {
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-import {
-  cuentaDetallesReducer,
-  cuentaActualizarReducer,
-} from "./reducers/cuentaReducers";
+import { cuentaActualizarReducer } from "./reducers/cuentaReducers";
 
 import {
-  usuarioInfoReducer,
   usuarioListaReducer,
   usuarioDetallesReducer,
   usuarioActualizarReducer,
@@ -26,6 +22,8 @@ import {
   productoRegistrarReducer,
   productoBorrarReducer,
 } from "./reducers/productoReducers";
+
+import { usuarioInfoReducer } from "./reducers/sesionReducers";
 
 import {
   clienteListaReducer,
@@ -44,8 +42,8 @@ import {
 
 const reducer = combineReducers({
   // Cuenta reducers
-  cuentaDetalles: cuentaDetallesReducer,
   cuentaActualizar: cuentaActualizarReducer,
+
   // Usuario reducers
   usuarioInfo: usuarioInfoReducer,
   usuarioLista: usuarioListaReducer,
@@ -53,6 +51,7 @@ const reducer = combineReducers({
   usuarioActualizar: usuarioActualizarReducer,
   usuarioRegistrar: usuarioRegistrarReducer,
   usuarioBorrar: usuarioBorrarReducer,
+
   // Producto reducers
   productoLista: productoListaReducer,
   productoDetalles: productoDetallesReducer,
@@ -76,37 +75,20 @@ const reducer = combineReducers({
 
 const middleware = [thunk];
 
+// Al establecer el valor inicial del token utilizando el valor almacenado en el localStorage, permites que el token se recupere y persista incluso después de recargar la aplicación o cerrar y volver a abrir la ventana del navegador.
+
+// El localStorage es una forma de almacenamiento local en el navegador que retiene los datos incluso cuando la página web se cierra o se recarga. Al guardar el token en el localStorage, puedes acceder a él en el futuro y utilizarlo para establecer el estado inicial del Redux store.
+
+// Establecer el valor inicial del token utilizando el contenido del localStorage es una forma eficaz de mantener y persistir los datos relevantes, como la sesión del usuario, en la aplicación, incluso después de eventos como recargar la página o cerrar y volver a abrir la ventana del navegador.
+
 const token = localStorage.getItem("accessToken")
   ? JSON.parse(localStorage.getItem("accessToken"))
   : null;
-
-// const productos = localStorage.getItem("productos")
-//   ? JSON.parse(localStorage.getItem("productos"))
-//   : null;
-
-// const clientes = localStorage.getItem("clientes")
-//   ? JSON.parse(localStorage.getItem("clientes"))
-//   : null;
-
-// const ventas = localStorage.getItem("ventas")
-//   ? JSON.parse(localStorage.getItem("ventas"))
-//   : null;
 
 const initialState = {
   usuarioInfo: {
     token,
   },
-  // productoLista: {
-  //   productos,
-  // },
-
-  // clienteLista: {
-  //   clientes,
-  // },
-
-  // ventaLista: {
-  //   ventas,
-  // },
 };
 
 const store = createStore(

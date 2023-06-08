@@ -1,9 +1,3 @@
-// Login usuario
-export const REQUEST_LOGIN_USUARIO = "REQUEST_LOGIN_USUARIO";
-export const SUCCESS_LOGIN_USUARIO = "SUCCESS_LOGIN_USUARIO";
-export const FAIL_LOGIN_USUARIO = "FAIL_LOGIN_USUARIO";
-export const LOGOUT_USUARIO = "LOGOUT_USUARIO";
-
 // Usuarios
 
 // Pedir lista de usuarios
