@@ -29,6 +29,8 @@ import {
   useMostrarDetallesCliente,
 } from "./utilis/ClienteLista.utilis";
 
+// Estilos
+
 const ClientesLista = () => {
   // Funcion para disparar las acciones
   const dispatch = useDispatch();

@@ -21,6 +21,8 @@ const GlobalStyles = createGlobalStyle`
         rgb(68, 111, 151)
     );
 
+    /* background-color: var(--primary-color); */
+
     }
 
     #root {

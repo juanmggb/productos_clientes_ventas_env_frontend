@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { StyledFormGroup } from "./styles/FiltroListaClientes.styles";
 
+// Estilos
+
 const FiltroListaClientes = ({ manejarFiltros }) => {
   // useForm para validar el formulario
   const { register, watch } = useForm({
