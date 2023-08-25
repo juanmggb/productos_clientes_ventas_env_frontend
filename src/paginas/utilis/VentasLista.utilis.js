@@ -210,7 +210,7 @@ export const filtrarVentas = (
 };
 
 // Function to create the state 'estadoVentanaEmergente' and its API
-export const useMostrarDetallesVenta = (ventas, dispatch) => {
+export const useMostrarDetallesVenta = (ventas, dispatch, page) => {
   const [venta, setVenta] = useState({});
 
   const [mostrarVenta, setMostrarVenta] = useState(false);
@@ -218,9 +218,14 @@ export const useMostrarDetallesVenta = (ventas, dispatch) => {
   useEffect(() => {
     // Si no hay ventas, disparar la accion de pedir ventas
     if (!ventas) {
-      dispatch(pedirVentasLista());
+      dispatch(pedirVentasLista(page));
     }
-  }, [dispatch, ventas]);
+  }, [dispatch, ventas, page]);
+
+  // This useEffect will be triggered only when the 'page' value changes
+  useEffect(() => {
+    dispatch(pedirVentasLista(page));
+  }, [dispatch, page]); // Only 'page' is included in the dependencies
 
   const manejarCerrarVentana = () => {
     setMostrarVenta(false);

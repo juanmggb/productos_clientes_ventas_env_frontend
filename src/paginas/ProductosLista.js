@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -17,6 +17,7 @@ import {
 } from "./styles/ProductosLista.styles";
 import TablaProductos from "../componentes/ProductosLista/TablaProductos";
 import { useMostrarDetallesProducto } from "./utilis/ProductosLista.utilis";
+import PaginacionVentas from "../componentes/VentasLista/PaginacionVentas";
 
 const ProductosLista = () => {
   // Funcion para disparar las acciones
@@ -35,7 +36,6 @@ const ProductosLista = () => {
     error: errorBorrar,
   } = productoBorrar;
 
-  // Hook para mostrar ventana con detalles del producto
   const {
     mostrarProducto,
     producto,

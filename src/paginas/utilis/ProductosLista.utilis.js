@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { pedirProductosLista } from "../../actions/productoActions";
 
 // Funcion para mostrar ventana con detalles del producto
-export const useMostrarDetallesProducto = (dispatch, productos) => {
+export const useMostrarDetallesProducto = (
+  dispatch,
+  productos,
+  navigate,
+  keyword
+) => {
   // Estado para la ventana emergente con la informacion del producto
   const [mostrarProducto, setMostrarProducto] = useState(false);
   // Estado para guardar informacion del producto
@@ -14,7 +19,7 @@ export const useMostrarDetallesProducto = (dispatch, productos) => {
     if (!productos) {
       dispatch(pedirProductosLista());
     }
-  }, [dispatch, productos]);
+  }, [dispatch, productos, navigate, keyword]);
 
   // Funcion para cerrar la ventana de informacion del producto
   const manejarCerrarVentana = () => {

@@ -15,7 +15,7 @@ export const StyledButton = styled(Button)`
 export const TableStyled = styled(Table)`
   margin: 0;
   tbody {
-    height: 70vh;
+    height: 50vh;
     display: block;
     overflow: auto;
   }

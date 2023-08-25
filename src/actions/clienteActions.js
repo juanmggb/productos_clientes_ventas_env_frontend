@@ -22,37 +22,42 @@ import { actualizarAccessToken } from "./sesionActions";
 import { BASE_URL } from "../constantes/constantes";
 
 // Creador de acciones para pedir los clientes del backend
-export const pedirClientesLista = () => async (dispatch, getState) => {
-  dispatch({ type: REQUEST_CLIENTE_LISTA });
+export const pedirClientesLista =
+  (page = 1) =>
+  async (dispatch, getState) => {
+    dispatch({ type: REQUEST_CLIENTE_LISTA });
 
-  // Intentar pedir lista de productos al backend
-  try {
-    // Obtener el token desde el Redux store
-    const {
-      usuarioInfo: { token },
-    } = getState();
+    // Intentar pedir lista de productos al backend
+    try {
+      // Obtener el token desde el Redux store
+      const {
+        usuarioInfo: { token },
+      } = getState();
 
-    // Crear header con el tipo de datos que se envia y el token para autenticacio
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
+      // Crear header con el tipo de datos que se envia y el token para autenticacio
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-    // Recibir la respuesta del backend y guardarla en data
-    const { data } = await axios.get(`${BASE_URL}api/clientes/`, config);
+      // Recibir la respuesta del backend y guardarla en data
+      const { data } = await axios.get(
+        `${BASE_URL}api/clientes?page=${page}`,
+        config
+      );
 
-    dispatch({ type: SUCCESS_CLIENTE_LISTA, payload: data });
-  } catch (error) {
-    // Si el backend responde con un error 401 (no autorizado) intentar actualizar el token
-    if (error.response && error.response.status === 401) {
-      dispatch(actualizarAccessToken(pedirClientesLista));
-    } else {
-      dispatch({ type: FAIL_CLIENTE_LISTA, payload: error.message });
+      dispatch({ type: SUCCESS_CLIENTE_LISTA, payload: data });
+    } catch (error) {
+      // Si el backend responde con un error 401 (no autorizado) intentar actualizar el token
+      if (error.response && error.response.status === 401) {
+        dispatch(actualizarAccessToken(pedirClientesLista));
+      } else {
+        dispatch({ type: FAIL_CLIENTE_LISTA, payload: error.message });
+      }
     }
-  }
-};
+  };
 
 // Creador de acciones para pedir el cliente con el id del backend
 export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {

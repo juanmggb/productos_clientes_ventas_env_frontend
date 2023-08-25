@@ -28,7 +28,12 @@ export const clienteListaReducer = (state = {}, action) => {
       return { loading: true };
 
     case SUCCESS_CLIENTE_LISTA:
-      return { loading: false, clientes: action.payload };
+      return {
+        loading: false,
+        clientes: action.payload.clientes,
+        page: action.payload.page,
+        pages: action.payload.pages,
+      };
 
     case FAIL_CLIENTE_LISTA:
       return { loading: false, error: action.payload };

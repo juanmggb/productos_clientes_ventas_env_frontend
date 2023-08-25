@@ -24,7 +24,12 @@ export const ventaListaReducer = (state = {}, action) => {
       return { loading: true };
 
     case SUCCESS_VENTA_LISTA:
-      return { loading: false, ventas: action.payload };
+      return {
+        loading: false,
+        ventas: action.payload.ventas,
+        page: action.payload.page,
+        pages: action.payload.pages,
+      };
 
     case FAIL_VENTA_LISTA:
       return { loading: false, error: action.payload };

@@ -26,8 +26,10 @@ import {
   useFiltros,
   useMostrarDetallesVenta,
 } from "./utilis/VentasLista.utilis";
+import PaginacionVentas from "../componentes/VentasLista/PaginacionVentas";
 
 const VentasLista = () => {
+  const [page, setPage] = useState(1);
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
   // Funcion para nevagar en la aplicacion
@@ -60,12 +62,15 @@ const VentasLista = () => {
   const [mostrarResumen, setMostrarResumen] = useState(false);
 
   // Custom hook para mostrar los detalles de la venta
+
+  // Hook para mostrar ventana con detalles del producto
+
   const {
     mostrarVenta,
     venta,
     manejarCerrarVentana,
     manejarMostrarDetallesVenta,
-  } = useMostrarDetallesVenta(ventas, dispatch);
+  } = useMostrarDetallesVenta(ventas, dispatch, page);
 
   // Filtrar y ordenar ventas
   let ventasFiltradas = ventas
@@ -142,6 +147,8 @@ const VentasLista = () => {
               manejarMostrarDetallesVenta={manejarMostrarDetallesVenta}
               manejarVentaDetalles={manejarVentaDetalles}
             ></TablaVentas>
+
+            <PaginacionVentas page={page} setPage={setPage} />
           </StyledContenidoPrincipal>
         </StyledGridContainer>
 

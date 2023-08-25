@@ -28,10 +28,12 @@ import {
   filtrarClientes,
   useMostrarDetallesCliente,
 } from "./utilis/ClienteLista.utilis";
+import PaginacionClientes from "../componentes/ClientesLista/PaginacionClientes";
 
 // Estilos
 
 const ClientesLista = () => {
+  const [page, setPage] = useState(1);
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
   // Funcion para nevagar en la aplicacion
@@ -60,7 +62,7 @@ const ClientesLista = () => {
     cliente,
     manejarCerrarVentana,
     manejarMostrarDetallesCliente,
-  } = useMostrarDetallesCliente(dispatch, navigate, clientes);
+  } = useMostrarDetallesCliente(dispatch, navigate, clientes, page);
 
   // Filtrar y ordenar clientes
   let clientesFiltrados = clientes
@@ -168,6 +170,7 @@ const ClientesLista = () => {
               manejarClienteDetalles={manejarClienteDetalles}
               manejarBorrarCliente={manejarBorrarCliente}
             ></TablaClientes>
+            <PaginacionClientes page={page} setPage={setPage} />
           </StyledContenidoPrincipal>
         </StyledGridContainer>
         {/* Mostrar venta con detalles del cliente */}

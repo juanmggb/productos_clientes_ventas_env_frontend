@@ -20,37 +20,44 @@ import { actualizarAccessToken } from "./sesionActions";
 import { BASE_URL } from "../constantes/constantes";
 
 // Creador de acciones para pedir los ventas del backend
-export const pedirVentasLista = () => async (dispatch, getState) => {
-  dispatch({ type: REQUEST_VENTA_LISTA });
+export const pedirVentasLista =
+  (page = 1) =>
+  async (dispatch, getState) => {
+    dispatch({ type: REQUEST_VENTA_LISTA });
 
-  // Intentar pedir al backend lista de ventas
-  try {
-    // Obtener token del Redux store
-    const {
-      usuarioInfo: { token },
-    } = getState();
+    // Intentar pedir al backend lista de ventas
+    try {
+      // Obtener token del Redux store
+      const {
+        usuarioInfo: { token },
+      } = getState();
 
-    // Crear header con tipo de datos a enviar y token para autenticacion
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
+      // Crear header con tipo de datos a enviar y token para autenticacion
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-    // Recibir respuesta del backend y guardarla en data
-    const { data } = await axios.get(`${BASE_URL}api/ventas/`, config);
+      // Recibir respuesta del backend y guardarla en data
+      const { data } = await axios.get(
+        `${BASE_URL}api/ventas?page=${page}`,
+        config
+      );
 
-    dispatch({ type: SUCCESS_VENTA_LISTA, payload: data });
-  } catch (error) {
-    // Si el backend responde con error de tipo 401 (no autenticado) intentar actualizar el token
-    if (error.response && error.response.status === 401) {
-      dispatch(actualizarAccessToken(pedirVentasLista));
-    } else {
-      dispatch({ type: FAIL_VENTA_LISTA, payload: error.message });
+      dispatch({ type: SUCCESS_VENTA_LISTA, payload: data });
+
+      console.log(data);
+    } catch (error) {
+      // Si el backend responde con error de tipo 401 (no autenticado) intentar actualizar el token
+      if (error.response && error.response.status === 401) {
+        dispatch(actualizarAccessToken(pedirVentasLista));
+      } else {
+        dispatch({ type: FAIL_VENTA_LISTA, payload: error.message });
+      }
     }
-  }
-};
+  };
 
 // Creador de acciones para pedir el venta con el id del backend
 export const obtenerVentaDetalles = (id) => async (dispatch, getState) => {

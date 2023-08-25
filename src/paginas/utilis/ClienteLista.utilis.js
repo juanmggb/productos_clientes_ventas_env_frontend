@@ -109,16 +109,25 @@ export const filtrarClientes = (clientes, filtrarPor, buscar, ordenarPor) => {
   return clientesFiltrados;
 };
 
-export const useMostrarDetallesCliente = (dispatch, navigate, clientes) => {
+export const useMostrarDetallesCliente = (
+  dispatch,
+  navigate,
+  clientes,
+  page
+) => {
   const [mostrarCliente, setMostrarCliente] = useState(false);
   const [cliente, setCliente] = useState({});
 
   useEffect(() => {
     // Si no hay clientes, disparar la accion de pedir clientes
     if (!clientes) {
-      dispatch(pedirClientesLista("/clientes"));
+      dispatch(pedirClientesLista(page));
     }
-  }, [dispatch, clientes, navigate]);
+  }, [dispatch, clientes, navigate, page]);
+
+  useEffect(() => {
+    dispatch(pedirClientesLista(page));
+  }, [page, dispatch]);
 
   const manejarCerrarVentana = () => {
     setMostrarCliente(false);
