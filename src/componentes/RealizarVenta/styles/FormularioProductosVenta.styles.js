@@ -43,6 +43,8 @@ export const StyledProductoContenedor = styled.div`
   gap: 10px;
   align-items: center;
   /* justify-content: center; */
+  background-color: rgba(250, 250, 250, 0.3);
+  border-radius: 10px;
 `;
 
 export const StyledProductoInfoContainer = styled.div`

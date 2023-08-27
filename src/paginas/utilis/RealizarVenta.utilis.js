@@ -9,7 +9,7 @@ export const useCliente = (clientes, dispatch, navigate) => {
   // Use effect para seleccionar cliente inicial y su lista de precios, y para fijar el vendedor
   useEffect(() => {
     if (!clientes) {
-      dispatch(pedirClientesLista(navigate, "/realizar-venta"));
+      dispatch(pedirClientesLista());
     } else if (clientes.length > 0) {
       setCliente(clientes[0]);
       setProductosCliente(clientes[0].precios_cliente);

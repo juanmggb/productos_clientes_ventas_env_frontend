@@ -6,7 +6,6 @@ import Mensaje from "../general/Mensaje";
 import {
   StyledButtonsContainer,
   StyledCol,
-  StyledContainer,
   StyledProductoContenedor,
   StyledProductoInfoContainer,
   StyledRow,
