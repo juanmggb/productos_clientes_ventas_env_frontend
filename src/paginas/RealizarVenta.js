@@ -29,8 +29,8 @@ const RealizarVenta = () => {
   const navigate = useNavigate();
 
   // Obtener lista de clientes del Redux store
-  const clienteLista = useSelector((state) => state.clienteLista);
-  const { loading, clientes, error } = clienteLista;
+  const clienteVentaLista = useSelector((state) => state.clienteVentaLista);
+  const { loading, clientesVenta, error } = clienteVentaLista;
 
   // Obtener estado registrar venta del Redux store
   const ventaRegistrar = useSelector((state) => state.ventaRegistrar);
@@ -54,7 +54,7 @@ const RealizarVenta = () => {
     productosCliente,
     setProductosCliente,
     manejarCambiarCliente,
-  } = useCliente(clientes, dispatch, navigate);
+  } = useCliente(clientesVenta, dispatch, navigate);
 
   // Hook personalizado para manejar el estado de los productos de venta
   const {
@@ -116,7 +116,7 @@ const RealizarVenta = () => {
     );
 
   return (
-    clientes && (
+    clientesVenta && (
       <>
         <StyledGridContainer>
           <StyledBotonPanel onClick={() => setMostrarPanel((state) => !state)}>
@@ -134,7 +134,7 @@ const RealizarVenta = () => {
               manejarCambiarCliente={manejarCambiarCliente}
               productosVenta={productosVenta}
               setProductosVenta={setProductosVenta}
-              clientes={clientes}
+              clientes={clientesVenta}
               manejarSeleccionarProducto={manejarSeleccionarProducto}
               productosCliente={productosCliente}
               setVenta={setVenta}

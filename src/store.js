@@ -31,6 +31,7 @@ import {
   clienteActualizarReducer,
   clienteRegistrarReducer,
   clienteBorrarReducer,
+  clienteVentaListaReducer,
 } from "./reducers/clienteReducers";
 
 import {
@@ -38,6 +39,7 @@ import {
   ventaDetallesReducer,
   ventaActualizarReducer,
   ventaRegistrarReducer,
+  ventaReporteListaReducer,
 } from "./reducers/ventaReducers";
 
 const reducer = combineReducers({
@@ -65,12 +67,14 @@ const reducer = combineReducers({
   clienteActualizar: clienteActualizarReducer,
   clienteRegistrar: clienteRegistrarReducer,
   clienteBorrar: clienteBorrarReducer,
+  clienteVentaLista: clienteVentaListaReducer,
 
   // Venta reducers
   ventaLista: ventaListaReducer,
   ventaDetalles: ventaDetallesReducer,
   ventaActualizar: ventaActualizarReducer,
   ventaRegistrar: ventaRegistrarReducer,
+  ventaReporteLista: ventaReporteListaReducer,
 });
 
 const middleware = [thunk];

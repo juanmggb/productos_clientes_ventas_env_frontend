@@ -1,6 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const PaginationWrapper = styled.div`
@@ -29,13 +30,20 @@ const PaginationButton = styled.button`
   }
 `;
 
-const PaginacionVentas = ({ page, setPage }) => {
-  const ventaLista = useSelector((state) => state.ventaLista);
-  const { pages } = ventaLista;
+const PaginateVentas = ({ page, pages, search = "" }) => {
+  const navigate = useNavigate();
+
   const currentPage = parseInt(page);
 
-  const goToPage = (pageNumber) => {
-    setPage(pageNumber);
+  let searchWithoutPage = "";
+  if (search === "") {
+    searchWithoutPage = "?";
+  } else {
+    searchWithoutPage = search.replace(/&page=\d+/g, "");
+  }
+
+  const goToPage = (p) => {
+    navigate(`/ventas${searchWithoutPage}&page=${p}`);
   };
 
   return (
@@ -74,4 +82,4 @@ const PaginacionVentas = ({ page, setPage }) => {
   );
 };
 
-export default PaginacionVentas;
+export default PaginateVentas;

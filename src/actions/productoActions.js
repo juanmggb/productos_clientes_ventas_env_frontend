@@ -120,7 +120,7 @@ export const actualizarProducto =
       dispatch({ type: RESET_PRODUCTO_LISTA });
       // Debo volver a pedir la lista de clientes del backend, la razon es que si cambio el nombre del producto el nombre de ese producto en la lista de precios de todos los clientes cambia y hay que actualizar la lista
       dispatch({ type: RESET_CLIENTE_LISTA });
-      // Debo volver a pedir la lista de ventas del backend, la razon es que si cambio el nombre del producto, la venta debe de mostrar el nuevo nombre
+      // Debo volver a pedir la lista de ventas del backend, la razon es que si cambio el nombre del producto, la venta debe de mostrar el nuevo nombre. Tambien debe mostrar la cantidad disponible del producto
       dispatch({ type: RESET_VENTA_LISTA });
     } catch (error) {
       // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el token

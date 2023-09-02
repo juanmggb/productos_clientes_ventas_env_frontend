@@ -113,7 +113,7 @@ export const useMostrarDetallesCliente = (
   dispatch,
   navigate,
   clientes,
-  page
+  search
 ) => {
   const [mostrarCliente, setMostrarCliente] = useState(false);
   const [cliente, setCliente] = useState({});
@@ -121,13 +121,13 @@ export const useMostrarDetallesCliente = (
   useEffect(() => {
     // Si no hay clientes, disparar la accion de pedir clientes
     if (!clientes) {
-      dispatch(pedirClientesLista(page));
+      dispatch(pedirClientesLista(search));
     }
-  }, [dispatch, clientes, navigate, page]);
+  }, [dispatch, search, clientes, navigate]);
 
   useEffect(() => {
-    dispatch(pedirClientesLista(page));
-  }, [page, dispatch]);
+    dispatch(pedirClientesLista(search));
+  }, [dispatch, search]);
 
   const manejarCerrarVentana = () => {
     setMostrarCliente(false);

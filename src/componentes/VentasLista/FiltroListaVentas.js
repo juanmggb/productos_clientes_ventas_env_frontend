@@ -1,28 +1,52 @@
 // Importar modulos
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
-import { Col, Container, Form, Row } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import {
+  StyledBoton,
   StyledFormControlContainer,
   StyledFormGroup,
 } from "./styles/FiltroListaVentas.styles";
+import { useNavigate } from "react-router-dom";
+import {
+  guardarFiltros,
+  obtenerValoresFiltroVentas,
+} from "./utilis/FiltroListaVentas.utilis";
 
-const FiltroListaVentas = ({ manejarFiltros }) => {
-  // Obtener la fecha actual
-  const hoy = obtenerFechaActual();
+const FiltroListaVentas = () => {
+  // Funcion para navegar de regreso a la pagina de clientes con el url modificado
+  const navigate = useNavigate();
 
   // Establecer valore por defecto del formulario
-  const { register, watch } = useForm({
-    defaultValues: {
-      buscar: "",
-      filtrarPor: 1,
-      ordenarPor: 0,
-      fechaInicio: "",
-      fechaFinal: hoy,
-      horaInicio: "",
-      horaFinal: "",
-    },
-  });
+  const { register, handleSubmit, watch, setValue } = useForm({});
+
+  useEffect(() => {
+    // Obtener valores del filtro desde el localstorage
+    const {
+      buscar: buscarInicial,
+      filtrarPor: filtrarPorInicial,
+      ordenarPor: ordenarPorInicial,
+      fechaInicio: fechaInicioInicial,
+      fechaFinal: fechaFinalInicial,
+      horaInicio: horaInicioInicial,
+      horaFinal: horaFinalInicial,
+    } = obtenerValoresFiltroVentas();
+
+    setValue("buscar", buscarInicial);
+    console.log("buscarInicial->", buscarInicial);
+    setValue("filtrarPor", filtrarPorInicial);
+    console.log("filtrarPorInicial->", filtrarPorInicial);
+    setValue("ordenarPor", ordenarPorInicial);
+    console.log("ordenarPorInicial->", ordenarPorInicial);
+    setValue("fechaInicio", fechaInicioInicial);
+    console.log("fechaInicioInicial->", fechaInicioInicial);
+    setValue("fechaFinal", fechaFinalInicial);
+    console.log("fechaFinalInicial->", fechaFinalInicial);
+    setValue("horaInicio", horaInicioInicial);
+    console.log("horaInicioInicial->", horaInicioInicial);
+    setValue("horaFinal", horaFinalInicial);
+    console.log("horaFinalInicial->", horaFinalInicial);
+  }, []);
 
   // Observar el valor de las entradas del formulario
   const {
@@ -36,8 +60,30 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
   } = watch();
 
   // Usamos la data en el formulario para cambiar el estado de filtros cada vez que la data cambia
-  useEffect(() => {
-    manejarFiltros(
+  // useEffect(() => {
+  //   manejarFiltros(
+  //     buscar,
+  //     filtrarPor,
+  //     ordenarPor,
+  //     fechaInicio,
+  //     fechaFinal,
+  //     horaInicio,
+  //     horaFinal
+  //   );
+  // }, [
+  //   buscar,
+  //   filtrarPor,
+  //   ordenarPor,
+  //   fechaInicio,
+  //   fechaFinal,
+  //   horaInicio,
+  //   horaFinal,
+  // ]);
+
+  const onSubmit = (data) => {
+    const url = `/ventas?filtrarpor=${filtrarPor}&buscar=${buscar}&ordernarpor=${ordenarPor}&fechainicio=${fechaInicio}&fechafinal=${fechaFinal}`;
+
+    guardarFiltros(
       buscar,
       filtrarPor,
       ordenarPor,
@@ -46,21 +92,16 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
       horaInicio,
       horaFinal
     );
-  }, [
-    buscar,
-    filtrarPor,
-    ordenarPor,
-    fechaInicio,
-    fechaFinal,
-    horaInicio,
-    horaFinal,
-  ]);
+
+    // console.log(data, url);
+    navigate(url);
+  };
 
   return (
     <Container>
       <Row>
         <Col>
-          <Form>
+          <Form onSubmit={handleSubmit(onSubmit)}>
             {/* Buscar por campo seleccionado */}
             <StyledFormGroup>
               <Form.Label htmlFor="filtrarPor">
@@ -70,14 +111,14 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
                 as="select"
                 id="filtrarPor"
                 {...register("filtrarPor", {
-                  valueAsNumber: true,
+                  // valueAsNumber: true,
                 })}
               >
-                <option value="0">Por nombre cliente</option>
-                <option value="1">Por tipo de venta</option>
-                <option value="2">Por tipo de pago</option>
-                <option value="3">Por status</option>
-                <option value="4">Por nombre vendedor</option>
+                <option value="cliente">Por nombre cliente</option>
+                <option value="tipoventa">Por tipo de venta</option>
+                <option value="tipopago">Por tipo de pago</option>
+                <option value="status">Por status</option>
+                <option value="vendedor">Por nombre vendedor</option>
               </Form.Control>
               <Form.Control
                 type="text"
@@ -93,14 +134,18 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
                 as="select"
                 id="ordenarPor"
                 {...register("ordenarPor", {
-                  valueAsNumber: true,
+                  // valueAsNumber: true,
                 })}
               >
-                <option value="0">Por defecto</option>
-                <option value="1">Por nombre cliente</option>
-                <option value="2">Por fecha</option>
-                <option value="3">Por hora</option>
-                <option value="4">Por nombre vendedor</option>
+                {/* <option value="defecto">Por defecto</option> */}
+                <option value="fecha_recientes">
+                  Por fecha (Más recientes primero)
+                </option>
+                <option value="fecha_antiguos">
+                  Por fecha (Más antiguas primero)
+                </option>
+                <option value="cliente">Por nombre cliente</option>
+                <option value="vendedor">Por nombre vendedor</option>
               </Form.Control>
             </StyledFormGroup>
 
@@ -117,12 +162,12 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
                   type="date"
                   id="fechaFinal"
                   {...register("fechaFinal")}
-                  value={fechaFinal}
+                  // value={fechaFinal}
                 />
               </StyledFormControlContainer>
             </StyledFormGroup>
             {/* Filtrar por rango de hora */}
-            <StyledFormGroup>
+            {/* <StyledFormGroup>
               <Form.Label>FILTRAR POR HORA</Form.Label>
 
               <StyledFormControlContainer>
@@ -137,24 +182,16 @@ const FiltroListaVentas = ({ manejarFiltros }) => {
                   {...register("horaFinal")}
                 />
               </StyledFormControlContainer>
-            </StyledFormGroup>
+            </StyledFormGroup> */}
+
+            <StyledBoton className="btn btn-primary" type="submit">
+              Actualizar Lista
+            </StyledBoton>
           </Form>
         </Col>
       </Row>
     </Container>
   );
-};
-
-const obtenerFechaActual = () => {
-  const date = new Date();
-  let dia = date.getDate();
-  dia = String(dia).padStart(2, "0");
-  let mes = date.getMonth() + 1;
-  mes = String(mes).padStart(2, "0");
-  const anio = date.getFullYear();
-
-  // This arrangement can be altered based on how we want the date's format to appear.
-  return `${anio}-${mes}-${dia}`;
 };
 
 export default FiltroListaVentas;

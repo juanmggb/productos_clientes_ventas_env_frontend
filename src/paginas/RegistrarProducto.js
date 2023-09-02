@@ -117,6 +117,7 @@ const RegistrarProducto = () => {
                   required: "Por favor, introduce la cantidad de producto",
                 })}
                 type="number"
+                step="any"
               ></Form.Control>
             </StyledFormGroup>
           </StyledCol>
@@ -129,6 +130,7 @@ const RegistrarProducto = () => {
                   required: "Por favor, introduce el precio del producto",
                 })}
                 type="number"
+                step="any"
               ></Form.Control>
             </StyledFormGroup>
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pedirVentasLista } from "../../actions/ventaActions";
-import * as XLSX from "xlsx";
+
 // Función para crear estado filter y su API
 export const useFiltros = () => {
   // Crear estado filtros
@@ -210,7 +210,7 @@ export const filtrarVentas = (
 };
 
 // Function to create the state 'estadoVentanaEmergente' and its API
-export const useMostrarDetallesVenta = (ventas, dispatch, page) => {
+export const useMostrarDetallesVenta = (ventas, dispatch, search) => {
   const [venta, setVenta] = useState({});
 
   const [mostrarVenta, setMostrarVenta] = useState(false);
@@ -218,14 +218,15 @@ export const useMostrarDetallesVenta = (ventas, dispatch, page) => {
   useEffect(() => {
     // Si no hay ventas, disparar la accion de pedir ventas
     if (!ventas) {
-      dispatch(pedirVentasLista(page));
+      dispatch(pedirVentasLista(search));
     }
-  }, [dispatch, ventas, page]);
+  }, [dispatch, ventas, search]);
 
-  // This useEffect will be triggered only when the 'page' value changes
   useEffect(() => {
-    dispatch(pedirVentasLista(page));
-  }, [dispatch, page]); // Only 'page' is included in the dependencies
+    // Si el parametros search con la informacion de filtrado se modifica, volver a pedir las ventas
+    // Si la pagina cambioa, volver a pedir las ventas
+    dispatch(pedirVentasLista(search));
+  }, [search, dispatch]);
 
   const manejarCerrarVentana = () => {
     setMostrarVenta(false);
@@ -299,21 +300,4 @@ export const modifyJSON = (data) => {
   }
 
   return newData;
-};
-
-export const manejarExportarVentas = (ventas) => {
-  // Modify the JSON data
-  ventas = modifyJSON(ventas);
-
-  // Convert JSON to worksheet
-  const worksheet = XLSX.utils.json_to_sheet(ventas);
-
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
-
-  // Append the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-
-  // Write the workbook to a file
-  XLSX.writeFile(workbook, "ventas.xlsx");
 };

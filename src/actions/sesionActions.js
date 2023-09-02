@@ -36,19 +36,8 @@ export const login = (username, password) => async (dispatch) => {
 
 export const logout = () => {
   return (dispatch) => {
-    const itemsToRemove = [
-      "accessToken",
-      "usuarioId",
-      "refreshToken",
-      "isAdmin",
-      "name",
-      "username",
-      "imagen",
-    ];
-
-    itemsToRemove.forEach((item) => {
-      localStorage.removeItem(item);
-    });
+    // Puedes borrar todo el contenido del localStorage usando localStorage.clear(). Este método eliminará todos los pares clave-valor almacenados en el objeto localStorage para ese dominio.
+    localStorage.clear();
 
     dispatch({ type: LOGOUT_USUARIO });
     window.location.href = "/login";

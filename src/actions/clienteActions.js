@@ -5,17 +5,20 @@ import {
   FAIL_CLIENTE_DETALLES,
   FAIL_CLIENTE_LISTA,
   FAIL_CLIENTE_REGISTRAR,
+  FAIL_CLIENTE_VENTA_LISTA,
   REQUEST_CLIENTE_ACTUALIZAR,
   REQUEST_CLIENTE_BORRAR,
   REQUEST_CLIENTE_DETALLES,
   REQUEST_CLIENTE_LISTA,
   REQUEST_CLIENTE_REGISTRAR,
+  REQUEST_CLIENTE_VENTA_LISTA,
   RESET_CLIENTE_LISTA,
   SUCCESS_CLIENTE_ACTUALIZAR,
   SUCCESS_CLIENTE_BORRAR,
   SUCCESS_CLIENTE_DETALLES,
   SUCCESS_CLIENTE_LISTA,
   SUCCESS_CLIENTE_REGISTRAR,
+  SUCCESS_CLIENTE_VENTA_LISTA,
 } from "../constantes/clienteConstantes";
 import { RESET_VENTA_LISTA } from "../constantes/ventaConstantes";
 import { actualizarAccessToken } from "./sesionActions";
@@ -23,7 +26,7 @@ import { BASE_URL } from "../constantes/constantes";
 
 // Creador de acciones para pedir los clientes del backend
 export const pedirClientesLista =
-  (page = 1) =>
+  (search = "") =>
   async (dispatch, getState) => {
     dispatch({ type: REQUEST_CLIENTE_LISTA });
 
@@ -44,7 +47,7 @@ export const pedirClientesLista =
 
       // Recibir la respuesta del backend y guardarla en data
       const { data } = await axios.get(
-        `${BASE_URL}api/clientes?page=${page}`,
+        `${BASE_URL}api/clientes${search}`,
         config
       );
 
@@ -58,6 +61,40 @@ export const pedirClientesLista =
       }
     }
   };
+
+// Creador de acciones para pedir los clientes del backend
+export const pedirClientesVentaLista = () => async (dispatch, getState) => {
+  dispatch({ type: REQUEST_CLIENTE_VENTA_LISTA });
+
+  // Intentar pedir lista de productos al backend
+  try {
+    // Obtener el token desde el Redux store
+    const {
+      usuarioInfo: { token },
+    } = getState();
+
+    // Crear header con el tipo de datos que se envia y el token para autenticacio
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // Recibir la respuesta del backend y guardarla en data
+    const { data } = await axios.get(`${BASE_URL}api/clientes-venta/`, config);
+
+    console.log("ClientesVenta:", data);
+    dispatch({ type: SUCCESS_CLIENTE_VENTA_LISTA, payload: data });
+  } catch (error) {
+    // Si el backend responde con un error 401 (no autorizado) intentar actualizar el token
+    if (error.response && error.response.status === 401) {
+      dispatch(actualizarAccessToken(pedirClientesVentaLista));
+    } else {
+      dispatch({ type: FAIL_CLIENTE_VENTA_LISTA, payload: error.message });
+    }
+  }
+};
 
 // Creador de acciones para pedir el cliente con el id del backend
 export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {

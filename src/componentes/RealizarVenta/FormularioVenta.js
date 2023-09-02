@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import {
   calcularMonto,
@@ -9,6 +9,7 @@ import {
   StyledForm,
   StyledFormGroup,
 } from "./styles/FormularioVenta.styles";
+import { toast } from "react-hot-toast";
 
 const FormularioVenta = ({
   cliente,
@@ -23,17 +24,39 @@ const FormularioVenta = ({
   deshabilitarVenta,
 }) => {
   // Hooks para el formulario de venta
-  const [tipoVenta, setTipoVenta] = useState("MOSTRADOR");
   const [tipoPago, setTipoPago] = useState("CONTADO");
-  const [status, setStatus] = useState("PENDIENTE");
-  const [observaciones, setObservaciones] = useState(null);
+  const [status, setStatus] = useState("REALIZADO");
+  const [observaciones, setObservaciones] = useState("");
   const [descuento, setDescuento] = useState(0);
+
+  const [monto, setMonto] = useState(0);
+
+  // useEffect para calcular el monto total cuando los productos, descuento o tipo de pago de modifican
+  useEffect(() => {
+    const nuevosProductosVenta = crearProductosVenta(productosVenta);
+    const monto = calcularMonto(tipoPago, nuevosProductosVenta);
+
+    if (descuento) {
+      setMonto(monto * (1 - descuento / 100));
+    } else {
+      setMonto(monto);
+    }
+  }, [productosVenta, descuento, tipoPago]);
 
   //   Funcion para crear venta
   const manejarCrearVenta = (e) => {
     e.preventDefault();
 
-    const nuevosProductosVenta = crearProductosVenta(productosVenta, descuento);
+    if (
+      (tipoPago === "CORTESIA" || descuento !== 0) &&
+      status !== "PENDIENTE"
+    ) {
+      return toast.error(
+        "STATUS deber ser pendiente si el tipo de venta es cortesía o existe un descuento"
+      );
+    }
+
+    const nuevosProductosVenta = crearProductosVenta(productosVenta);
 
     const monto = calcularMonto(tipoPago, nuevosProductosVenta);
     const montoDescuento = monto * (1 - descuento / 100);
@@ -42,12 +65,14 @@ const FormularioVenta = ({
       productosVenta: nuevosProductosVenta,
       VENDEDOR: VENDEDOR,
       MONTO: montoDescuento,
-      TIPO_VENTA: tipoVenta,
+      TIPO_VENTA: "MOSTRADOR",
       TIPO_PAGO: tipoPago,
       STATUS: status,
       OBSERVACIONES: observaciones,
       CLIENTE: cliente.id,
+      NOMBRE_CLIENTE: cliente.NOMBRE,
       DESCUENTO: descuento,
+
       /*      LOCAL: {
             CALLE: 'Culiver City',
             NUMERO: '3',
@@ -60,7 +85,6 @@ const FormularioVenta = ({
     };
     setVenta(ventaSubmit);
     setMostrarVenta(true);
-    // dispatch(registrarVenta(navigate, venta));
   };
 
   const VENDEDOR = JSON.parse(localStorage.getItem("name"));
@@ -106,18 +130,6 @@ const FormularioVenta = ({
         </Form.Control>
       </StyledFormGroup>
 
-      <StyledFormGroup controlId="tipoVenta">
-        <Form.Label>TIPO DE VENTA</Form.Label>
-        <Form.Control
-          as="select"
-          value={tipoVenta}
-          onChange={(e) => setTipoVenta(e.target.value)}
-        >
-          <option value="MOSTRADOR">Mostrador</option>
-          <option value="RUTA">Ruta</option>
-        </Form.Control>
-      </StyledFormGroup>
-
       <StyledFormGroup controlId="tipoPago">
         <Form.Label>TIPO DE PAGO</Form.Label>
         <Form.Control
@@ -138,14 +150,8 @@ const FormularioVenta = ({
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          {tipoPago === "CORTESIA" || descuento !== 0 ? (
-            <option value="PENDIENTE">Pendiente</option>
-          ) : (
-            <>
-              <option value="REALIZADO">Realizado</option>
-              <option value="PENDIENTE">Pendiente</option>
-            </>
-          )}
+          <option value="REALIZADO">Realizado</option>
+          <option value="PENDIENTE">Pendiente</option>
         </Form.Control>
       </StyledFormGroup>
 
@@ -161,7 +167,7 @@ const FormularioVenta = ({
       </StyledFormGroup>
 
       <StyledFormGroup controlId="descuento">
-        <Form.Label>DESCUENTO</Form.Label>
+        <Form.Label>DESCUENTO </Form.Label>
         <Form.Control
           required
           type="number"
@@ -172,6 +178,10 @@ const FormularioVenta = ({
           onChange={(e) => setDescuento(parseInt(e.target.value))}
         />
       </StyledFormGroup>
+
+      <p className="text-light fs-5 text-center">
+        (Monto total: ${monto.toFixed(2)})
+      </p>
       <StyledBoton disabled={deshabilitarVenta} type="submit">
         Realizar venta
       </StyledBoton>

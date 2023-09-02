@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../componentes/general/Loader";
 import { RESET_VENTA_DETALLES } from "../constantes/ventaConstantes";
 import FiltroListaVentas from "../componentes/VentasLista/FiltroListaVentas";
@@ -20,23 +20,22 @@ import {
   StyledRow,
   StyledTitulo,
 } from "./styles/VentasLista.styles";
-import {
-  filtrarVentas,
-  manejarExportarVentas,
-  useFiltros,
-  useMostrarDetallesVenta,
-} from "./utilis/VentasLista.utilis";
+import { useMostrarDetallesVenta } from "./utilis/VentasLista.utilis";
 import PaginacionVentas from "../componentes/VentasLista/PaginacionVentas";
+import { pedirVentasReporteLista } from "../actions/ventaActions";
 
 const VentasLista = () => {
-  const [page, setPage] = useState(1);
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
   // Funcion para nevagar en la aplicacion
   const navigate = useNavigate();
+  // Function para obtener el search param en el url
+  const location = useLocation();
+  const search = location.search;
+
   // Obtener el estado desde el Redux store
   const ventaLista = useSelector((state) => state.ventaLista);
-  const { loading, ventas, error } = ventaLista;
+  const { loading, ventas, error, page, pages } = ventaLista;
 
   const manejarVentaDetalles = (id) => {
     // Redireccionar a la pagina de la venta
@@ -44,47 +43,22 @@ const VentasLista = () => {
     navigate(`/ventas/${id}`);
   };
 
-  // Custom Hook para filtrar y ordenar ventas
-  const {
-    buscar,
-    filtrarPor,
-    ordenarPor,
-    fechaInicio,
-    fechaFinal,
-    horaInicio,
-    horaFinal,
-    manejarFiltros,
-  } = useFiltros();
-
   // Hook para mostrar y ocultar panel de control en pantallas pequenas
   const [mostrarPanel, setMostrarPanel] = useState(true);
   // Hook para mostrar el resumen de venta
   const [mostrarResumen, setMostrarResumen] = useState(false);
 
   // Custom hook para mostrar los detalles de la venta
-
-  // Hook para mostrar ventana con detalles del producto
-
   const {
     mostrarVenta,
     venta,
     manejarCerrarVentana,
     manejarMostrarDetallesVenta,
-  } = useMostrarDetallesVenta(ventas, dispatch, page);
+  } = useMostrarDetallesVenta(ventas, dispatch, search);
 
-  // Filtrar y ordenar ventas
-  let ventasFiltradas = ventas
-    ? filtrarVentas(
-        ventas,
-        filtrarPor,
-        buscar,
-        fechaInicio,
-        fechaFinal,
-        horaInicio,
-        horaFinal,
-        ordenarPor
-      )
-    : [];
+  const manejarExportarVentas = () => {
+    dispatch(pedirVentasReporteLista(search));
+  };
 
   if (loading)
     return (
@@ -124,12 +98,13 @@ const VentasLista = () => {
           <StyledTitulo>Ventas</StyledTitulo>
           {/* Panel de control para filtrar y ordenar ventas */}
           <StyledPanelControl mostrarPanel={mostrarPanel}>
-            <FiltroListaVentas manejarFiltros={manejarFiltros} />
+            {/* <FiltroListaVentas manejarFiltros={manejarFiltros} /> */}
+            <FiltroListaVentas />
 
             {/* Exportar ventas */}
             <StyledBoton
               type="submit"
-              onClick={() => manejarExportarVentas(ventasFiltradas)}
+              onClick={() => manejarExportarVentas(ventas)}
             >
               Descargar tabla de ventas
             </StyledBoton>
@@ -143,12 +118,17 @@ const VentasLista = () => {
           {/* Tabla de ventas */}
           <StyledContenidoPrincipal>
             <TablaVentas
-              ventasFiltradas={ventasFiltradas}
+              ventas={ventas}
               manejarMostrarDetallesVenta={manejarMostrarDetallesVenta}
               manejarVentaDetalles={manejarVentaDetalles}
             ></TablaVentas>
 
-            <PaginacionVentas page={page} setPage={setPage} />
+            <PaginacionVentas
+              page={page}
+              pages={pages}
+              search={search}
+              isAdmin={false}
+            />
           </StyledContenidoPrincipal>
         </StyledGridContainer>
 
@@ -163,7 +143,7 @@ const VentasLista = () => {
         <VentanaMostrarResumenVentas
           mostrarResumen={mostrarResumen}
           manejarCerrarVentana={() => setMostrarResumen(false)}
-          ventas={ventasFiltradas}
+          ventas={ventas}
         />
       </>
     )

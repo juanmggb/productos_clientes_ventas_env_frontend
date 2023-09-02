@@ -34,7 +34,6 @@ function CuentaDetalles() {
     defaultValues: {
       username: JSON.parse(localStorage.getItem("username")),
       nombre: JSON.parse(localStorage.getItem("name")),
-      isAdmin: JSON.parse(localStorage.getItem("isAdmin")),
     },
   });
 
@@ -101,7 +100,6 @@ function CuentaDetalles() {
 
       formData.append("username", data.username);
       formData.append("name", data.nombre);
-      formData.append("is_admin", data.isAdmin);
       if (data.imagen[0]) {
         formData.append("IMAGEN", data.imagen[0]);
       }

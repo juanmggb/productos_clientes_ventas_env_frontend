@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
-import { pedirClientesLista } from "../../actions/clienteActions";
+import { pedirClientesVentaLista } from "../../actions/clienteActions";
 import { toast } from "react-hot-toast";
 
-export const useCliente = (clientes, dispatch, navigate) => {
+export const useCliente = (clientesVenta, dispatch, navigate) => {
   const [cliente, setCliente] = useState({});
   const [productosCliente, setProductosCliente] = useState([]);
 
   // Use effect para seleccionar cliente inicial y su lista de precios, y para fijar el vendedor
   useEffect(() => {
-    if (!clientes) {
-      dispatch(pedirClientesLista());
-    } else if (clientes.length > 0) {
-      setCliente(clientes[0]);
-      setProductosCliente(clientes[0].precios_cliente);
+    if (!clientesVenta) {
+      dispatch(pedirClientesVentaLista());
+    } else if (clientesVenta.length > 0) {
+      setCliente(clientesVenta[0]);
+      setProductosCliente(clientesVenta[0].precios_cliente);
     }
-  }, [clientes, navigate, dispatch]);
+  }, [clientesVenta, navigate, dispatch]);
 
   const manejarCambiarCliente = (clienteId) => {
-    const clienteSeleccionado = { ...clientes.find((c) => c.id === clienteId) };
+    const clienteSeleccionado = {
+      ...clientesVenta.find((c) => c.id === clienteId),
+    };
 
     setCliente(clienteSeleccionado);
 

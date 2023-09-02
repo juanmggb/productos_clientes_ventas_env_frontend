@@ -31,7 +31,7 @@ const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
             <tbody>
               {productos.map((producto, index) => (
                 <tr key={index}>
-                  <td>{producto.producto_nombre}</td>
+                  <td>{producto.NOMBRE_PRODUCTO}</td>
                   <td>{producto.CANTIDAD_VENTA}</td>
                   <td>
                     $

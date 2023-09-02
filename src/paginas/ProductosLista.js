@@ -17,7 +17,6 @@ import {
 } from "./styles/ProductosLista.styles";
 import TablaProductos from "../componentes/ProductosLista/TablaProductos";
 import { useMostrarDetallesProducto } from "./utilis/ProductosLista.utilis";
-import PaginacionVentas from "../componentes/VentasLista/PaginacionVentas";
 
 const ProductosLista = () => {
   // Funcion para disparar las acciones

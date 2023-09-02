@@ -3,7 +3,6 @@ import { Col, Form, Modal } from "react-bootstrap";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { registrarVenta } from "../../actions/ventaActions";
-import { useNavigate } from "react-router-dom";
 import {
   StyledButtonCancelar,
   StyledButtonConfirmar,
@@ -19,6 +18,7 @@ const VentanaMostrarVenta = ({
   cliente,
 }) => {
   // Funcion para disparar acciones
+
   const dispatch = useDispatch();
 
   // Obtener fecha y hora de la venta
@@ -31,7 +31,7 @@ const VentanaMostrarVenta = ({
   const descuento = venta.DESCUENTO;
 
   // Hook para calcular y mostrar el cambio de la venta
-  const [cambio, setCambio] = useState();
+  const [cambio, setCambio] = useState(0);
 
   // Funcion para realizar la venta
   const manejarRealizarVenta = (e) => {
@@ -81,7 +81,7 @@ const VentanaMostrarVenta = ({
               <Form onSubmit={manejarRealizarVenta}>
                 <Form.Group controlId="recibido">
                   <Form.Control
-                    required
+                    required={monto > 0}
                     type="number"
                     placeholder="Recibido"
                     onChange={(e) => setCambio(e.target.value - monto)}
@@ -93,7 +93,7 @@ const VentanaMostrarVenta = ({
               </Form>
             </StyledCol>
             <Col xs={6}>
-              <p>Cambio: {cambio} $</p>
+              <p>Cambio: {cambio.toFixed(2)} $</p>
             </Col>
           </StyledRow>
           <p>

@@ -4,7 +4,7 @@ import { useMediaQuery } from "react-responsive";
 import { StyledButton, TableStyled } from "./styles/TablaVentas.styles";
 
 const TablaVentas = ({
-  ventasFiltradas,
+  ventas,
   manejarMostrarDetallesVenta,
   manejarVentaDetalles,
 }) => {
@@ -38,7 +38,7 @@ const TablaVentas = ({
               </tr>
             </thead>
             <tbody>
-              {ventasFiltradas.map((venta) => (
+              {ventas.map((venta) => (
                 <tr
                   key={venta.id}
                   onClick={() => {
@@ -47,8 +47,8 @@ const TablaVentas = ({
                 >
                   <td>{venta.id}</td>
                   <td>
-                    {venta.CLIENTE
-                      ? truncateClienteNombre(venta.cliente_nombre)
+                    {venta.NOMBRE_CLIENTE
+                      ? truncateClienteNombre(venta.NOMBRE_CLIENTE)
                       : "NO DISPONIBLE"}
                   </td>
 

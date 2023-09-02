@@ -1,34 +1,54 @@
 // Importar modulos
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { Col, Container, Form, Row } from "react-bootstrap";
-import { StyledFormGroup } from "./styles/FiltroListaClientes.styles";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import {
+  StyledFormGroup,
+  StyledBoton,
+} from "./styles/FiltroListaClientes.styles";
+import { useNavigate } from "react-router-dom";
+import {
+  guardarFiltros,
+  obtenerValoresFiltroClientes,
+} from "./utilis/FiltroListaClientes.utilis";
+const FiltroListaClientes = () => {
+  // Funcion para navegar de regreso a la pagina de clientes con el url modificado
+  const navigate = useNavigate();
 
-// Estilos
+  // Establecer valore por defecto del formulario
+  const { register, handleSubmit, watch, setValue } = useForm({});
 
-const FiltroListaClientes = ({ manejarFiltros }) => {
-  // useForm para validar el formulario
-  const { register, watch } = useForm({
-    defaultValues: {
-      buscar: "",
-      filtrarPor: 1,
-      ordenarPor: 0,
-    },
-  });
+  useEffect(() => {
+    // Obtener valores del filtro desde el localstorage
+    const {
+      buscar: buscarInicial,
+      filtrarPor: filtrarPorInicial,
+      ordenarPor: ordenarPorInicial,
+    } = obtenerValoresFiltroClientes();
+
+    setValue("buscar", buscarInicial);
+
+    setValue("filtrarPor", filtrarPorInicial);
+
+    setValue("ordenarPor", ordenarPorInicial);
+  }, []);
 
   // Observar el valor de las entradas del formulario
   const { buscar, filtrarPor, ordenarPor } = watch();
 
-  // Usamos la data en el formulario para cambiar el estado de filtros cada vez que la data cambia
-  useEffect(() => {
-    manejarFiltros(buscar, filtrarPor, ordenarPor);
-  }, [buscar, filtrarPor, ordenarPor]);
+  const onSubmit = (data) => {
+    const url = `/clientes?clientefiltrarpor=${filtrarPor}&clientebuscar=${buscar}&clienteordenarpor=${ordenarPor}`;
+
+    guardarFiltros(buscar, filtrarPor, ordenarPor);
+
+    navigate(url);
+  };
 
   return (
     <Container>
       <Row>
         <Col>
-          <Form>
+          <Form onSubmit={handleSubmit(onSubmit)}>
             {/* Buscar por campo seleccionado */}
             <StyledFormGroup>
               <Form.Label htmlFor="filtrarPor">
@@ -37,13 +57,11 @@ const FiltroListaClientes = ({ manejarFiltros }) => {
               <Form.Control
                 as="select"
                 id="filtrarPor"
-                {...register("filtrarPor", {
-                  valueAsNumber: true,
-                })}
+                {...register("filtrarPor", {})}
               >
-                <option value="0">Por nombre cliente</option>
-                <option value="1">Por nombre de contacto</option>
-                <option value="2">Por tipo de pago</option>
+                <option value="nombre">Por nombre cliente</option>
+                <option value="contacto">Por nombre de contacto</option>
+                <option value="tipopago">Por tipo de pago</option>
               </Form.Control>
               <Form.Control
                 type="text"
@@ -58,16 +76,15 @@ const FiltroListaClientes = ({ manejarFiltros }) => {
               <Form.Control
                 as="select"
                 id="ordenarPor"
-                {...register("ordenarPor", {
-                  valueAsNumber: true,
-                })}
+                {...register("ordenarPor", {})}
               >
-                <option value="0">Por defecto</option>
-                <option value="1">Por nombre cliente</option>
-                <option value="2">Por nombre contacto</option>
-                <option value="3">Por tipo de pago</option>
+                <option value="defecto">Por defecto</option>
+                <option value="nombre">Por nombre cliente</option>
+                <option value="contacto">Por nombre contacto</option>
               </Form.Control>
             </StyledFormGroup>
+
+            <StyledBoton type="submit">Actualizar Lista</StyledBoton>
           </Form>
         </Col>
       </Row>

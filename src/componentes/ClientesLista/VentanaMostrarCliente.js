@@ -57,11 +57,16 @@ const VentanaMostrarCliente = ({
             <strong>C.P:</strong> {cliente.DIRECCION.CP}
           </p>
 
+          <p>
+            <strong>Observaciones:</strong> {cliente.OBSERVACIONES}
+          </p>
+
           <h5>Precios del cliente</h5>
 
           {cliente.precios_cliente.map((pc) => (
             <p>
-              {pc.producto_nombre}: {pc.PRECIO}
+              {pc.producto_nombre}: {pc.PRECIO}{" "}
+              <strong>({pc.porcentage_precio} %)</strong>
             </p>
           ))}
         </StyledModalBody>

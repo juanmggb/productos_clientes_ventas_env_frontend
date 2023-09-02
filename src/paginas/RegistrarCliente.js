@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -130,6 +130,7 @@ const RegistrarCliente = () => {
           CP: data.codigoPostal !== "" ? data.codigoPostal : null,
         },
         preciosCliente: nuevosPreciosCliente,
+        OBSERVACIONES: data.observaciones,
       })
     );
   };
@@ -168,8 +169,9 @@ const RegistrarCliente = () => {
 
           <Form onSubmit={handleSubmit(manejarRegistrarCliente)}>
             <StyledRow>
-              <StyledCol md={4}>
+              <StyledCol md={4} style={{ marginBottom: "100px" }}>
                 {/* Nombre */}
+
                 <StyledFormGroup controlId="nombre">
                   <Form.Label>Nombre</Form.Label>
                   <Form.Control
@@ -177,7 +179,7 @@ const RegistrarCliente = () => {
                       required: "Por favor, introduce el nombre del cliente",
                     })}
                     type="text"
-                    autoComplete="off"
+                    // autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
 
@@ -198,7 +200,7 @@ const RegistrarCliente = () => {
                     {...register("telefono", {
                       required: "Por favor, introduce el teléfono del cliente",
                     })}
-                    type="number"
+                    type="text"
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
@@ -212,7 +214,8 @@ const RegistrarCliente = () => {
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
-
+              </StyledCol>
+              <StyledCol md={4}>
                 {/* Tipo de pago */}
                 <StyledFormGroup controlId="tipoPago">
                   <Form.Label>Tipo de pago</Form.Label>
@@ -221,8 +224,6 @@ const RegistrarCliente = () => {
                     <option value="CREDITO">CREDITO</option>
                   </Form.Control>
                 </StyledFormGroup>
-              </StyledCol>
-              <StyledCol md={4}>
                 {/* Calle */}
                 <StyledFormGroup controlId="calle">
                   <Form.Label>Calle</Form.Label>
@@ -242,7 +243,7 @@ const RegistrarCliente = () => {
                     {...register("numero", {
                       required: "Por favor, introduce el número en la calle",
                     })}
-                    type="number"
+                    type="text"
                   ></Form.Control>
                 </StyledFormGroup>
 
@@ -291,6 +292,16 @@ const RegistrarCliente = () => {
                   <Form.Control
                     {...register("codigoPostal")}
                     type="number"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Observaciones */}
+                <StyledFormGroup controlId="colonia">
+                  <Form.Label>Observaciones (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("observaciones")}
+                    type="text"
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>

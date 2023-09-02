@@ -141,6 +141,7 @@ const ClienteDetalles = ({ match }) => {
         ciudad: cliente.DIRECCION.CIUDAD,
         municipio: cliente.DIRECCION.MUNICIPIO,
         codigoPostal: cliente.DIRECCION.CP,
+        observaciones: cliente.OBSERVACIONES,
       });
       setPreciosCliente(cambiarCampoNombrePrecios(cliente.precios_cliente));
     }
@@ -171,6 +172,7 @@ const ClienteDetalles = ({ match }) => {
           CP: data.codigoPostal,
         },
         nuevosPreciosCliente: nuevosPreciosCliente,
+        OBSERVACIONES: data.observaciones,
       })
     );
   };
@@ -220,7 +222,7 @@ const ClienteDetalles = ({ match }) => {
 
           <Form onSubmit={handleSubmit(manejarActualizarCliente)}>
             <StyledRow>
-              <StyledCol md={4}>
+              <StyledCol md={4} style={{ marginBottom: "100px" }}>
                 <StyledFormGroup controlId="nombre">
                   <Form.Label>Nombre</Form.Label>
                   <Form.Control
@@ -249,7 +251,7 @@ const ClienteDetalles = ({ match }) => {
                     {...register("telefono", {
                       required: "Por favor, introduce el teléfono del cliente",
                     })}
-                    type="number"
+                    type="text"
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
@@ -263,7 +265,9 @@ const ClienteDetalles = ({ match }) => {
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
+              </StyledCol>
 
+              <StyledCol md={4}>
                 {/* Tipo de pago */}
                 <StyledFormGroup controlId="tipoPago">
                   <Form.Label>Tipo de pago</Form.Label>
@@ -272,9 +276,6 @@ const ClienteDetalles = ({ match }) => {
                     <option value="CREDITO">CREDITO</option>
                   </Form.Control>
                 </StyledFormGroup>
-              </StyledCol>
-
-              <StyledCol md={4}>
                 {/* Calle */}
                 <StyledFormGroup controlId="calle">
                   <Form.Label>Calle</Form.Label>
@@ -294,7 +295,8 @@ const ClienteDetalles = ({ match }) => {
                     {...register("numero", {
                       required: "Por favor, introduce el número en la calle",
                     })}
-                    type="number"
+                    type="text"
+                    step="any"
                   ></Form.Control>
                 </StyledFormGroup>
 
@@ -345,6 +347,16 @@ const ClienteDetalles = ({ match }) => {
                   <Form.Control
                     {...register("codigoPostal")}
                     type="number"
+                    autoComplete="off"
+                  ></Form.Control>
+                </StyledFormGroup>
+
+                {/* Observaciones */}
+                <StyledFormGroup controlId="observaciones">
+                  <Form.Label>Observaciones (Opcional)</Form.Label>
+                  <Form.Control
+                    {...register("observaciones")}
+                    type="text"
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>

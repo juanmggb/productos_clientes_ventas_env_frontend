@@ -46,7 +46,9 @@ const TablaClientes = ({
                   {shouldShow ? (
                     <>
                       <td style={{ color: "white" }}>
-                        {c.CONTACTO ? truncateTexto(c.CONTACTO) : "ND"}
+                        {c.CONTACTO
+                          ? truncateTexto(c.CONTACTO)
+                          : "NO DISPONIBLE"}
                       </td>
                       <td style={{ color: "white" }}>{c.TELEFONO}</td>
                       <td style={{ color: "white" }}>{c.TIPO_PAGO}</td>

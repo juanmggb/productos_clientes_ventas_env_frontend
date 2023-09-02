@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Loader from "../componentes/general/Loader";
 import VentanaMostrarCliente from "../componentes/ClientesLista/VentanaMostrarCliente";
@@ -33,14 +33,18 @@ import PaginacionClientes from "../componentes/ClientesLista/PaginacionClientes"
 // Estilos
 
 const ClientesLista = () => {
-  const [page, setPage] = useState(1);
   // Funcion para disparar las acciones
   const dispatch = useDispatch();
   // Funcion para nevagar en la aplicacion
   const navigate = useNavigate();
+  // funcion para obtener el search param en el url
+  const location = useLocation();
+  const search = location.search;
+
+  console.log(search);
   // Obtener lista de clientes desde el Redux store
   const clienteLista = useSelector((state) => state.clienteLista);
-  const { loading, clientes, error } = clienteLista;
+  const { loading, clientes, error, page, pages } = clienteLista;
 
   // Obtener el estado borrar cliente desde el Redux sotore
   const clienteBorrar = useSelector((state) => state.clienteBorrar);
@@ -54,7 +58,7 @@ const ClientesLista = () => {
   const [mostrarPanel, setMostrarPanel] = useState(true);
 
   // Custom Hook para filtrar y ordenar los clientes
-  const { buscar, filtrarPor, ordenarPor, manejarFiltros } = useFiltros();
+  // const { buscar, filtrarPor, ordenarPor, manejarFiltros } = useFiltros();
 
   // Custom Hook para mostrar ventana con detalles del cliente
   const {
@@ -62,12 +66,9 @@ const ClientesLista = () => {
     cliente,
     manejarCerrarVentana,
     manejarMostrarDetallesCliente,
-  } = useMostrarDetallesCliente(dispatch, navigate, clientes, page);
+  } = useMostrarDetallesCliente(dispatch, navigate, clientes, search);
 
-  // Filtrar y ordenar clientes
-  let clientesFiltrados = clientes
-    ? filtrarClientes(clientes, filtrarPor, buscar, ordenarPor)
-    : [];
+  let clientesFiltrados = clientes;
 
   // useEffect para mostrar alertas de eliminar cliente
   useEffect(() => {
@@ -148,7 +149,7 @@ const ClientesLista = () => {
           <StyledTitulo>Clientes</StyledTitulo>
           {/* Panel de control para filtrar y ordenar clientes */}
           <StyledPanelControl mostrarPanel={mostrarPanel}>
-            <FiltroListaClientes manejarFiltros={manejarFiltros} />
+            <FiltroListaClientes />
 
             {/* Exportar clientes */}
             <StyledBoton
@@ -170,7 +171,12 @@ const ClientesLista = () => {
               manejarClienteDetalles={manejarClienteDetalles}
               manejarBorrarCliente={manejarBorrarCliente}
             ></TablaClientes>
-            <PaginacionClientes page={page} setPage={setPage} />
+            <PaginacionClientes
+              page={page}
+              pages={pages}
+              search={search}
+              isAdmin={false}
+            />
           </StyledContenidoPrincipal>
         </StyledGridContainer>
         {/* Mostrar venta con detalles del cliente */}
