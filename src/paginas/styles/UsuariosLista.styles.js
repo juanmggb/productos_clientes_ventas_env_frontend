@@ -2,8 +2,9 @@ import { Col, Container, Row } from "react-bootstrap";
 import styled from "styled-components";
 
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 2rem 0;
+  height: 88vh;
+  padding: 0.8rem 0;
+  overflow: auto;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,
@@ -15,12 +16,19 @@ export const StyledContainer = styled(Container)`
   h1 {
     text-align: center;
     color: var(--white-color);
-    margin-bottom: 3rem;
+    margin-bottom: 0.8rem;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
+    display: none;
   }
 `;
 
 export const StyledRow = styled(Row)`
-  height: 80%;
+  height: 88%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -30,5 +38,6 @@ export const StyledRow = styled(Row)`
 export const StyledCol = styled(Col)`
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  height: 100%;
 `;

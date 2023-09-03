@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import {
   StyledImageContainer,
   StyledLinkContainerEmpresa,
+  StyledNavbar,
   StyledNavDropdown,
   StyledNavWrapper,
   StyledText,
@@ -37,11 +38,11 @@ const Encabezado = () => {
   }, [token]);
 
   return (
-    <Navbar expand="lg" bg="light" variant="light">
+    <StyledNavbar expand="lg" bg="light" variant="light">
       <Container className="d-flex">
         {/* Imagen de la cuenta */}
         {isAuthenticated && (
-          <LinkContainer to="/cuenta" style={{ marginBottom: "20px" }}>
+          <LinkContainer to="/cuenta">
             <StyledNavWrapper className="text-center">
               <StyledImageContainer>
                 <Image
@@ -170,7 +171,7 @@ const Encabezado = () => {
           </Nav>
         </Navbar.Collapse>
       </Container>
-    </Navbar>
+    </StyledNavbar>
   );
 };
 

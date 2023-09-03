@@ -4,9 +4,17 @@ import styled from "styled-components";
 export const TableStyled = styled(Table)`
   height: 100%;
   tbody {
-    height: 75vh;
+    height: 70vh;
+    width: 100vw;
     display: block;
     overflow: auto;
+    
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  
+    &::-webkit-scrollbar{
+      display: none;
+    }
   }
 
   thead,

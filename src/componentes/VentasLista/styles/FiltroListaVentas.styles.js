@@ -5,7 +5,7 @@ export const StyledFormGroup = styled(Form.Group)`
   label {
     color: var(--font-color-label);
     font-weight: var(--font-weight-label);
-    font-size: var(--font-size-label);
+    font-size: var(--font-size-label)-5px;
   }
 
   input,
@@ -13,8 +13,9 @@ export const StyledFormGroup = styled(Form.Group)`
     color: var(--font-color-input);
     font-weight: var(--font-weight-input);
     font-size: var(--font-size-input);
-    margin-bottom: 2rem;
-  }
+    margin-bottom: 0.5rem;
+    height: 3.2rem;
+ }
 `;
 
 export const StyledFormControlContainer = styled.div`
@@ -31,9 +32,10 @@ export const StyledFormControlContainer = styled.div`
 export const StyledBoton = styled(Button)`
   /* width: 50%; */
   max-width: 200px;
-  height: 50px;
-  margin: 10px 0;
+  height: 35px;
+  margin: 7px 0;
   padding: 10px;
+  left: 25%;
   background-color: rgba(0, 100, 0, 0.6);
   color: white;
   font-weight: bold;

@@ -4,8 +4,8 @@ import styled from "styled-components";
 // Estilos generales
 // Estilo para el contenedor
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 5rem 0;
+  height: 88vh;
+  padding: 3rem 0;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,
@@ -13,6 +13,7 @@ export const StyledContainer = styled(Container)`
     60%,
     rgb(68, 111, 151)
   );
+
 `;
 
 export const StyledRow = styled(Row)`

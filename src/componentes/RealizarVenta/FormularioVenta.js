@@ -91,10 +91,6 @@ const FormularioVenta = ({
 
   return (
     <StyledForm onSubmit={manejarCrearVenta}>
-      <StyledFormGroup>
-        <Form.Label>VENDEDOR</Form.Label>
-        <Form.Control readOnly type="text" value={VENDEDOR}></Form.Control>
-      </StyledFormGroup>
 
       <StyledFormGroup controlId="cliente">
         <Form.Label>CLIENTE</Form.Label>

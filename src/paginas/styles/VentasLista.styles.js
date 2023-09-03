@@ -11,9 +11,10 @@ export const StyledGridContainer = styled.div`
     rgb(68, 111, 151)
   );
 
-  height: 100vh;
+  height: 88vh;
   width: 100%;
   padding: 0px 10px;
+  overflow: auto;
 
   display: grid;
   grid-gap: 10px;
@@ -30,16 +31,23 @@ export const StyledGridContainer = styled.div`
       "Titulo"
       "ContenidoPrincipal";
   }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
+    display: none;
+  }
 `;
 
 export const StyledPanelControl = styled.div`
   grid-area: PanelControl;
   position: relative;
-  margin-top: 5rem;
+  margin-top: 2rem;
   padding: 1rem 0.5rem;
   /* padding-top: 1rem; */
   width: 100%;
-  height: 90%;
+  height: 80vh;
   min-width: 300px;
 
   /* layout */
@@ -130,6 +138,7 @@ export const StyledTitulo = styled.h1`
 export const StyledContainer = styled(Container)`
   height: 100%;
   padding: 2rem 0;
+  width: 100%;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,

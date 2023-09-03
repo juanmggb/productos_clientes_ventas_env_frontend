@@ -2,8 +2,9 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import styled from "styled-components";
 
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 5rem 0;
+  height: 88vh;
+  padding: 2rem 0;
+  overflow: auto;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,
@@ -16,6 +17,13 @@ export const StyledContainer = styled(Container)`
     text-align: center;
     color: var(--white-color);
     margin-bottom: 3rem;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
+    display: none;
   }
 `;
 

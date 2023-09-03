@@ -168,13 +168,11 @@ const RegistrarUsuario = () => {
                 type="file"
                 // onChange={(e) => setImagen(e.target.files[0])}
               />
-            </StyledFormGroup>
-          </StyledCol>
-        </StyledRow>
-
-        <StyledRow>
-          <StyledCol>
+           <StyledCol>
             <StyledBoton type="submit">Registrar usuario</StyledBoton>
+           </StyledCol>
+              
+            </StyledFormGroup>
           </StyledCol>
         </StyledRow>
       </Form>

@@ -7,7 +7,7 @@ const BACKGROUND_URL = `${BASE_URL}media/imagenes/general/background.jpg`;
 export const StyledBackground = styled.div`
   position: relative;
   width: 100%;
-  height: 92vh;
+  height: 88vh;
   background: linear-gradient(rgba(0, 0, 0, 0), 80%, rgba(0, 0, 0, 0.5)),
     url(${BACKGROUND_URL});
   background-size: 100% 100%;

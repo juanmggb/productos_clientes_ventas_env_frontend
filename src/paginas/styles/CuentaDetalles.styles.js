@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 // Estilo para el contenedor
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 2rem 0;
+  height: 88vh;
+  padding: 1rem 0;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,
@@ -33,6 +33,7 @@ export const StyledFormGroup = styled(Form.Group)`
     color: var(--font-color-label);
     font-weight: var(--font-weight-label);
     font-size: var(--font-size-label);
+    margin-bottom: 0.2rem;
   }
 
   input,
@@ -40,7 +41,8 @@ export const StyledFormGroup = styled(Form.Group)`
     color: var(--font-color-input);
     font-weight: var(--font-weight-input);
     font-size: var(--font-size-input);
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
+    height: 2.8rem;
   }
 `;
 

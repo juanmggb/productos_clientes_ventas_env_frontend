@@ -13,12 +13,12 @@ export const StyledFormGroup = styled(Form.Group)`
     color: var(--font-color-input);
     font-weight: var(--font-weight-input);
     font-size: var(--font-size-input);
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
   }
 `;
 
 export const StyledBoton = styled(Button)`
-  /* width: 50%; */
+  width: 50%; 
   max-width: 200px;
   height: 50px;
   margin: 10px 0;
@@ -32,6 +32,7 @@ export const StyledBoton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
+  left: 25%;
 
   &:hover {
     background-color: #00a100;

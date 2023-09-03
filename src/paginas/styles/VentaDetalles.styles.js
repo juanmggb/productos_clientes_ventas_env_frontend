@@ -2,8 +2,8 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import styled from "styled-components";
 
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 5rem 0;
+  height: 88vh;
+  padding: 2rem 0;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,

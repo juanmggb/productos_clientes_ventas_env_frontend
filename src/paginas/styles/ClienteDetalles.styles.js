@@ -2,8 +2,9 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import styled from "styled-components";
 
 export const StyledContainer = styled(Container)`
-  height: 100%;
-  padding: 5rem 0;
+  height: 88vh;
+  padding: 2rem 0;
+  overflow: auto;
   background: linear-gradient(
     rgb(54, 54, 82),
     15%,
@@ -15,11 +16,18 @@ export const StyledContainer = styled(Container)`
   h1 {
     text-align: center;
     color: var(--white-color);
-    margin-bottom: 3rem;
+    margin-bottom: 1.75rem;
   }
 
   @media screen and (max-width: 768px) {
-    height: 230%;
+    height: 88vh;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
+    display: none;
   }
 `;
 
@@ -34,7 +42,7 @@ export const StyledCol = styled(Col)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;
 
 export const StyledFormGroup = styled(Form.Group)`
@@ -51,7 +59,7 @@ export const StyledFormGroup = styled(Form.Group)`
     color: var(--font-color-input);
     font-weight: var(--font-weight-input);
     font-size: var(--font-size-input);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 `;
 

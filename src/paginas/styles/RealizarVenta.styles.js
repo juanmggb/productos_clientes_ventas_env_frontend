@@ -11,9 +11,10 @@ export const StyledGridContainer = styled.div`
     rgb(68, 111, 151)
   );
 
-  height: 100vh;
+  height: 88vh;
   width: 100%;
   padding: 0px 10px;
+  overflow: auto;
 
   display: grid;
   grid-gap: 10px;
@@ -30,12 +31,19 @@ export const StyledGridContainer = styled.div`
       "Titulo"
       "ContenidoPrincipal";
   }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
+    display: none;
+  }
 `;
 
 export const StyledPanelControl = styled.div`
   grid-area: PanelControl;
   position: relative;
-  padding: 1rem 0.5rem;
+  padding: 0.15rem 0.5rem;
   /* padding-top: 1rem; */
   width: 100%;
   height: 90%;
@@ -118,6 +126,16 @@ export const StyledContenidoPrincipal = styled.div`
   padding-top: 0;
   position: absolute;
 
+  &::-webkit-scrollbar{
+    -webkit-appearance: none;
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(250,250,250,20);
+    border-radius: 20px;
+  }
+
   /* &::-webkit-scrollbar {
     display: none;
   } */
@@ -160,5 +178,5 @@ export const StyledRow = styled(Row)`
 export const StyledCol = styled(Col)`
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;

@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const StyledForm = styled(Form)`
   width: 80%;
+  height: 100%;
 
   @media (max-width: 768px) {
     width: 50%;
@@ -13,7 +14,7 @@ export const StyledFormGroup = styled(Form.Group)`
   label {
     color: var(--font-color-label);
     font-weight: var(--font-weight-label);
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin-bottom: 0;
   }
 
@@ -21,15 +22,16 @@ export const StyledFormGroup = styled(Form.Group)`
   select {
     color: var(--font-color-input);
     font-weight: var(--font-weight-input);
-    font-size: 0.9rem;
-    margin-bottom: 8px;
+    font-size: 13px;
+    margin-bottom: 5px;
+    height: 2.9rem;
   }
 `;
 
 export const StyledBoton = styled(Button)`
   width: 100%;
   max-width: 200px;
-  height: 50px;
+  height: 40px;
   margin: 16px auto;
   padding: 10px;
   background-color: rgba(0, 100, 0, 0.6);

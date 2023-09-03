@@ -8,6 +8,13 @@ export const TableStyled = styled(Table)`
     height: 50vh;
     display: block;
     overflow: auto;
+ 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar{
+      display: none;
+    }
   }
 
   thead,

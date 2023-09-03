@@ -11,7 +11,7 @@ export const StyledGridContainer = styled.div`
     rgb(68, 111, 151)
   );
 
-  height: 100vh;
+  height: 88vh;
   width: 100%;
   padding: 0px 10px;
 
@@ -39,7 +39,7 @@ export const StyledPanelControl = styled.div`
   padding: 0.5rem;
   padding-top: 1rem;
   width: 100%;
-  height: 100%;
+  height: 88%;
   min-width: 300px;
 
   /* layout */
@@ -114,7 +114,10 @@ export const StyledContenidoPrincipal = styled.div`
   padding-top: 0;
   position: absolute;
 
-  &::-webkit-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar{
     display: none;
   }
 `;

@@ -58,7 +58,7 @@ const FormularioProductoVenta = ({
             onClick={() => manejarMostrarDetallesProducto(producto.id)}
           >
             {/* Informacion del producto */}
-            <StyledProductoInfoContainer>
+            <StyledProductoInfoContainer style={{fontSize: "13px"}}>
               <span>{producto.producto_nombre} </span>
               <img
                 src={`${BASE_URL}${producto.producto_imagen}`}
