@@ -4,6 +4,11 @@ import styled from "styled-components";
 
 export const StyledNavbar = styled(Navbar)`
   height: 12vh;
+
+  @media screen and (max-width: 1200px){
+    height: auto;
+    z-index: 1000;
+  }
 `;
 
 export const StyledLinkContainerEmpresa = styled(LinkContainer)`
