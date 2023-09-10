@@ -17,8 +17,15 @@ export const StyledFormGroup = styled(Form.Group)`
   }
 `;
 
+export const StyledBotonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const StyledBoton = styled(Button)`
-  width: 50%; 
+  width: 70%; 
   max-width: 200px;
   height: 50px;
   margin: 10px 0;
@@ -32,7 +39,6 @@ export const StyledBoton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 25%;
 
   &:hover {
     background-color: #00a100;

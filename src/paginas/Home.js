@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 // Importar estilos del componente
 import {
   StyledButton,
+  StyledButtonContainer,
   StyledCol,
   StyledContainer,
   StyledFormGroup,
@@ -61,7 +62,9 @@ const Home = () => {
               <Form.Control type="text" readOnly value={name}></Form.Control>
             </StyledFormGroup>
 
-            <StyledButton onClick={manejarLogout}>Cerrar Sesión</StyledButton>
+            <StyledButtonContainer>
+              <StyledButton onClick={manejarLogout}>Cerrar Sesión</StyledButton>
+              </StyledButtonContainer>
           </Form>
         </StyledCol>
       </StyledRow>

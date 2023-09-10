@@ -24,7 +24,7 @@ export const StyledGridContainer = styled.div`
     "PanelControl Titulo"
     "PanelControl ContenidoPrincipal";
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 900px) {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 8fr;
     grid-template-areas:
@@ -56,12 +56,11 @@ export const StyledPanelControl = styled.div`
   justify-content: center;
   align-items: center;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 900px) {
     margin: 0;
     padding-top: 0;
-    display: ${(props) => (props.mostrarPanel ? "flex" : "none")};
     position: fixed;
-    left: 0;
+    left: ${props => props.mostrarPanel ? '0':'-100vw'};
     z-index: 2;
     height: 90%;
     background: linear-gradient(
@@ -71,6 +70,8 @@ export const StyledPanelControl = styled.div`
       60%,
       rgb(68, 111, 151)
     );
+
+    transition: ease all 0.5s;
   }
 `;
 
@@ -96,7 +97,7 @@ export const StyledBoton = styled(Button)`
     color: black;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 900px) {
     min-width: 160px;
   }
 `;
@@ -104,14 +105,19 @@ export const StyledBoton = styled(Button)`
 export const StyledBotonPanel = styled(Button)`
   display: none;
   position: fixed;
-  top: 120px;
-  right: 5px;
+  top: 11%;
+  right: 30px;
   z-index: 3;
   width: 20px;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 900px) {
     display: flex;
     justify-content: center;
+
+    i{
+      transform: ${props => props.state ? 'rotate(180deg)':'rotate(0)'};
+      transition: ease all 0.5s; 
+    }
   }
 `;
 
@@ -124,6 +130,10 @@ export const StyledContenidoPrincipal = styled.div`
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @media screen and (max-width: 900px){
+    width: 100%;
   }
 `;
 

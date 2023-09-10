@@ -7,6 +7,8 @@ import {
   TablaEstilo,
 } from "./styles/VentanaMostrarVenta.styles";
 
+import { obtenerFecha, obtenerHora } from "./TablaVentas";
+
 const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
   const { productos, total, observacion, descuento, status } = venta;
 
@@ -19,6 +21,14 @@ const VentanaMostrarVenta = ({ venta, mostrarVenta, manejarCerrarVentana }) => {
         </StyledModalHeader>
 
         <StyledModalBody>
+          <h5>DATOS GENERALES:</h5>
+          <h5>Cliente:</h5> <p>{venta.cliente}</p>
+          <h5>Fecha de Venta:</h5>
+           <p>{obtenerFecha(venta.fecha)} --<span> {obtenerHora(venta.fecha)}</span></p>
+          <h5>Vendedor:</h5> <p>{venta.vendedor}</p>
+          <h5>Tipo de Venta:</h5> <p>{venta.tipo}</p>
+          <h5>Tipo de Pago:</h5> <p>{venta.pago}</p>
+          {console.log(venta)}
           <h5>Tabla de Productos:</h5>
           <TablaEstilo>
             <thead>

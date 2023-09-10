@@ -242,6 +242,11 @@ export const useMostrarDetallesVenta = (ventas, dispatch, search) => {
       total: ventaSeleccionada.MONTO,
       status: ventaSeleccionada.STATUS,
       observacion: ventaSeleccionada.OBSERVACIONES,
+      cliente: ventaSeleccionada.NOMBRE_CLIENTE,
+      fecha: ventaSeleccionada.FECHA,
+      vendedor: ventaSeleccionada.VENDEDOR,
+      tipo: ventaSeleccionada.TIPO_VENTA,
+      pago: ventaSeleccionada.TIPO_PAGO,
     });
     setMostrarVenta(true);
   };

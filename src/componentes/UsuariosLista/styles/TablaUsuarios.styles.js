@@ -31,4 +31,18 @@ export const TableStyled = styled(Table)`
     vertical-align: middle;
     color: white !important;
   }
+
+  @media screen and (max-width: 400px){
+    Button{
+      width: 40px;
+      height: 40px;
+      font-size: 22px;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  @media screen and (max-width: 400px){
+    font-size: 12px;
+  }
 `;

@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import {
   StyledBoton,
+  StyledBotonContainer,
   StyledFormControlContainer,
   StyledFormGroup,
 } from "./styles/FiltroListaVentas.styles";
@@ -184,9 +185,11 @@ const FiltroListaVentas = () => {
               </StyledFormControlContainer>
             </StyledFormGroup> */}
 
-            <StyledBoton className="btn btn-primary" type="submit">
-              Actualizar Lista
-            </StyledBoton>
+            <StyledBotonContainer>
+              <StyledBoton className="btn btn-primary" type="submit">
+                Actualizar Lista
+              </StyledBoton>
+            </StyledBotonContainer>
           </Form>
         </Col>
       </Row>

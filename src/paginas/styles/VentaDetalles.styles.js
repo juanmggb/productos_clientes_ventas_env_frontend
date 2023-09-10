@@ -17,6 +17,7 @@ export const StyledContainer = styled(Container)`
     color: var(--white-color);
     margin-bottom: 3rem;
   }
+  justify-content: center;
 `;
 
 export const StyledRow = styled(Row)`
@@ -48,6 +49,11 @@ export const StyledFormGroup = styled(Form.Group)`
     font-size: var(--font-size-input);
     margin-bottom: 2rem;
     min-width: 300px;
+
+    @media screen and (max-width: 370px){
+      min-width: 250px;
+      width: 100%;
+    }
   }
 `;
 

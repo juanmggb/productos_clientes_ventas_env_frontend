@@ -66,21 +66,61 @@ export const StyledProductoInfoContainer = styled.div`
     color: #fff;
   }
 
-  @media screen and (max-width: 1000px) {
-    display: none;
+  @media screen and (max-width: 1000px){
+    width: 115px;
+    margin-left: 8px;
+  }
+`;
+
+export const StyledOptionsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  @media screen and (max-width: 880px){
+    width: 100%;
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 0.5fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "Vacio1 Seleccionador Vacio2"
+                         "Botones Botones Botones";
+    
+    @media screen and (max-width: 769px){
+      display: flex;
+
+      @media screen and (max-width: 551px){
+        display: grid;
+
+        @media screen and (max-width: 450px){
+          grid-template-columns: 0.2fr 1fr 0.2fr;
+        }
+      }
+    }
   }
 `;
 
 export const StyledSeleccionadorCantidad = styled.div`
   padding: 10px;
   margin-left: 40px;
-  justify-content: space-around;
+  width: 100%;
+
+  @media screen and (max-width: 1000px){
+    margin-left: 0px;
+    margin-top: 7px;
+    padding: 0px;
+    max-width: 200px;
+    grid-area: Seleccionador;
+  }
 `;
 
 export const StyledButtonsContainer = styled.div`
-  display: flex;
+  display: grid;
   width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr;
+  grid-template-areas: "Confirmar Modificar Eliminar";
+  grid-gap: 20px;
   justify-content: space-around;
+  margin-left: 15px;
   align-items: center;
   padding: 10px;
   Button {
@@ -90,10 +130,34 @@ export const StyledButtonsContainer = styled.div`
     justify-content: center;
   }
 
-  @media screen and (max-width: 1000px) {
+  @media screen and (max-width: 1080px) {
     Button {
       width: 70px;
       font-size: 0.8rem;
+    }
+    margin-left: 10px;
+    grid-area: Botones;
+
+    @media screen and (max-width: 1000px){
+      Button{
+        font-size: 1.4rem;
+      }
+
+      @media screen and (max-width: 430px){
+        Button{
+          font-size: 1rem;
+          width: 50px;
+        }
+        margin-top: 5px;
+      }
+      @media screen and (max-width: 360px){
+        Button{
+          font-size: 0.8rem;
+          width: 40px;
+        }
+        grid-gap: 5px;
+        margin-left: 0px;
+      }
     }
   }
 `;

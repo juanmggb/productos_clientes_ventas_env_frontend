@@ -57,22 +57,23 @@ export const StyledPanelControl = styled.div`
 
   @media screen and (max-width: 768px) {
     margin: 0;
-    padding-top: 0;
-    display: ${(props) => {
-      return props.mostrarPanel ? "flex" : "none";
-    }};
+    padding-top: 5px;
+    display: flex;
+    overflow: auto;
 
     position: fixed;
-    left: 0;
+    left: ${props => props.mostrarPanel ? '0':'-100vw'};
     z-index: 2;
     height: 90%;
     background: linear-gradient(
-      rgb(54, 54, 82),
+      rgba(54, 54, 82,0.95),
       15%,
-      rgb(84, 106, 144),
+      rgba(84, 106, 144,0.95),
       60%,
-      rgb(68, 111, 151)
+      rgba(68, 111, 151,0.95)
     );
+    transform: ${props => props.state ? 'rotate(180deg)': 'rotate(0)'};
+    transition: 0.5s ease all;
   }
 `;
 
@@ -106,7 +107,7 @@ export const StyledBoton = styled(Button)`
 export const StyledBotonPanel = styled(Button)`
   display: none;
   position: fixed;
-  top: 120px;
+  top: 11vh;
   right: 5px;
   z-index: 3;
   width: 20px;
@@ -114,6 +115,11 @@ export const StyledBotonPanel = styled(Button)`
   @media screen and (max-width: 768px) {
     display: flex;
     justify-content: center;
+  }
+
+  i{
+    transform: ${props => props.state ? 'rotate(180deg)': 'rotate(0)'};
+    transition: 0.5s ease all;
   }
 `;
 

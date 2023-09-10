@@ -29,13 +29,20 @@ export const StyledFormControlContainer = styled.div`
   }
 `;
 
+export const StyledBotonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const StyledBoton = styled(Button)`
-  /* width: 50%; */
+  width: 50%;
   max-width: 200px;
   height: 35px;
-  margin: 7px 0;
+  margin: 10px;
   padding: 10px;
-  left: 25%;
+  left: 0%;
   background-color: rgba(0, 100, 0, 0.6);
   color: white;
   font-weight: bold;

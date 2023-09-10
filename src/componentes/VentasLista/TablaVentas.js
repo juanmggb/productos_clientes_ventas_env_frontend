@@ -1,7 +1,8 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
-import { StyledButton, TableStyled } from "./styles/TablaVentas.styles";
+import { StyledButton, StyledButtonContainer, TableStyled } from "./styles/TablaVentas.styles";
+import UseScreenSize from "../../paginas/utilis/UseScreenSize";
 
 const TablaVentas = ({
   ventas,
@@ -10,6 +11,7 @@ const TablaVentas = ({
 }) => {
   const isSmallViewport = useMediaQuery({ maxWidth: 768 });
   const shouldshow = !isSmallViewport;
+  const {alto, ancho} = UseScreenSize(); 
 
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
 
@@ -17,22 +19,18 @@ const TablaVentas = ({
     <Container>
       <Row>
         <Col>
-          <TableStyled hover>
+          <TableStyled striped hover>
             <thead>
               <tr>
                 <th>ID</th>
                 <th>CLIENTE</th>
 
-                {shouldshow ? (
-                  <>
-                    <th>FECHA</th>
-                    <th>VENDEDOR</th>
-                    <th>HORA</th>
-                    <th>TIPO DE VENTA</th>
-                    <th>TIPO DE PAGO</th>
-                    <th>STATUS</th>
-                  </>
-                ) : null}
+                {ancho > 500  ? (<th>FECHA</th>) : null}
+                {ancho > 700  ? (<th>VENDEDOR</th>) : null}
+                {ancho > 1200 ? (<th>HORA</th>) : null}
+                {ancho > 500  ? (<th>TIPO DE VENTA</th>) : null}
+                {ancho > 1100 ? (<th>TIPO DE PAGO</th>) : null}
+                {ancho > 1200 ? (<th>STATUS</th>) : null}
 
                 {isAdmin ? <th>EDITAR</th> : null}
               </tr>
@@ -45,33 +43,31 @@ const TablaVentas = ({
                     return manejarMostrarDetallesVenta(venta.id);
                   }}
                 >
-                  <td>{venta.id}</td>
-                  <td>
+                  {<td>{venta.id}</td>}
+                  {<td>
                     {venta.NOMBRE_CLIENTE
                       ? truncateClienteNombre(venta.NOMBRE_CLIENTE)
                       : "NO DISPONIBLE"}
-                  </td>
+                  </td>}
 
-                  {shouldshow ? (
-                    <>
-                      <td>{obtenerFecha(venta.FECHA)}</td>
-                      <td>{truncateClienteNombre(venta.VENDEDOR)}</td>
-                      <td>{obtenerHora(venta.FECHA)}</td>
-                      <td>{venta.TIPO_VENTA}</td>
-                      <td>{venta.TIPO_PAGO}</td>
-                      <td>{venta.STATUS}</td>
-                    </>
-                  ) : null}
+                  {ancho > 500  ? (<td>{obtenerFecha(venta.FECHA)}</td>) : null}
+                  {ancho > 700  ? (<td>{truncateClienteNombre(venta.VENDEDOR)}</td>) : null}
+                  {ancho > 1200 ? (<td>{obtenerHora(venta.FECHA)}</td>) : null}
+                  {ancho > 500  ? (<td>{venta.TIPO_VENTA}</td>) : null}
+                  {ancho > 1100 ? (<td>{venta.TIPO_PAGO}</td>) : null}
+                  {ancho > 1200 ? (<td>{venta.STATUS}</td>) : null}
 
                   {isAdmin ? (
                     <td>
                       {venta.STATUS === "PENDIENTE" ? (
-                        <StyledButton
-                          shouldshow={shouldshow.toString()}
-                          onClick={() => manejarVentaDetalles(venta.id)}
-                        >
-                          <i className="fa-regular fa-pen-to-square"></i>
-                        </StyledButton>
+                        <StyledButtonContainer>
+                          <StyledButton
+                            shouldshow={shouldshow.toString()}
+                            onClick={() => manejarVentaDetalles(venta.id)}
+                          >
+                            <i className="fa-regular fa-pen-to-square"></i>
+                          </StyledButton>
+                        </StyledButtonContainer>
                       ) : (
                         <i
                           style={{ marginLeft: "10px" }}
@@ -90,7 +86,7 @@ const TablaVentas = ({
   );
 };
 
-const obtenerFecha = (date) => {
+export const obtenerFecha = (date) => {
   const ventaDate = new Date(date);
 
   // Extracting fecha (date)
@@ -99,7 +95,7 @@ const obtenerFecha = (date) => {
   return fecha;
 };
 
-const obtenerHora = (date) => {
+export const obtenerHora = (date) => {
   const ventaDate = new Date(date);
 
   const hora = ventaDate.toLocaleTimeString();

@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 import { TableStyled } from "./styles/TablaClientes.styles";
+import useScreenSize from "../../paginas/utilis/UseScreenSize";
 
 const TablaClientes = ({
   clientesFiltrados,
@@ -9,8 +10,9 @@ const TablaClientes = ({
   manejarClienteDetalles,
   manejarBorrarCliente,
 }) => {
-  const isSmallViewport = useMediaQuery({ maxWidth: 768 });
+  const isSmallViewport = useMediaQuery({ maxWidth: 800 });
   const shouldShow = !isSmallViewport;
+  const {alto, ancho} = useScreenSize();
 
   return (
     <Container>
@@ -19,16 +21,22 @@ const TablaClientes = ({
           <TableStyled striped hover>
             <thead>
               <tr>
-                <th>ID</th>
+
+                {ancho > 350 ? (
+                  <th>ID</th>
+                ) : null}
                 <th>NOMBRE</th>
 
                 {shouldShow ? (
+                  <th>CONTACTO</th>
+                ) : null}
+
+                {ancho > 1000 ? (
                   <>
-                    <th>CONTACTO</th>
                     <th>TELEFONO</th>
                     <th>TIPO DE PAGO</th>
                   </>
-                ) : null}
+                ): null}
 
                 <th>EDITAR</th>
                 <th>BORRAR</th>
@@ -40,20 +48,28 @@ const TablaClientes = ({
                   key={c.id}
                   onClick={() => manejarMostrarDetallesCliente(c.id)}
                 >
-                  <td style={{ color: "white" }}>{c.id}</td>
-                  <td style={{ color: "white" }}>{truncateTexto(c.NOMBRE)}</td>
+                  {ancho > 350 ? (
+                    <td>{c.id}</td>
+                  ): null}
+
+                  <td>{truncateTexto(c.NOMBRE)}</td>
 
                   {shouldShow ? (
                     <>
-                      <td style={{ color: "white" }}>
+                      <td>
                         {c.CONTACTO
                           ? truncateTexto(c.CONTACTO)
                           : "NO DISPONIBLE"}
                       </td>
-                      <td style={{ color: "white" }}>{c.TELEFONO}</td>
-                      <td style={{ color: "white" }}>{c.TIPO_PAGO}</td>
                     </>
                   ) : null}
+
+                  {ancho > 1000 ? (
+                    <>
+                      <td>{c.TELEFONO}</td>
+                      <td>{c.TIPO_PAGO}</td>
+                    </>
+                  ): null}
 
                   <td>
                     <Button onClick={() => manejarClienteDetalles(c.id)}>

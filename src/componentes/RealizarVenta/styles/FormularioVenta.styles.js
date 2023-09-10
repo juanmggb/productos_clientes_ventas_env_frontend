@@ -7,6 +7,10 @@ export const StyledForm = styled(Form)`
 
   @media (max-width: 768px) {
     width: 50%;
+
+    @media screen and (max-width: 400px){
+      width: 70%;
+    }
   }
 `;
 

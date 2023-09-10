@@ -7,12 +7,13 @@ export const TableStyled = styled(Table)`
   tbody {
     height: 50vh;
     display: block;
+    width:100%;
     overflow: auto;
- 
+
     -ms-overflow-style: none;
     scrollbar-width: none;
 
-    &::-webkit-scrollbar{
+    &::-webkit-scrollbar {
       display: none;
     }
   }
@@ -28,6 +29,16 @@ export const TableStyled = styled(Table)`
   td {
     text-align: center;
     vertical-align: middle;
-    color: white;
+    color: white !important;
+  }
+
+  @media screen and (max-width: 768px){
+    Button{
+      width: 40px;
+      height: 40px;
+      font-size: 22px;
+      margin: 0;
+      padding: 0;
+    }
   }
 `;

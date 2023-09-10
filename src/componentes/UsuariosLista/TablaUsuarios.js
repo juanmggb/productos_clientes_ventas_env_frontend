@@ -4,6 +4,7 @@ import { useMediaQuery } from "react-responsive";
 import ImagenObjeto from "../general/ImagenObjecto";
 import { TableStyled } from "./styles/TablaUsuarios.styles";
 import { BASE_URL } from "../../constantes/constantes";
+import UseScreenSize from "../../paginas/utilis/UseScreenSize";
 
 const TablaUsuarios = ({
   usuarios,
@@ -12,24 +13,22 @@ const TablaUsuarios = ({
 }) => {
   const isSmallViewport = useMediaQuery({ maxWidth: 768 });
   const shouldShow = !isSmallViewport;
+  const {alto, ancho} = UseScreenSize();
 
   return (
     <TableStyled striped hover>
       <thead>
         <tr>
           <th>ID</th>
-
-          <th>IMAGEN</th>
-          {shouldShow ? (
-            <>
-              <th>USUARIO</th>
-              <th>NOMBRE</th>
-              <th>PERMISOS</th>
-            </>
-          ) : null}
-
+          {ancho > 720 ? (<th>IMAGEN</th>) : null}
+          <th>USUARIO</th>
+          
+          {ancho > 870 ? (<th>NOMBRE</th>) : null}
+          {ancho > 480 ? (<th>PERMISOS</th>) : null}
+          
           <th>EDITAR</th>
           <th>BORRAR</th>
+
         </tr>
       </thead>
       <tbody>
@@ -38,24 +37,26 @@ const TablaUsuarios = ({
           .map((u) => (
             <tr key={u.id}>
               <td>{u.id}</td>
-              <td>
-                <ImagenObjeto
-                  src={`${BASE_URL}${u.empleado.IMAGEN}`}
-                  alt={u.name}
-                />
-              </td>
-              {shouldShow ? (
-                <>
-                  <td style={{ color: "white" }}>
-                    {truncateTexto(u.username)}
-                  </td>
+              {ancho > 720 ? (
+                <td>
+                  <ImagenObjeto
+                    src={`${BASE_URL}${u.empleado.IMAGEN}`}
+                    alt={u.name}
+                 />
+                </td>) : null}
+              
+              {ancho > 870 ? (
+                <td style={{ color: "white" }}>
+                  {truncateTexto(u.username)}
+                </td>) : null}
 
-                  <td style={{ color: "white" }}>{truncateTexto(u.name)}</td>
-                  <td style={{ color: "white" }}>
-                    {u.is_admin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR"}
-                  </td>
-                </>
-              ) : null}
+              <td style={{ color: "white" }}>{truncateTexto(u.name)}</td>
+              {ancho > 480 ? (
+              <td style={{ color: "white" }}>
+                {(ancho > 620) ? (u.is_admin ? "ADMINISTRADOR" : "NO ES ADMINISTRADOR") :
+                  u.is_admin ? "ADM" : "NO ADM"
+                }
+              </td>) : null}
 
               <td>
                 <Button onClick={() => manejarUsuarioDetalles(u.id)}>

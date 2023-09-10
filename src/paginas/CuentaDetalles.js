@@ -10,6 +10,7 @@ import { RESET_CUENTA_UPDATE } from "../constantes/cuentaConstantes";
 import { useForm } from "react-hook-form";
 import {
   StyledButton,
+  StyledButtonContainer,
   StyledCol,
   StyledContainer,
   StyledFormGroup,
@@ -167,7 +168,9 @@ function CuentaDetalles() {
               <Form.Control {...register("imagen")} type="file" />
             </StyledFormGroup>
 
-            <StyledButton type="submit">Actualizar Cuenta</StyledButton>
+            <StyledButtonContainer>
+              <StyledButton type="submit">Actualizar Cuenta</StyledButton>
+            </StyledButtonContainer>
           </Form>
         </StyledCol>
       </StyledRow>

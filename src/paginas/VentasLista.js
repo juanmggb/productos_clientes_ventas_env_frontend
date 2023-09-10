@@ -88,12 +88,8 @@ const VentasLista = () => {
     ventas && (
       <>
         <StyledGridContainer>
-          <StyledBotonPanel onClick={() => setMostrarPanel((state) => !state)}>
-            {mostrarPanel ? (
-              <i className="fa-solid fa-arrow-left"></i>
-            ) : (
-              <i className="fa-solid fa-arrow-right"></i>
-            )}
+          <StyledBotonPanel onClick={() => setMostrarPanel((state) => !state)} state={mostrarPanel}>
+            <i className="fa-solid fa-arrow-right"/>
           </StyledBotonPanel>
           <StyledTitulo>Ventas</StyledTitulo>
           {/* Panel de control para filtrar y ordenar ventas */}

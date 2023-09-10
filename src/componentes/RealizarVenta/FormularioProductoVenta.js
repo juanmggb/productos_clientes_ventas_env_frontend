@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 
+import UseScreenSize from "../../paginas/utilis/UseScreenSize";
 import VentanaMostrarProducto from "../ProductosLista/VentanaMostrarProducto";
 import Mensaje from "../general/Mensaje";
 import {
   StyledButtonsContainer,
   StyledCol,
+  StyledOptionsContainer,
   StyledProductoContenedor,
   StyledProductoInfoContainer,
   StyledRow,
@@ -36,6 +38,8 @@ const FormularioProductoVenta = ({
     setMostrarProducto(true);
   };
 
+  const {ancho, alto} = UseScreenSize();
+
   // Si no hay productos seleccionados pedir al usuario que seleccione al menos uno
   if (!productos.length)
     return (
@@ -57,6 +61,7 @@ const FormularioProductoVenta = ({
             key={producto.id}
             onClick={() => manejarMostrarDetallesProducto(producto.id)}
           >
+
             {/* Informacion del producto */}
             <StyledProductoInfoContainer style={{fontSize: "13px"}}>
               <span>{producto.producto_nombre} </span>
@@ -66,53 +71,58 @@ const FormularioProductoVenta = ({
               />
             </StyledProductoInfoContainer>
 
-            {/* Input para seleccionar cantidad */}
-            <StyledSeleccionadorCantidad onClick={(e) => e.stopPropagation()}>
-              <Form.Group controlId={producto.id}>
-                <Form.Control
+            <StyledOptionsContainer>
+              {/* Input para seleccionar cantidad */}
+              <StyledSeleccionadorCantidad onClick={(e) => e.stopPropagation()}>
+                <Form.Group controlId={producto.id}>
+                  <Form.Control
+                    disabled={producto.confirmado}
+                    type="number"
+                    value={producto.cantidadVenta}
+                    onChange={(e) =>
+                      manejarCambioCantidad(
+                        e,
+                        Number(e.target.value),
+                        producto.id
+                      )
+                    }
+                  />
+                </Form.Group>
+              </StyledSeleccionadorCantidad>
+
+              {/* Botones para el producto de venta */}
+              <StyledButtonsContainer>
+                <BotonOpcionesProducto
+                  bg="green"
+                  producto={producto}
+                  onClick={manejarConfirmarProducto}
                   disabled={producto.confirmado}
-                  type="number"
-                  value={producto.cantidadVenta}
-                  onChange={(e) =>
-                    manejarCambioCantidad(
-                      e,
-                      Number(e.target.value),
-                      producto.id
-                    )
-                  }
-                />
-              </Form.Group>
-            </StyledSeleccionadorCantidad>
+                  gridArea={"Confirmar"}
+                >
+                  {ancho > 1000 ? "Confirmar": <i className="fa-solid fa-check"/>}
+                </BotonOpcionesProducto>
 
-            {/* Botones para el producto de venta */}
-            <StyledButtonsContainer>
-              <BotonOpcionesProducto
-                bg="green"
-                producto={producto}
-                onClick={manejarConfirmarProducto}
-                disabled={producto.confirmado}
-              >
-                Confirmar
-              </BotonOpcionesProducto>
+                <BotonOpcionesProducto
+                  bg="blue"
+                  producto={producto}
+                  onClick={manejarConfirmarProducto}
+                  disabled={!producto.confirmado}
+                  gridArea={"Modificar"}
+                >
+                  {ancho > 1000 ? "Modificar": <i className="fa-solid fa-pen-to-square"/>}
+                </BotonOpcionesProducto>
 
-              <BotonOpcionesProducto
-                bg="blue"
-                producto={producto}
-                onClick={manejarConfirmarProducto}
-                disabled={!producto.confirmado}
-              >
-                Modificar
-              </BotonOpcionesProducto>
-
-              <BotonOpcionesProducto
-                bg="red"
-                producto={producto}
-                onClick={manejarCancelarProducto}
-                disabled={false}
-              >
-                Eliminar
-              </BotonOpcionesProducto>
-            </StyledButtonsContainer>
+                <BotonOpcionesProducto
+                  bg="red"
+                  producto={producto}
+                  onClick={manejarCancelarProducto}
+                  disabled={false}
+                  gridArea={"Eliminar"}
+                >
+                  {(ancho > 1000) ? <>Eliminar</>:<i className="fa-solid fa-xmark"/>}
+                </BotonOpcionesProducto>
+              </StyledButtonsContainer>
+            </StyledOptionsContainer>
           </StyledProductoContenedor>
         );
       })}

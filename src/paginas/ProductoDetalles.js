@@ -178,6 +178,7 @@ const ProductoDetalles = ({ match }) => {
                   type="number"
                   value={cantidad}
                   onChange={(e) => setCantidad(e.target.value)}
+                  step='any'
                 ></Form.Control>
               </StyledFormGroup>
             </StyledCol>
@@ -189,6 +190,7 @@ const ProductoDetalles = ({ match }) => {
                   type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
+                  step='any'
                 ></Form.Control>
               </StyledFormGroup>
 

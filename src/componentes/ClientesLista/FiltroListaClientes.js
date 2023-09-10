@@ -5,6 +5,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import {
   StyledFormGroup,
   StyledBoton,
+  StyledBotonContainer,
 } from "./styles/FiltroListaClientes.styles";
 import { useNavigate } from "react-router-dom";
 import {
@@ -84,7 +85,9 @@ const FiltroListaClientes = () => {
               </Form.Control>
             </StyledFormGroup>
 
-            <StyledBoton type="submit">Actualizar Lista</StyledBoton>
+            <StyledBotonContainer>
+              <StyledBoton type="submit">Actualizar Lista</StyledBoton>
+            </StyledBotonContainer>
           </Form>
         </Col>
       </Row>

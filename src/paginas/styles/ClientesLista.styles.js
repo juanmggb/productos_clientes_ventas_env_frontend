@@ -29,6 +29,7 @@ export const StyledGridContainer = styled.div`
     grid-template-areas:
       "Titulo"
       "ContenidoPrincipal";
+    padding: 0px;
   }
 `;
 
@@ -51,18 +52,19 @@ export const StyledPanelControl = styled.div`
   @media screen and (max-width: 768px) {
     margin: 0;
     padding-top: 0;
-    display: ${(props) => (props.mostrarPanel ? "flex" : "none")};
+    display: flex;
     position: fixed;
-    left: 0;
+    left: ${props => props.mostrarPanel ? '0':'-100vw'};
     z-index: 2;
     height: 90%;
     background: linear-gradient(
-      rgb(54, 54, 82),
+      rgba(54, 54, 82, 5),
       15%,
-      rgb(84, 106, 144),
+      rgba(84, 106, 144, 5),
       60%,
-      rgb(68, 111, 151)
+      rgba(68, 111, 151, 5)
     );
+    transition: 0.5s ease all;
   }
 `;
 
@@ -96,14 +98,19 @@ export const StyledBoton = styled(Button)`
 export const StyledBotonPanel = styled(Button)`
   display: none;
   position: fixed;
-  top: 120px;
-  right: 5px;
+  top: 11%;
+  right: 15px;
   z-index: 3;
   width: 20px;
 
   @media screen and (max-width: 768px) {
     display: flex;
     justify-content: center;
+  }
+
+  i{
+    transform: ${props => props.state ? 'rotate(180deg)': 'rotate(0)'};
+    transition: 0.5s ease all;
   }
 `;
 
@@ -113,6 +120,7 @@ export const StyledContenidoPrincipal = styled.div`
   padding: 1rem 0;
   padding-top: 0;
   position: absolute;
+  width: 100%;
 
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -146,6 +154,10 @@ export const StyledContainer = styled(Container)`
     text-align: center;
     color: var(--white-color);
     margin-bottom: 3rem;
+  }
+
+  @media screen and (max-width: 768px){
+    padding: 0;
   }
 `;
 

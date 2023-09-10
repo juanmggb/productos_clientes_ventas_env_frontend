@@ -175,7 +175,7 @@ const FormularioVenta = ({
         />
       </StyledFormGroup>
 
-      <p className="text-light fs-5 text-center">
+      <p className="text-light fs-6 text-center">
         (Monto total: ${monto.toFixed(2)})
       </p>
       <StyledBoton disabled={deshabilitarVenta} type="submit">
