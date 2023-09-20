@@ -7,6 +7,16 @@ import {
   StyledModalHeader,
 } from "./styles/VentanaMostrarCliente.styles";
 
+const ORDER_WEEK = {
+  LUNES: 1,
+  MARTES: 2,
+  MIERCOLES: 3,
+  JUEVES: 4,
+  VIERNES: 5,
+  SABADO: 6,
+  DOMINGO: 7,
+};
+
 const VentanaMostrarCliente = ({
   cliente,
   mostrarCliente,
@@ -67,6 +77,17 @@ const VentanaMostrarCliente = ({
             <p>
               {pc.producto_nombre}: {pc.PRECIO}{" "}
               <strong>({pc.porcentage_precio} %)</strong>
+            </p>
+          ))}
+
+          <h5>Rutas del Cliente</h5>
+          {cliente.RUTAS.sort((a, b) => {
+            if (ORDER_WEEK[a.DIA] < ORDER_WEEK[b.DIA]) return -1;
+            if (ORDER_WEEK[b.DIA] < ORDER_WEEK[a.DIA]) return 1;
+            return 0;
+          }).map((r) => (
+            <p>
+              {r.NOMBRE}: {r.DIA}
             </p>
           ))}
         </StyledModalBody>

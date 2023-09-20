@@ -20,6 +20,7 @@ import {
   crearPreciosCliente,
   useProductos,
 } from "./utilis/RegistrarCliente.utilis";
+import VentanaFormularioRuta from "../componentes/RegistrarCliente/VentanaFormularioRuta";
 
 const RegistrarCliente = () => {
   // Funcion para disparar las acciones
@@ -31,6 +32,23 @@ const RegistrarCliente = () => {
   // Obtener lista de productos del Redux
   const productoLista = useSelector((state) => state.productoLista);
   const { loading, productos, error } = productoLista;
+
+  const [rutas, setRutas] = useState(["Ruta 1", "Ruta 2", "Ruta 3"]);
+  const [ruta, setRuta] = useState("Ruta 1");
+
+  const [days, setDays] = useState([]);
+
+  const modificarDays = (day, add) => {
+    if (add) {
+      const newDays = [...days, day];
+      setDays(newDays);
+    } else {
+      const newDays = days.filter((d) => d !== day);
+      setDays(newDays);
+    }
+  };
+
+  const [mostrarRutas, setMostrarRutas] = useState(false);
 
   // Obtener el estado registrar cliente del Redux
   const clienteRegistrar = useSelector((state) => state.clienteRegistrar);
@@ -161,6 +179,10 @@ const RegistrarCliente = () => {
       </StyledContainer>
     );
 
+  console.log("DAYS:", days);
+
+  console.log("RUTA:", ruta);
+
   return (
     productos && (
       <>
@@ -169,7 +191,7 @@ const RegistrarCliente = () => {
 
           <Form onSubmit={handleSubmit(manejarRegistrarCliente)}>
             <StyledRow>
-              <StyledCol md={4} style={{ marginBottom: "100px" }}>
+              <StyledCol md={4}>
                 {/* Nombre */}
 
                 <StyledFormGroup controlId="nombre">
@@ -214,6 +236,12 @@ const RegistrarCliente = () => {
                     autoComplete="off"
                   ></Form.Control>
                 </StyledFormGroup>
+                <StyledBoton
+                  type="button"
+                  onClick={() => setMostrarRutas(true)}
+                >
+                  Seleccionar Rutas
+                </StyledBoton>
               </StyledCol>
               <StyledCol md={4}>
                 {/* Tipo de pago */}
@@ -317,6 +345,17 @@ const RegistrarCliente = () => {
           mostrarPrecios={mostrarPrecios}
           manejarCerrarVentana={() => setMostrarPrecios(false)}
           manejarCambioPrecio={manejarCambioPrecio}
+        />
+
+        {/* Formulario de rutas del cliente */}
+        <VentanaFormularioRuta
+          rutas={rutas}
+          ruta={ruta}
+          days={days}
+          setRuta={setRuta}
+          modificarDays={modificarDays}
+          mostrarRutas={mostrarRutas}
+          manejarCerrarVentana={() => setMostrarRutas(false)}
         />
       </>
     )
