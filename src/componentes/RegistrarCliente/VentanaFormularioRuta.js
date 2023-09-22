@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Form, Modal } from "react-bootstrap";
 import {
   StyledButton,
@@ -6,8 +6,6 @@ import {
   StyledModalFooter,
   StyledModalHeader,
 } from "./styles/VentanaFormularioRuta.styles";
-import { useDispatch, useSelector } from "react-redux";
-import { pedirRutasLista } from "../../actions/rutaActions";
 
 const DAY_WEEK = {
   LUNES: "Lunes",
@@ -20,29 +18,15 @@ const DAY_WEEK = {
 };
 
 const VentanaFormularioRuta = ({
-  days,
   ruta,
-  modificarDays,
+  rutas,
+  modificarDayIds,
   modificarRuta,
   mostrarRutas,
   manejarCerrarVentana,
 }) => {
-  // Funcion para disparar las acciones
-  const dispatch = useDispatch();
-
-  const rutaLista = useSelector((state) => state.rutaLista);
-  const { rutas } = rutaLista;
-
-  // useEffect para cargar rutas
-  useEffect(() => {
-    // Siempre que se va a registrar un cliente se hace una request de las rutas
-    dispatch(pedirRutasLista());
-  }, [dispatch]);
-
-  console.log("days", days);
-
   return (
-    rutas && (
+    Object.keys(ruta.rutaDays).length > 0 && (
       <Modal centered show={mostrarRutas} onHide={manejarCerrarVentana}>
         <StyledModalHeader>
           <h4>Rutas del Cliente </h4>
@@ -53,13 +37,15 @@ const VentanaFormularioRuta = ({
               <Form.Label>Ruta:</Form.Label>
               <Form.Control
                 as="select"
-                value={ruta}
+                value={ruta.nombre}
                 onChange={(e) => {
                   modificarRuta(e.target.value);
                 }}
               >
                 {rutas.map((r) => (
-                  <option value={r.NOMBRE}>{r.NOMBRE}</option>
+                  <option value={r.NOMBRE} key={r.NOMBRE}>
+                    {r.NOMBRE}
+                  </option>
                 ))}
               </Form.Control>
             </Form.Group>
@@ -68,12 +54,16 @@ const VentanaFormularioRuta = ({
               <Form.Label>Días de la semana:</Form.Label>
               {Object.keys(DAY_WEEK).map((day) => (
                 <Form.Check
+                  key={day}
                   type="checkbox"
                   label={DAY_WEEK[day]}
                   value={day}
-                  checked={days.includes(day)}
+                  checked={ruta.selectedIds.includes(ruta.rutaDays[day])}
                   onChange={(e) => {
-                    modificarDays(e.target.value, e.target.checked);
+                    modificarDayIds(
+                      ruta.rutaDays[e.target.value],
+                      e.target.checked
+                    );
                   }}
                 />
               ))}

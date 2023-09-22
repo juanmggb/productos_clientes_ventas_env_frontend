@@ -34,18 +34,8 @@ const RegistrarCliente = () => {
   const productoLista = useSelector((state) => state.productoLista);
   const { loading, productos, error } = productoLista;
 
-  // const rutaLista = useSelector((state) => state.rutaLista);
-  // const { rutas } = rutaLista;
-
-  // // useEffect para cargar rutas
-  // useEffect(() => {
-  //   // Siempre que se va a registrar un cliente se hace una request de las rutas
-  //   dispatch(pedirRutasLista());
-  // }, [dispatch]);
-
-  const { ruta, days, modificarDays, modificarRuta } = useRutas();
-
-  const [mostrarRutas, setMostrarRutas] = useState(false);
+  const rutaLista = useSelector((state) => state.rutaLista);
+  const { rutas } = rutaLista;
 
   // Obtener el estado registrar cliente del Redux
   const clienteRegistrar = useSelector((state) => state.clienteRegistrar);
@@ -56,12 +46,21 @@ const RegistrarCliente = () => {
   } = clienteRegistrar;
 
   // Custom Hook para precios de productos del cliente
-  const { productosCliente, manejarCambioPrecio } = useProductos(
-    productos,
-    dispatch
-  );
-  // Hook para mostrar precios del cliente
-  const [mostrarPrecios, setMostrarPrecios] = useState(false);
+  const {
+    productosCliente,
+    manejarCambioPrecio,
+    mostrarPrecios,
+    setMostrarPrecios,
+  } = useProductos(productos, dispatch);
+
+  // Custom Hook para rutas  del cliente
+  const {
+    ruta,
+    modificarDayIds,
+    modificarRuta,
+    mostrarRutas,
+    setMostrarRutas,
+  } = useRutas(rutas, dispatch);
 
   // useForm para validar formulario
   const {
@@ -129,6 +128,8 @@ const RegistrarCliente = () => {
     // Esta funcion permite crear un array de precios con el formato que recibe el backend
     const nuevosPreciosCliente = crearPreciosCliente(productosCliente);
 
+    console.log(ruta.selectedIds);
+
     dispatch(
       registrarCliente({
         NOMBRE: data.nombre,
@@ -146,6 +147,7 @@ const RegistrarCliente = () => {
         },
         preciosCliente: nuevosPreciosCliente,
         OBSERVACIONES: data.observaciones,
+        rutasIds: ruta.selectedIds,
       })
     );
   };
@@ -343,11 +345,12 @@ const RegistrarCliente = () => {
         {/* Formulario de rutas del cliente */}
         <VentanaFormularioRuta
           // Estado del componente
-          days={days}
           ruta={ruta}
+          // Esto del Redux
+          rutas={rutas}
           // Funciones para modificar el estado del componente
           modificarRuta={modificarRuta}
-          modificarDays={modificarDays}
+          modificarDayIds={modificarDayIds}
           // Mostrar ventana con rutas
           mostrarRutas={mostrarRutas}
           manejarCerrarVentana={() => setMostrarRutas(false)}
@@ -359,24 +362,58 @@ const RegistrarCliente = () => {
 
 export default RegistrarCliente;
 
-const useRutas = () => {
+const useRutas = (rutas, dispatch) => {
   // Estado para las rutas del cliente
-  const [ruta, setRuta] = useState("");
-  const [days, setDays] = useState([]);
+  const [ruta, setRuta] = useState({
+    nombre: "",
+    rutaDays: [],
+    selectedIds: [],
+  });
 
-  const modificarDays = (day, add) => {
-    if (add) {
-      const newDays = [...days, day];
-      setDays(newDays);
+  const [mostrarRutas, setMostrarRutas] = useState(false);
+
+  // useEffect para cargar rutas
+  useEffect(() => {
+    // Siempre que se va a registrar un cliente se hace una request de las rutas
+    if (!rutas) {
+      dispatch(pedirRutasLista());
     } else {
-      const newDays = days.filter((d) => d !== day);
-      setDays(newDays);
+      const newRuta = rutas[0];
+      setRuta({
+        nombre: newRuta.NOMBRE,
+        rutaDays: newRuta.ruta_dias,
+        selectedIds: [],
+      });
+    }
+  }, [dispatch, rutas]);
+
+  const modificarDayIds = (dayId, add) => {
+    console.log("2MODIFICAR ID");
+    if (add) {
+      const newSelectedIds = [...ruta.selectedIds, dayId];
+      setRuta({ ...ruta, selectedIds: newSelectedIds });
+    } else {
+      const newSelectedIds = ruta.selectedIds.filter((d) => d !== dayId);
+      setRuta({ ...ruta, selectedIds: newSelectedIds });
     }
   };
 
-  const modificarRuta = (rutaName) => {
-    setRuta(rutaName);
+  const modificarRuta = (rutaNombre) => {
+    const newRuta = { ...rutas.find((r) => r.NOMBRE === rutaNombre) };
+    console.log(rutaNombre, newRuta);
+
+    setRuta({
+      nombre: newRuta.NOMBRE,
+      rutaDays: newRuta.ruta_dias,
+      selectedIds: [],
+    });
   };
 
-  return { ruta, days, modificarDays, modificarRuta };
+  return {
+    ruta,
+    modificarDayIds,
+    modificarRuta,
+    mostrarRutas,
+    setMostrarRutas,
+  };
 };

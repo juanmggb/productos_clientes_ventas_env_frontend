@@ -4,6 +4,9 @@ import { pedirProductosLista } from "../../actions/productoActions";
 export const useProductos = (productos, dispatch) => {
   const [productosCliente, setProductosCliente] = useState([]);
 
+  // Hook para mostrar precios del cliente
+  const [mostrarPrecios, setMostrarPrecios] = useState(false);
+
   const manejarCambioPrecio = (nuevo_precio, productoId) => {
     // Obtener el index del producto cuyo precio hay que cambiar
     const indexProducto = productosCliente.findIndex(
@@ -36,6 +39,8 @@ export const useProductos = (productos, dispatch) => {
   return {
     productosCliente,
     manejarCambioPrecio,
+    mostrarPrecios,
+    setMostrarPrecios,
   };
 };
 
