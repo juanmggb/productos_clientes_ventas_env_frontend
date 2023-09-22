@@ -21,6 +21,7 @@ import {
   useProductos,
 } from "./utilis/RegistrarCliente.utilis";
 import VentanaFormularioRuta from "../componentes/RegistrarCliente/VentanaFormularioRuta";
+import { pedirRutasLista } from "../actions/rutaActions";
 
 const RegistrarCliente = () => {
   // Funcion para disparar las acciones
@@ -33,20 +34,16 @@ const RegistrarCliente = () => {
   const productoLista = useSelector((state) => state.productoLista);
   const { loading, productos, error } = productoLista;
 
-  const [rutas, setRutas] = useState(["Ruta 1", "Ruta 2", "Ruta 3"]);
-  const [ruta, setRuta] = useState("Ruta 1");
+  // const rutaLista = useSelector((state) => state.rutaLista);
+  // const { rutas } = rutaLista;
 
-  const [days, setDays] = useState([]);
+  // // useEffect para cargar rutas
+  // useEffect(() => {
+  //   // Siempre que se va a registrar un cliente se hace una request de las rutas
+  //   dispatch(pedirRutasLista());
+  // }, [dispatch]);
 
-  const modificarDays = (day, add) => {
-    if (add) {
-      const newDays = [...days, day];
-      setDays(newDays);
-    } else {
-      const newDays = days.filter((d) => d !== day);
-      setDays(newDays);
-    }
-  };
+  const { ruta, days, modificarDays, modificarRuta } = useRutas();
 
   const [mostrarRutas, setMostrarRutas] = useState(false);
 
@@ -178,10 +175,6 @@ const RegistrarCliente = () => {
         </StyledRow>
       </StyledContainer>
     );
-
-  console.log("DAYS:", days);
-
-  console.log("RUTA:", ruta);
 
   return (
     productos && (
@@ -349,11 +342,13 @@ const RegistrarCliente = () => {
 
         {/* Formulario de rutas del cliente */}
         <VentanaFormularioRuta
-          rutas={rutas}
-          ruta={ruta}
+          // Estado del componente
           days={days}
-          setRuta={setRuta}
+          ruta={ruta}
+          // Funciones para modificar el estado del componente
+          modificarRuta={modificarRuta}
           modificarDays={modificarDays}
+          // Mostrar ventana con rutas
           mostrarRutas={mostrarRutas}
           manejarCerrarVentana={() => setMostrarRutas(false)}
         />
@@ -363,3 +358,25 @@ const RegistrarCliente = () => {
 };
 
 export default RegistrarCliente;
+
+const useRutas = () => {
+  // Estado para las rutas del cliente
+  const [ruta, setRuta] = useState("");
+  const [days, setDays] = useState([]);
+
+  const modificarDays = (day, add) => {
+    if (add) {
+      const newDays = [...days, day];
+      setDays(newDays);
+    } else {
+      const newDays = days.filter((d) => d !== day);
+      setDays(newDays);
+    }
+  };
+
+  const modificarRuta = (rutaName) => {
+    setRuta(rutaName);
+  };
+
+  return { ruta, days, modificarDays, modificarRuta };
+};

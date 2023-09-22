@@ -42,6 +42,8 @@ import {
   ventaReporteListaReducer,
 } from "./reducers/ventaReducers";
 
+import { rutaListaReducer } from "./reducers/rutaReducers";
+
 const reducer = combineReducers({
   // Cuenta reducers
   cuentaActualizar: cuentaActualizarReducer,
@@ -68,6 +70,7 @@ const reducer = combineReducers({
   clienteRegistrar: clienteRegistrarReducer,
   clienteBorrar: clienteBorrarReducer,
   clienteVentaLista: clienteVentaListaReducer,
+  rutaLista: rutaListaReducer,
 
   // Venta reducers
   ventaLista: ventaListaReducer,
