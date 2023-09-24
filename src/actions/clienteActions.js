@@ -13,6 +13,7 @@ import {
   REQUEST_CLIENTE_REGISTRAR,
   REQUEST_CLIENTE_VENTA_LISTA,
   RESET_CLIENTE_LISTA,
+  RESET_CLIENTE_VENTA_LISTA,
   SUCCESS_CLIENTE_ACTUALIZAR,
   SUCCESS_CLIENTE_BORRAR,
   SUCCESS_CLIENTE_DETALLES,
@@ -84,7 +85,6 @@ export const pedirClientesVentaLista = () => async (dispatch, getState) => {
     // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.get(`${BASE_URL}api/clientes-venta/`, config);
 
-    console.log("ClientesVenta:", data);
     dispatch({ type: SUCCESS_CLIENTE_VENTA_LISTA, payload: data });
   } catch (error) {
     // Si el backend responde con un error 401 (no autorizado) intentar actualizar el token
@@ -158,8 +158,10 @@ export const actualizarCliente = (cliente) => async (dispatch, getState) => {
     dispatch({ type: SUCCESS_CLIENTE_ACTUALIZAR });
     // Reset lista de clientes para actualizar la lista con la nueva informacion del cliente
     dispatch({ type: RESET_CLIENTE_LISTA });
+
     // Reset lista de ventas para actualizar la lista con la nueva informacion del cliente
     dispatch({ type: RESET_VENTA_LISTA });
+    dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
   } catch (error) {
     // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el token
     if (error.response && error.response.status === 401) {
@@ -200,6 +202,8 @@ export const registrarCliente = (cliente) => async (dispatch, getState) => {
 
     // Reset lista de clientes para actualizar la lista con el nuevo cliente
     dispatch({ type: RESET_CLIENTE_LISTA });
+    // Reset lista de clientes venta para que aparezca el nuevo cliente al hacer la venta
+    dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
   } catch (error) {
     // Si el backend responde con error de tipo 401 (no autorizado) intentar actualizar el access token
     if (error.response && error.response.status === 401) {
@@ -238,6 +242,8 @@ export const borrarCliente = (id) => async (dispatch, getState) => {
     dispatch({ type: SUCCESS_CLIENTE_BORRAR });
     // Reset lista de clientes para actualizar la lista y remover el cliente eliminado
     dispatch({ type: RESET_CLIENTE_LISTA });
+    // Reset lista de clientes venta para que NO aparezca el nuevo cliente al hacer la venta
+    dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
     // Reset lista de ventas para eliminar el cliente de las ventas con ese cliente
     dispatch({ type: RESET_VENTA_LISTA });
   } catch (error) {

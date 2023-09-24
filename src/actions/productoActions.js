@@ -1,5 +1,8 @@
 import axios from "axios";
-import { RESET_CLIENTE_LISTA } from "../constantes/clienteConstantes";
+import {
+  RESET_CLIENTE_LISTA,
+  RESET_CLIENTE_VENTA_LISTA,
+} from "../constantes/clienteConstantes";
 import {
   REQUEST_PRODUCTO_LISTA,
   SUCCESS_PRODUCTO_LISTA,
@@ -120,6 +123,7 @@ export const actualizarProducto =
       dispatch({ type: RESET_PRODUCTO_LISTA });
       // Debo volver a pedir la lista de clientes del backend, la razon es que si cambio el nombre del producto el nombre de ese producto en la lista de precios de todos los clientes cambia y hay que actualizar la lista
       dispatch({ type: RESET_CLIENTE_LISTA });
+      dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
       // Debo volver a pedir la lista de ventas del backend, la razon es que si cambio el nombre del producto, la venta debe de mostrar el nuevo nombre. Tambien debe mostrar la cantidad disponible del producto
       dispatch({ type: RESET_VENTA_LISTA });
     } catch (error) {
@@ -162,6 +166,7 @@ export const registrarProducto = (formData) => async (dispatch, getState) => {
     dispatch({ type: RESET_PRODUCTO_LISTA });
     // Debo volver a pedir la lista de clientes del backend, la razon es que cuando se crea un nuevo producto se le asigna el precio de ese producto a todos los clientes y se debe actualizar la lista de clientes para ver estos precios
     dispatch({ type: RESET_CLIENTE_LISTA });
+    dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
   } catch (error) {
     // Si el backend responde con error de tipo 401 (no autenticado) intentar actualizar ek token
     if (error.response && error.response.status === 401) {
@@ -202,6 +207,8 @@ export const borrarProducto = (id) => async (dispatch, getState) => {
 
     // Reset lista de clientes para obtener la lista de clientes actualizada sin el producto que se borro
     dispatch({ type: RESET_CLIENTE_LISTA });
+
+    dispatch({ type: RESET_CLIENTE_VENTA_LISTA });
     // Reset lista de ventas para obtener la lista de ventas actualizada sin el producto que se borro
     dispatch({ type: RESET_VENTA_LISTA });
   } catch (error) {
