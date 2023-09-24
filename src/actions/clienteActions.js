@@ -82,8 +82,10 @@ export const pedirClientesVentaLista = () => async (dispatch, getState) => {
       },
     };
 
+
     // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.get(`${BASE_URL}api/clientes-venta/`, config);
+
 
     dispatch({ type: SUCCESS_CLIENTE_VENTA_LISTA, payload: data });
   } catch (error) {
@@ -115,8 +117,10 @@ export const obtenerClienteDetalles = (id) => async (dispatch, getState) => {
       },
     };
 
+
     // Recibir respuesta del backend y guardar en data
     const { data } = await axios.get(`${BASE_URL}api/clientes/${id}/`, config);
+
 
     dispatch({ type: SUCCESS_CLIENTE_DETALLES, payload: data });
   } catch (error) {
@@ -150,7 +154,9 @@ export const actualizarCliente = (cliente) => async (dispatch, getState) => {
 
     // Recibir respuesta del backend y guardar en data
     const { data } = await axios.put(
+
       `${BASE_URL}api/modificar-cliente/${cliente.id}/`,
+
       cliente,
       config
     );
@@ -193,7 +199,9 @@ export const registrarCliente = (cliente) => async (dispatch, getState) => {
 
     // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.post(
+
       `${BASE_URL}api/crear-cliente/`,
+
       cliente,
       config
     );
@@ -235,7 +243,9 @@ export const borrarCliente = (id) => async (dispatch, getState) => {
 
     // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.delete(
+
       `${BASE_URL}api/modificar-cliente/${id}/`,
+
       config
     );
 

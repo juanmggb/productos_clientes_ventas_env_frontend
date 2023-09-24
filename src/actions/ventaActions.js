@@ -115,6 +115,7 @@ export const pedirVentasReporteLista =
     }
   };
 
+
 // Creador de acciones para pedir el venta con el id del backend
 export const obtenerVentaDetalles = (id) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_VENTA_DETALLES });
@@ -136,6 +137,7 @@ export const obtenerVentaDetalles = (id) => async (dispatch, getState) => {
 
     // Recibir respuesta del backend y guardarla en data
     const { data } = await axios.get(`${BASE_URL}api/ventas/${id}/`, config);
+
 
     dispatch({ type: SUCCESS_VENTA_DETALLES, payload: data });
   } catch (error) {
@@ -169,7 +171,9 @@ export const actualizarVenta = (venta) => async (dispatch, getState) => {
 
     // Recibir respuesta del backend y guardarla en data
     const { data } = await axios.put(
+
       `${BASE_URL}api/modificar-venta/${venta.id}/`,
+
       venta,
       config
     );
@@ -209,7 +213,9 @@ export const registrarVenta = (venta) => async (dispatch, getState) => {
 
     // recibir respuesta del backend y guardarla en data
     const { data } = await axios.post(
+
       `${BASE_URL}api/crear-venta/`,
+
       venta,
       config
     );

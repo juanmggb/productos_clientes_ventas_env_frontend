@@ -25,6 +25,7 @@ export const pedirUsuariosLista = () => async (dispatch, getState) => {
   dispatch({ type: REQUEST_USUARIO_LISTA });
 
   try {
+
     const {
       usuarioInfo: { token },
     } = getState();
@@ -163,6 +164,7 @@ export const borrarUsuario = (id) => async (dispatch, getState) => {
 
     dispatch({ type: SUCCESS_USUARIO_BORRAR });
     dispatch({ type: RESET_USUARIO_LISTA });
+
   } catch (error) {
     if (error.response && error.response.status === 401) {
       dispatch(actualizarAccessToken(borrarUsuario, id));

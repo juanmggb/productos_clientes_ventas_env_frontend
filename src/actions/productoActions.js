@@ -44,8 +44,10 @@ export const pedirProductosLista = () => async (dispatch, getState) => {
       },
     };
 
+
     // Recibir respuesta del backend y guardarla en data
     const { data } = await axios.get(`${BASE_URL}api/productos/`, config);
+
 
     dispatch({ type: SUCCESS_PRODUCTO_LISTA, payload: data });
   } catch (error) {
@@ -77,8 +79,10 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
       },
     };
 
+
     // Recibir respuesta del backend y guardarla en data
     const { data } = await axios.get(`${BASE_URL}api/productos/${id}/`, config);
+
 
     dispatch({ type: SUCCESS_PRODUCTO_DETALLES, payload: data });
   } catch (error) {
@@ -92,6 +96,7 @@ export const obtenerProductoDetalles = (id) => async (dispatch, getState) => {
 };
 
 // Creador de acciones para actualizar producto del backend
+
 export const actualizarProducto =
   (id, formData) => async (dispatch, getState) => {
     dispatch({ type: REQUEST_PRODUCTO_ACTUALIZAR });
@@ -136,6 +141,7 @@ export const actualizarProducto =
     }
   };
 
+
 // Creador de acciones para registrar un nuevo producto en el backend
 export const registrarProducto = (formData) => async (dispatch, getState) => {
   dispatch({ type: REQUEST_PRODUCTO_REGISTRAR });
@@ -157,8 +163,10 @@ export const registrarProducto = (formData) => async (dispatch, getState) => {
 
     // Recibir la respuesta del backend y guardarla en data
     const { data } = await axios.post(
+
       `${BASE_URL}api/crear-producto/`,
       formData,
+
       config
     );
 
@@ -198,7 +206,9 @@ export const borrarProducto = (id) => async (dispatch, getState) => {
 
     // Recibir respuesta del backend y guardar en data
     const { data } = await axios.delete(
+
       `${BASE_URL}api/modificar-producto/${id}/`,
+
       config
     );
 
